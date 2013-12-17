@@ -1,0 +1,332 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A Javascript-optional AJAX library featuring declarative, REST-ful bindings">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="./img/icon.png">
+
+  <title>Intercooler.JS - The Javascript-optional AJAX library</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
+    rel="stylesheet" type="text/css">
+  <link href="./css/site.css" rel="stylesheet" type="text/css">
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+<script type="text/javascript" src="../src/intercooler.js"></script>
+<script type="text/javascript" src="/js/intercooler.js"></script>
+<script>
+
+  //---------------------------------------------------------------------------------
+  // This is all junk to simulate an actual remote server
+  //---------------------------------------------------------------------------------
+  var counter = 1;
+  setInterval(function () {
+    counter++;
+  }, 2500);
+
+  var clicks = 0;
+
+  function paramsToHash(str) {
+    var searchString = str,
+        params = searchString.split("&"),
+        hash = {};
+
+    if (searchString == "") return {};
+    for (var i = 0; i < params.length; i++) {
+      var val = params[i].split("=");
+      hash[unescape(val[0])] = unescape(val[1]);
+    }
+    return hash;
+  }
+
+  var firstName = "";
+  var lastName = "";
+
+  Intercooler.setRemote({
+    get: function (url, callback) {
+      if (url == "/polling_div") {
+        callback("<div ic-src='/polling_div' ic-poll='1s'>Sample Polling Div.  Value is " + counter + "</div>")
+      }
+      if (url == "/manual_div") {
+        callback("<div id='manual-update' ic-src='/manual_div'>Sample Manual Div.  Value is " + counter + "</div>")
+      }
+      if (url == "/dependency_div") {
+        callback("<div ic-src='/dependency_div'>Sample Dependency Dectection. You have clicked " + clicks + " times</div>")
+      }
+      if (url == "/progress_bar") {
+        callback((counter % 12) / 12 * 100 + "%")
+      }
+      if (url == "/attr_update") {
+        if(counter % 3 == 0) {
+          callback("");
+        } else if(counter % 3 == 1) {
+          callback("font-style:italic");
+        } else {
+          callback("font-weight:bold");
+        }
+      }
+      if(url == "/contacts/1/info_div") {
+        callback("<div ic-src='/contacts/1/info_div' ic-deps='/contacts/1'>Hello " + firstName + " " + lastName + "</div>");
+      }
+    },
+    post : function(url, data, callback) {
+      if (url == "/dependency_div") {
+        clicks++;
+        callback("");
+      }
+      if (url == "/contacts/1/first_name") {
+        firstName = paramsToHash(data)['first_name'];
+        callback("");
+      }
+      if (url == "/contacts/1/last_name") {
+        lastName = paramsToHash(data)['last_name'];
+        callback("");
+      }
+      if (url == "/contacts/2/email") {
+        var email = paramsToHash(data)['email'];
+        if(/\S+@\S+\.\S+/.test(email)){
+          callback('<div class="form-group" ic-dest="/contacts/2/email"  ic-transition="none">' +
+                     '<label>Enter An Email</label>' +
+                     '<input type="text" name="email" class="form-control" placeholder="Enter An Email" value="' + email + '">' +
+                   '</div>');
+        } else {
+          callback('<div class="form-group has-error" ic-dest="/contacts/2/email" ic-transition="none">' +
+                     '<label>Enter An Email</label>' +
+                     '<input type="text" name="email" class="form-control" placeholder="Enter An Email" value="' + email + '">' +
+                     '<span class="help-block">Please enter a valid email.</span>' +
+                   '</div>');
+        }
+      }
+    }
+  });
+
+</script>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="index.html">Intercooler.JS</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="demo.html">Demo</a></li>
+    </ul>
+  </div>
+</div>
+
+<br/>
+<br/>
+<br/>
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Intercooler.JS Examples</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h3>Polling</h3>
+      <p>This is a simple div that polls an http endpoint for updates every 1 second</p>
+
+      <h4>Code</h4>
+      <pre>
+
+  &lt;div ic-src="/polling_div" ic-poll="1s">Sample Polling Div. Value is 0&lt;/div>
+      </pre>
+
+      <h4>Live Example</h4>
+
+      <div ic-src="/polling_div" ic-poll="1s">Sample Polling Div. Value is 0</div>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h3>Manual Update</h3>
+
+      <p>This is a div that is refreshed explicitly using events and the Intercooler library</p>
+
+      <h4>Code</h4>
+      <pre>
+
+  &lt;div id="manual-update" ic-src="/manual_div">Sample Polling Div. Value is 0&lt;/div>
+  &lt;button onclick="Intercooler.refresh($('#manual-update'));">Update It!&lt;/button>
+      </pre>
+
+      <h4>Live Example</h4>
+
+      <div id="manual-update" ic-src="/manual_div">Sample Polling Div. Value is 0</div>
+      <button class="btn btn-primary" onclick="Intercooler.refresh($('#manual-update'));">Update It!</button>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h3>Dependency Detection</h3>
+
+      <p>This is a div that is refreshed automatically when the button is clicked due to the fact that it depends
+      on a URL that the button targets for update.</p>
+
+      <h4>Code</h4>
+      <pre>
+
+        &lt;div ic-src="/dependency_div">Sample Dependency Dectection. You have clicked 0 times&lt;/div>
+        &lt;button ic-dest="/dependency_div">Increment Counter&lt;/button>
+      </pre>
+
+      <h4>Live Example</h4>
+
+      <div ic-src="/dependency_div">Sample Dependency Dectection. You have clicked 0 times</div>
+      <button class="btn btn-primary" ic-dest="/dependency_div">Increment Counter</button>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h3>CSS Value Targeting</h3>
+
+      <p>You may want to target the value of an style attribute with an endpoint for a smoother UI experience.  Below is an
+        example targeting the 'width' attribute of the style on the progress bar, allowing for smooth easing as it updates.</p>
+
+      <h4>Code</h4>
+      <pre>
+
+  &lt;div class="progress progress-striped active">
+    &lt;div class="progress-bar" ic-style-src="width:/progress_bar" ic-poll="2s" style="width:1%">&lt;/div>
+  &lt;/div>
+      </pre>
+
+      <h4>Live Example</h4>
+
+      <div class="progress progress-striped active">
+        <div class="progress-bar" ic-style-src="width:/progress_bar" ic-poll="2s" style="width:1%"></div>
+      </div>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h3>Attribute Value Targeting</h3>
+
+      <p>You may want to target the value of an attribute with an endpoint for a smoother UI experience.  Below
+      we update the entire style block of the element</p>
+      <h4>Code</h4>
+      <pre>
+
+  &lt;div class="progress progress-striped active">
+    &lt;div class="progress-bar" ic-attr-src="style:/attr_update" ic-poll="2s" style="width:1%">Here is some text!&lt;/div>
+  &lt;/div>
+      </pre>
+
+      <h4>Live Example</h4>
+
+     <div ic-attr-src="style:/attr_update" ic-poll="2s">Here is some text!</div>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h3>Input Binding Example</h3>
+
+      <p>This example binds two inputs to two different endpoints.  The div below them then depends on a parent path, but sources from
+        a different URL.  When you change the value in the inputs (tab out) the div below will update.</p>
+
+      <h4>Code</h4>
+      <pre>
+  &lt;form role="form">
+    &lt;div class="form-group">
+      &lt;label>First Name&lt;/label>
+      &lt;input type="text" name="first_name" class="form-control" placeholder="Enter Your First Name" ic-dest="/contacts/1/first_name">
+    &lt;/div>
+    &lt;div class="form-group">
+      &lt;label>Last Name&lt;/label>
+      &lt;input type="text" name="last_name" class="form-control" placeholder="Enter Your Last Name" ic-dest="/contacts/1/last_name">
+    &lt;/div>
+  &lt;/form>
+  &lt;div ic-src="/contacts/1/info_div" ic-deps="/contacts/1">Nothing Entered Yet...&lt;/div>
+      </pre>
+
+      <h4>Live Example</h4>
+      <form role="form">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" name="first_name" class="form-control" placeholder="Enter Your First Name" ic-dest="/contacts/1/first_name">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" name="last_name" class="form-control" placeholder="Enter Your Last Name" ic-dest="/contacts/1/last_name">
+        </div>
+      </form>
+      <div ic-src="/contacts/1/info_div" ic-deps="/contacts/1">Nothing Entered Yet...</div>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h3>Input Validation Example</h3>
+
+      <p>Intercooler.js makes it easy to do incremental inline form element validations against your server.  Below
+      is an example that will only allow properly formatted emails.</p>
+
+      <h4>Code</h4>
+      <pre>
+  &lt;div class="form-group" ic-dest="/contacts/2/email" ic-transition="none">
+    &lt;label>Enter An Email&lt;/label>
+    &lt;input type="text" name="email" class="form-control" placeholder="Enter An Email">
+  &lt;/div>
+      </pre>
+
+      <h4>Live Example</h4>
+      <form role="form">
+        <div class="form-group" ic-dest="/contacts/2/email" ic-transition="none">
+          <label>Enter An Email</label>
+          <input type="text" name="email" class="form-control" placeholder="Enter An Email">
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+</body>
+</html>

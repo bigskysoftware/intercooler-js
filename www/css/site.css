@@ -1,0 +1,16 @@
+div.jumbotron {
+  margin-top:50px !important;
+}
+
+h1, h2, h3, h4, .navbar-brand {
+	font-family:'Crete Round';'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+p 
+{
+	font-family: 'Open Sans';'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.red {
+	color:red;
+}
