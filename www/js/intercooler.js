@@ -120,21 +120,13 @@ var Intercooler = Intercooler || (function () {
 
   function refreshDependencies(dest) {
     withSourceAttrs(function(attr){
-      $('[ic-src]').each(function(){
+      $('[' + attr + ']').each(function(){
         if(dest.indexOf($(this).attr('ic-src')) == 0) {
           updateElement($(this));
         } else if($(this).attr('ic-deps') && dest.indexOf($(this).attr('ic-deps')) == 0) {
           updateElement($(this));
         }
       });
-    });
-
-    $('[ic-src]').each(function(){
-      if(dest.indexOf($(this).attr('ic-src')) == 0) {
-        updateElement($(this));
-      } else if($(this).attr('ic-deps') && dest.indexOf($(this).attr('ic-deps')) == 0) {
-        updateElement($(this));
-      }
     });
   }
 

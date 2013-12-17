@@ -10,28 +10,55 @@ layout: default
   </div>
 </div>
 
+  <script>
+    var clicks = 0;
+    Intercooler.setRemote({
+      get: function (url, callback) {
+        if (url == "/btn/1/clicks") {
+          console.log('here');
+          callback('<div ic-src="/btn/1/clicks">You have clicked the button ' + clicks + ' times...</div>');
+        }
+      },
+      post : function(url, data, callback) {
+        if (url == "/btn/1/clicks") {
+          clicks++;
+          callback("");
+        }
+      }
+    });
+
+  </script>
+
 
 <div class="container">
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
-      <div class="alert alert-info"><strong>!!! Warning !!!</strong>: Intercooler.JS is currently in the <strong>Pre-Alpha</strong> stage of development.
+      <div class="alert alert-info"><strong>*Warning*</strong>: Intercooler.JS is currently in the <strong>Pre-Alpha</strong> stage of development.
         If you are interested in contributing please consider forking the code <a href="https://github.com/LeadDyno/intercooler-js">here</a>,
         and joining the newsgroup <a href="https://groups.google.com/forum/#!forum/intercooler-js">here</a>.</div>
     </div>
   </div>
   <div class="row">
     <div class="col-md-8 col-md-offset-2">
-      <h3 class="text-center">Example Code</h3>
+      <h3 class="text-center">Some Example Code</h3>
 	        <pre>
-		
-    &lt;-- Bind a button to a URL -->
-    &lt;button ic-action="/widget/1/status/update">Update It!&lt;button/>
+  &lt;-- This button posts to the /widget/1/status URL when it is clicked -->
+  &lt;button ic-dest="/btn/1/clicks">Click Me!&lt;button/>
 
-    &lt;-- This div is bound to a URL that returns an updated version when
-        the button is clicked -->
-    &lt;div ic-source="/widget/1/status">The widgets status is 'Good'&lt;div/>
-
+  &lt;-- This div is bound to a URL that returns an updated version  of the div when
+      the button is clicked -->
+  &lt;div ic-src="/btn/1/clicks">You have clicked the button 0 times...&lt;div/>
 		      </pre>
+
+      <h3 class="text-center">Live Demo</h3>
+      <div class="text-center">
+        <button class="btn btn-primary btn-lg" ic-dest="/btn/1/clicks">Click Me!</button>
+        <hr/>
+        <div class="well" style="font-size:22px">
+          <div ic-src="/btn/1/clicks">You have clicked the button 0 times...</div>
+        </div>
+      </div>
+
       <hr/>
     </div>
   </div>
