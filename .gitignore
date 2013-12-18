@@ -1,4 +1,5 @@
 .idea
+.DS_Store
 intercooler-js.iml
 www/.last_published
 www/_site/

@@ -10,8 +10,20 @@
  */
 var Intercooler = Intercooler || (function () {
 
+  //--------------------------------------------------
+  // Vars
+  //--------------------------------------------------
+
+  // Logging constants
+  var _DEBUG = 1;
+  var _INFO = 2;
+  var _WARN = 3;
+  var _ERROR = 4;
+
   var _remote = $;
-  var _logger = console.log;
+  var _logger = null;
+  var _loggingLevel = null;
+  var _loggingGrep = null;
 
   //============================================================
   // Utility Methods
@@ -33,24 +45,26 @@ var Intercooler = Intercooler || (function () {
   (function(){var e=CryptoJS,m=e.lib,p=m.WordArray,j=m.Hasher,l=[],m=e.algo.SHA1=j.extend({_doReset:function(){this._hash=new p.init([1732584193,4023233417,2562383102,271733878,3285377520])},_doProcessBlock:function(f,n){for(var b=this._hash.words,h=b[0],g=b[1],e=b[2],k=b[3],j=b[4],a=0;80>a;a++){if(16>a)l[a]=f[n+a]|0;else{var c=l[a-3]^l[a-8]^l[a-14]^l[a-16];l[a]=c<<1|c>>>31}c=(h<<5|h>>>27)+j+l[a];c=20>a?c+((g&e|~g&k)+1518500249):40>a?c+((g^e^k)+1859775393):60>a?c+((g&e|g&k|e&k)-1894007588):c+((g^e^
   k)-899497514);j=k;k=e;e=g<<30|g>>>2;g=h;h=c}b[0]=b[0]+h|0;b[1]=b[1]+g|0;b[2]=b[2]+e|0;b[3]=b[3]+k|0;b[4]=b[4]+j|0},_doFinalize:function(){var f=this._data,e=f.words,b=8*this._nDataBytes,h=8*f.sigBytes;e[h>>>5]|=128<<24-h%32;e[(h+64>>>9<<4)+14]=Math.floor(b/4294967296);e[(h+64>>>9<<4)+15]=b;f.sigBytes=4*e.length;this._process();return this._hash},clone:function(){var e=j.clone.call(this);e._hash=this._hash.clone();return e}});e.SHA1=j._createHelper(m);e.HmacSHA1=j._createHmacHelper(m)})();
 
-  function log(msg) {
-    if(_logger) {
-      _logger(msg);
+  function fp(elt) {
+    return CryptoJS.SHA1(elt.html()).toString();
+  }
+
+  function log(msg, level) {
+    var srcLevel = level || _INFO;
+    var targetLevel = _loggingLevel || _ERROR;
+    if (_logger && (srcLevel >= targetLevel) && (_loggingGrep == null || _loggingGrep.test(msg))) {
+      _logger.log(msg);
     }
   }
 
   function uuid() {
-      var d = new Date().getTime();
-      var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          var r = (d + Math.random()*16)%16 | 0;
-          d = Math.floor(d/16);
-          return (c=='x' ? r : (r&0x7|0x8)).toString(16);
-      });
-      return uuid;
-  }
-
-  function fp(elt) {
-    return CryptoJS.SHA1(elt.html()).toString();
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = (d + Math.random() * 16) % 16 | 0;
+      d = Math.floor(d / 16);
+      return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
+    });
+    return uuid;
   }
 
   function icSelectorFor(elt) {
@@ -58,15 +72,65 @@ var Intercooler = Intercooler || (function () {
   }
 
   function parseInterval(str) {
-    //TODO - implment (100ms, 2s, etc.)
-    return 4000;
+    log("POLL: Parsing interval string " + str, _DEBUG);
+    if (str == "") {
+      return 1000;
+    } else if (str.lastIndexOf("ms") == str.length - 2) {
+      return parseInt(str.substr(0, str.length - 2));
+    } else if (str.lastIndexOf("s") == str.length - 1) {
+      return parseInt(str.substr(0, str.length - 1)) * 1000;
+    } else {
+      return 1000;
+    }
+  }
+
+  // Taken from https://gist.github.com/kares/956897
+  function parseParams(str) {
+    var re = /([^&=]+)=?([^&]*)/g;
+    var decode = function (str) {
+      return decodeURIComponent(str.replace(/\+/g, ' '));
+    };
+    var params = {}, e;
+    if (str) {
+      if (str.substr(0, 1) == '?') {
+        str = str.substr(1);
+      }
+      while (e = re.exec(str)) {
+        var k = decode(e[1]);
+        var v = decode(e[2]);
+        if (params[k] !== undefined) {
+          if (!$.isArray(params[k])) {
+            params[k] = [params[k]];
+          }
+          params[k].push(v);
+        } else {
+          params[k] = v;
+        }
+      }
+    }
+    return params;
   }
 
   //============================================================
   // Tree Processing
   //============================================================
+  function getParametersForElement(elt) {
+    var str = "ic-request=true&" + elt.serialize();
+    if(elt.attr('ic-id')) {
+      str += "&ic-id=" + elt.attr('ic-id');
+    }
+    if(elt.attr('ic-last-refresh')) {
+      str += "&ic-last-refresh=" + elt.attr('ic-last-refresh');
+    }
+    if(elt.attr('ic-fingerprint')) {
+      str += "&ic-fingerprint=" + elt.attr('ic-fingerprint');
+    }
+    log("PARAMS: Returning parameters " + str + " for ")
+    return str;
+  }
+
   function maybeSetIntercoolerInfo(elt) {
-    if(!elt.data('ic-id')){
+    if (!elt.data('ic-id')) {
       var eltFingerPrint = fp(elt);
       var icId = uuid();
       var lastRefresh = new Date().getTime();
@@ -78,28 +142,30 @@ var Intercooler = Intercooler || (function () {
 
   function withSourceAttrs(func) {
     var selectors = ['ic-src', 'ic-style-src', 'ic-attr-src'];
-    for(var i=0, l=selectors.length; i < l; i++){
+    for (var i = 0, l = selectors.length; i < l; i++) {
       func(selectors[i]);
     }
   }
 
   function processSources(elt) {
-    withSourceAttrs(function(attr){
-      if($(elt).is("[" + attr + "]")) {
+    withSourceAttrs(function (attr) {
+      if ($(elt).is("[" + attr + "]")) {
         maybeSetIntercoolerInfo($(elt));
       }
-      $(elt).find("[" + attr + "]").each(function(){
+      $(elt).find("[" + attr + "]").each(function () {
         maybeSetIntercoolerInfo($(this));
       });
     });
   }
 
   function startPolling(elt) {
-    var interval = parseInterval(elt);
+    var interval = parseInterval(elt.attr('ic-poll'));
     var selector = icSelectorFor(elt);
-    var timerId = setInterval(function(){
+    log("POLL: Starting poll for element " + selector, _DEBUG);
+    var timerId = setInterval(function () {
       var target = $(selector);
-      if(target.length == 0) {
+      if (target.length == 0) {
+        log("POLL: Clearing poll for element " + selector, _DEBUG);
         clearTimeout(timerId);
       } else {
         updateElement(target);
@@ -108,22 +174,22 @@ var Intercooler = Intercooler || (function () {
   }
 
   function processPolling(elt) {
-    if($(elt).is('[ic-poll]')) {
+    if ($(elt).is('[ic-poll]')) {
       maybeSetIntercoolerInfo($(elt));
       startPolling(elt);
     }
-    $(elt).find('[ic-poll]').each(function(){
+    $(elt).find('[ic-poll]').each(function () {
       maybeSetIntercoolerInfo($(this));
       startPolling($(this));
     });
   }
 
   function refreshDependencies(dest) {
-    withSourceAttrs(function(attr){
-      $('[' + attr + ']').each(function(){
-        if(dest.indexOf($(this).attr('ic-src')) == 0) {
+    withSourceAttrs(function (attr) {
+      $('[' + attr + ']').each(function () {
+        if (dest.indexOf($(this).attr('ic-src')) == 0) {
           updateElement($(this));
-        } else if($(this).attr('ic-deps') && dest.indexOf($(this).attr('ic-deps')) == 0) {
+        } else if ($(this).attr('ic-deps') && dest.indexOf($(this).attr('ic-deps')) == 0) {
           updateElement($(this));
         }
       });
@@ -131,20 +197,24 @@ var Intercooler = Intercooler || (function () {
   }
 
   function initDestination(elt, target) {
-    if(!target) {
+    if (!target) {
       target = elt;
     }
     if ($(elt).is('button')) {
       var destinationStr = $(target).attr('ic-dest');
       $(elt).click(function () {
-        _remote.post(destinationStr, "", function () {
+        _remote.post(destinationStr,
+          getParametersForElement(elt),
+          function () {
           refreshDependencies(destinationStr);
         })
       });
     } else if ($(elt).is('input')) {
       var destinationStr = $(target).attr('ic-dest');
       $(elt).change(function () {
-        _remote.post(destinationStr, $(elt).serialize(), function (data) {
+        _remote.post(destinationStr,
+          getParametersForElement(elt),
+          function (data) {
           processICResponse(data, target);
           refreshDependencies(destinationStr);
         })
@@ -155,11 +225,11 @@ var Intercooler = Intercooler || (function () {
   }
 
   function processDestinations(elt) {
-    if($(elt).is('[ic-dest]')) {
+    if ($(elt).is('[ic-dest]')) {
       maybeSetIntercoolerInfo($(elt));
       initDestination(elt);
     }
-    $(elt).find('[ic-dest]').each(function(){
+    $(elt).find('[ic-dest]').each(function () {
       maybeSetIntercoolerInfo($(this));
       initDestination($(this));
     });
@@ -172,17 +242,21 @@ var Intercooler = Intercooler || (function () {
   }
 
   function processICResponse(data, elt) {
-    if(data != "") {
+    if (data != "") {
+      log("IC RESPONSE: Received: " + data, _DEBUG);
       var newElt = $(data);
       maybeSetIntercoolerInfo(newElt);
       if (newElt.attr('ic-fingerprint') != $(elt).attr('ic-fingerprint')) {
-        processNodes(newElt);
-        if(elt.attr('ic-transition') == "none") {
+        if (elt.attr('ic-transition') == "none") {
           elt.replaceWith(newElt);
+          processNodes(newElt);
+          log("IC RESPONSE: Replacing " + elt.html() + " with " + elt.html(), _DEBUG);
         } else {
           elt.fadeOut('fast', function () {
             newElt.hide();
             elt.replaceWith(newElt);
+            log("IC RESPONSE:  Replacing " + elt.html() + " with " + elt.html(), _DEBUG);
+            processNodes(newElt);
             newElt.fadeIn('slow');
           });
         }
@@ -194,22 +268,28 @@ var Intercooler = Intercooler || (function () {
 
   function updateElement(element) {
     var elt = element;
-    if(elt.attr('ic-src')) {
-      _remote.get(elt.attr('ic-src'), function(data){
+    if (elt.attr('ic-src')) {
+      _remote.get(elt.attr('ic-src'),
+        getParametersForElement(elt),
+        function (data) {
         processICResponse(data, elt);
       });
-    } else if(elt.attr('ic-style-src')) {
+    } else if (elt.attr('ic-style-src')) {
       var styleSrc = elt.attr('ic-style-src').split(":");
-      _remote.get(styleSrc[1], function(data){
-            elt.css(styleSrc[0], data);
+      _remote.get(styleSrc[1],
+        getParametersForElement(elt),
+        function (data) {
+        elt.css(styleSrc[0], data);
       });
-    } else if(elt.attr('ic-attr-src')) {
+    } else if (elt.attr('ic-attr-src')) {
       var attrSrc = elt.attr('ic-attr-src').split(":");
-      _remote.get(attrSrc[1], function(data){
-            elt.attr(attrSrc[0], data);
+      _remote.get(attrSrc[1],
+        getParametersForElement(elt),
+        function (data) {
+        elt.attr(attrSrc[0], data);
       });
     }
-   }
+  }
 
   /**
    * Process initial nodes
@@ -222,11 +302,64 @@ var Intercooler = Intercooler || (function () {
    * Public API
    */
   return {
-    setRemote: function (remote) {
-      _remote = remote;
-    },
-    refresh : function(elt) {
+
+    /* ===================================================
+     * Core API
+     * =================================================== */
+
+    refresh: function (elt) {
       updateElement(elt);
+      return Intercooler;
+    },
+
+    /* ===================================================
+     * Mock Testing API
+     * =================================================== */
+    setRemoteProxy: function (remoteProxy) {
+      _remote = {
+        get : function(path, params, callback) {
+          var returnVal = remoteProxy.get && remoteProxy.get(path, parseParams(params));
+          if(returnVal) {
+            callback(returnVal);
+          }
+        },
+        post : function(path, params, callback) {
+          var returnVal = remoteProxy.post && remoteProxy.post(path, parseParams(params));
+          if(returnVal) {
+            callback(returnVal);
+          }
+        }
+      };
+      return Intercooler;
+    },
+
+    /* ===================================================
+     * Logging API
+     * =================================================== */
+    setLogger: function (logger, level, grep) {
+      _logger = logger;
+      if(level) {
+        _loggingLevel = level;
+      }
+      if(grep) {
+        _loggingGrep = grep;
+      }
+      return Intercooler;
+    },
+    log: function (msg, level) {
+      log(msg, level);
+      return Intercooler;
+    },
+    /* LOGGING LEVELS */
+    setLogLevel: function (level) {
+      _loggingLevel = level;
+      return Intercooler;
+    },
+    logLevels: {
+      DEBUG: _DEBUG,
+      INFO: _INFO,
+      WARNING: _WARN,
+      ERROR: _ERROR
     }
   }
 })();
