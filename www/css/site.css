@@ -1,16 +1,33 @@
 .body-wrapper {
-  margin-top:50px !important;
+  margin-top: 50px !important;
 }
 
-h1, h2, h3, h4, .navbar-brand {
-	font-family:'Crete Round';'Helvetica Neue', Helvetica, Arial, sans-serif;
+h1, h2, h3, h4 {
+  font-family: 'Crete Round', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-p 
-{
-	font-family: 'Open Sans';'Helvetica Neue', Helvetica, Arial, sans-serif;
+.navbar-brand {
+  padding-top: 20px;
+  font-family: 'Crete Round', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16pt;
+}
+
+p {
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14pt;
+}
+
+li {
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 13pt;
+  margin-top: 4px;
+}
+
+body {
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14pt;
 }
 
 .red {
-	color:red;
+  color: red;
 }

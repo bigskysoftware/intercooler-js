@@ -16,7 +16,7 @@ layout: default
       get: function (url, callback) {
         if (url == "/btn/1/clicks") {
           console.log('here');
-          callback('<div ic-src="/btn/1/clicks">You have clicked the button ' + clicks + ' times...</div>');
+          callback('<span ic-src="/btn/1/clicks">You have clicked the button ' + clicks + ' times...</span>');
         }
       },
       post : function(url, data, callback) {
@@ -47,15 +47,14 @@ layout: default
 
   &lt;-- This div is bound to a URL that returns an updated version  of the div when
       the button is clicked -->
-  &lt;div ic-src="/btn/1/clicks">You have clicked the button 0 times...&lt;div/>
+  &lt;span ic-src="/btn/1/clicks">You have clicked the button 0 times...&lt;span/>
 		      </pre>
 
       <h3 class="text-center">Live Demo</h3>
       <div class="text-center">
-        <button class="btn btn-primary btn-lg" ic-dest="/btn/1/clicks">Click Me!</button>
-        <hr/>
         <div class="well" style="font-size:22px">
-          <div ic-src="/btn/1/clicks">You have clicked the button 0 times...</div>
+          <button class="btn btn-primary btn-lg" ic-dest="/btn/1/clicks">Click Me!</button>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span ic-src="/btn/1/clicks">You have clicked the button 0 times...</span>
         </div>
       </div>
 
@@ -85,6 +84,32 @@ layout: default
       <p>Intercooler uses pattern matching in your REST-ful URLs to detect and refresh dependencies between independent
         elements. Typically it will do the right thing without any additional work on your part. Of course, if you need
         to add or ignore dependencies, Intercooler allows you to do that as well.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <h2>Framework Agnostic</h2>
+
+      <p>Although it was inspired by <a href="http://guides.rubyonrails.org/layouts_and_rendering.html#using-partials">Partials</a>
+        in <a href="http://rubyonrails.org/">Rails</a>, IntercoolerJS can work equally well with any back end platform.  Additionally, it is designed to play
+      well with other Javascript frameworks, so you can use <a href="http://angularjs.org/">AngularJS</a> or
+        <a href="http://emberjs.com/">EmberJS</a> in places your UI call for it.</p>
+    </div>
+    <div class="col-md-4">
+      <h2>Bootstrap Friendly</h2>
+
+      <p>IntercoolerJS works fine with any HTML/CSS framework, but it was designed with <a href="http://getbootstrap.com/">Bootstrap</a>
+      in mind, making it easy to create dynamic UIs using standard, simple Bootstrap techniques.</p>
+    </div>
+    <div class="col-md-4">
+      <h2>Pluggable</h2>
+
+      <p>IntercoolerJS was designed from the ground up to be pluggable so, when push comes to shove, you can customise
+      pretty much any part of the it you need to.  On the other hand, Intercooler provides sensible, attractive defaults
+      so you won't need to do much if you don't want to.</p>
     </div>
   </div>
 </div>
