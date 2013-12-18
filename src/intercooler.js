@@ -112,8 +112,30 @@ var Intercooler = Intercooler || (function () {
   }
 
   //============================================================
-  // Tree Processing
+  // Parameter/Include Processing
   //============================================================
+  function processInclude(str) {
+    if(str.indexOf('$') == 0) {
+      return eval(str).serialize();
+    } else {
+      if(str.indexOf(":")) {
+        var name = str.split(":")[0];
+        var val = str.split(":")[1];
+        return encodeURIComponent(name) + "=" +encodeURIComponent(eval(val));
+      } else {
+        return "";
+      }
+    }
+  }
+
+  function processIncludes(str) {
+    var returnString = "";
+    var strs = str.split(','); //TODO handle commas in jquery selectors
+    for (var i = 0, l = strs.length; i < l; i++) {
+      returnString += "&" + processInclude(strs[i]);
+    }
+    return returnString;
+  }
   function getParametersForElement(elt) {
     var str = "ic-request=true&" + elt.serialize();
     if(elt.attr('ic-id')) {
@@ -125,9 +147,16 @@ var Intercooler = Intercooler || (function () {
     if(elt.attr('ic-fingerprint')) {
       str += "&ic-fingerprint=" + elt.attr('ic-fingerprint');
     }
-    log("PARAMS: Returning parameters " + str + " for ")
+    if(elt.attr('ic-include')) {
+      str += processIncludes(elt.attr('ic-include'));
+    }
+    log("PARAMS: Returning parameters " + str + " for ");
     return str;
   }
+
+  //============================================================
+  // Tree Processing
+  //============================================================
 
   function maybeSetIntercoolerInfo(elt) {
     if (!elt.data('ic-id')) {

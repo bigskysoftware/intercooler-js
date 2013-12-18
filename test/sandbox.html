@@ -47,7 +47,7 @@
               .setRemoteProxy({
                 get: function (url, params) {
                   console.log(params);
-                  return "<div ic-src='/polling_div1' ic-poll='2s'>Sample Polling Div.  Value is " + counter + "</div>";
+                  return '<div ic-src="/polling_div1" ic-poll="' + params['poll-interval'] + '" ic-include="$(\'#poll-interval\')">Sample Polling Div.  Value is ' + counter + '</div>';
                 }
               });
   </script>
@@ -74,9 +74,11 @@
   &lt;div ic-src="/polling_div" ic-poll="1s">Sample Polling Div. Value is 0&lt;/div>
       </pre>
 
-        <h4>Live Example</h4>
-
-        500ms: <div ic-src="/polling_div" ic-poll="2s" ic-send="">Sample Polling Div. Value is 0</div>
+        <h4>Sample</h4>
+        Polling interval: <input id="poll-interval" type="text" name="poll-interval" value="2s"/>
+        <br/>
+        <br/>
+        <div ic-src="/polling_div" ic-poll="2s" ic-include="$('#poll-interval')">Sample Polling Div. Value is 0</div>
       </div>
     </div>
 

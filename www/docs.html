@@ -129,6 +129,14 @@ nav: docs
             <td>This attribute allows you to specify additional dependencies of a element in the form of paths that
             should cause the element to refresh.</td>
           </tr>
+          <tr>
+            <td>ic-include</td>
+            <td>Intercooler&nbsp;Include</td>
+            <td>This attribute allows you to include additional parameters in all Intercooler-generated requests.  The
+            attribute values can either be of the form '$(<em>jQuerySelector</em>)', in which case the selected element
+            will be serialized and included, or of the form '<em>name:expr</em>' where the name of the paramter will be
+            <code>name</code>, and the value will be the evaluated value of <em>expr</em>.</td>
+          </tr>
         </tbody>
       </table>
     </div>
