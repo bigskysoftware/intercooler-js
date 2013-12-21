@@ -170,7 +170,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function withSourceAttrs(func) {
-    var selectors = ['ic-src', 'ic-style-src', 'ic-attr-src'];
+    var selectors = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from'];
     for (var i = 0, l = selectors.length; i < l; i++) {
       func(selectors[i]);
     }
@@ -303,6 +303,52 @@ var Intercooler = Intercooler || (function () {
         function (data) {
         processICResponse(data, elt);
       });
+    } else if (elt.attr('ic-prepend-from')) {
+      _remote.get(elt.attr('ic-prepend-from'),
+        getParametersForElement(elt),
+        function (data) {
+          var elts = $(data);
+          if(elts.is('tr')) {
+            elts.children().hide();
+          } else {
+            elts.hide();
+          }
+          elt.prepend(elts);
+          log("elt is ");
+          log(elt);
+          if(elts.is('tr')) {
+            elts.children().slideDown();
+          } else {
+            elts.slideDown();
+          }
+          processNodes(elts);
+          if(elt.attr('ic-limit-children')) {
+            var limit = parseInt(elt.attr('ic-limit-children'));
+            if(elt.children().length > limit) {
+              elt.children().slice(limit , elt.children().length).remove();
+            }
+          }
+        });
+    } else if (elt.attr('ic-append-from')) {
+      _remote.get(elt.attr('ic-append-from'),
+        getParametersForElement(elt),
+        function (data) {
+          var elts = $(data);
+          elts.hide();
+          elt.append(elts);
+          if(elts.is('tr')) {
+            elts.children().slideDown();
+          } else {
+            elts.slideDown();
+          }
+          processNodes(elts);
+          if(elt.attr('ic-limit-children')) {
+            var limit = parseInt(elt.attr('ic-limit-children'));
+            if(elt.children().length > limit) {
+              elt.children().slice(0 , elt.children().length - limit).remove();
+            }
+          }
+        });
     } else if (elt.attr('ic-style-src')) {
       var styleSrc = elt.attr('ic-style-src').split(":");
       _remote.get(styleSrc[1],

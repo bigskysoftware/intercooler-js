@@ -43,11 +43,11 @@
       counter++;
     }, 500);
 
-    Intercooler.setLogger(console, Intercooler.logLevels.DEBUG, /PARAMS/)
+    Intercooler.setLogger(console)
               .setRemoteProxy({
-                get: function (url, params) {
+                get: function (path, params) {
                   console.log(params);
-                  return '<div ic-src="/polling_div1" ic-poll="' + params['poll-interval'] + '" ic-include="$(\'#poll-interval\')">Sample Polling Div.  Value is ' + counter + '</div>';
+                  return '<tr><td>Smergy</td><td>' + counter + '</td></tr>';
                 }
               });
   </script>
@@ -65,20 +65,24 @@
     <div class="row">
       <div class="col-md-12">
 
-        <h3>Polling</h3>
-
-        <p>This is a simple div that polls an http endpoint for updates every 1 second</p>
-
-        <h4>Code</h4>
-      <pre>
-  &lt;div ic-src="/polling_div" ic-poll="1s">Sample Polling Div. Value is 0&lt;/div>
-      </pre>
-
         <h4>Sample</h4>
+
         Polling interval: <input id="poll-interval" type="text" name="poll-interval" value="2s"/>
-        <br/>
-        <br/>
-        <div ic-src="/polling_div" ic-poll="2s" ic-include="$('#poll-interval')">Sample Polling Div. Value is 0</div>
+
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Name</th>
+            <th>Count</th>
+          </tr>
+          </thead>
+          <tbody ic-prepend-from="/list-src" ic-limit-children="5" ic-poll="2s" ic-include="foo:$('#poll-interval').val()">
+            <tr>
+              <td>Foo</td>
+              <td>1</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
