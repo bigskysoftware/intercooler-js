@@ -91,13 +91,20 @@
         </script>
       </div>
     </div>
+
     <div class="row">
       <div class="col-md-12">
         <hr/>
-        <div id="ic-src-div2" ic-src="/basic_update">Foo</div>
+        <div id="ic-src-div2" ic-transition="none" ic-src="/basic_update">Foo</div>
         <script>
-          Intercooler.setRemoteProxy()
           test("Simple update", function () {
+            Intercooler.pushRemoteHandler({
+              "url" : "/basic_update",
+              "get": function (url, params) {
+                return '<div id="ic-src-div2" ic-src="/basic_update">Bar</div>'
+              }
+            });
+            equal($('#ic-src-div2').text(), "Foo", "Updated");
             Intercooler.refresh($("#ic-src-div2"));
             equal($('#ic-src-div2').text(), "Bar", "Updated");
           });
@@ -105,14 +112,112 @@
       </div>
     </div>
 
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
 
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
+        <div id="ic-src-div3" ic-transition="none" ic-src="/deps_test1">Foo</div>
+        <button id="ic-dest-btn1" ic-dest="/deps_test1">Click</button>
+
+        <script>
+          test("Dependency update", function () {
+            var text = "Foo";
+            Intercooler.pushRemoteHandler({
+              "url" : "/deps_test1",
+              "get": function (url, params) {
+                return '<div id="ic-src-div3" ic-transition="none" ic-src="/deps_test1">' + text + '</div>';
+              },
+              "post": function (url, params) {
+                text = "Bar"
+              }
+            });
+            equal($('#ic-src-div3').text(), "Foo", "Updated");
+            $("#ic-dest-btn1").click();
+            equal($('#ic-src-div3').text(), "Bar", "Updated");
+          });
+        </script>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
+        <div id="ic-src-div4" ic-transition="none" ic-src="/deps_test2">Foo</div>
+        <button id="ic-dest-btn2" ic-dest="/deps_test2/super">Clicked</button>
+        <script>
+          test("Dependency on updated superpath", function () {
+            var text = "Foo";
+            Intercooler.pushRemoteHandler({
+              "url" : "/deps_test2",
+              "get": function (url, params) {
+                return '<div id="ic-src-div4" ic-transition="none" ic-src="/deps_test2">' + text + '</div>';
+              },
+              "post" : function(url, params){
+                  text = "Bar"
+              }
+            });
+
+            equal($('#ic-src-div4').text(), "Foo", "Updated");
+            $("#ic-dest-btn2").click();
+            equal($('#ic-src-div4').text(), "Bar", "Updated");
+          });
+        </script>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
+        <div id="ic-src-div5" ic-transition="none" ic-src="/deps_test3/sub">Foo</div>
+        <button id="ic-dest-btn3" ic-dest="/deps_test3">Clicked</button>
+        <script>
+          test("Dependency on updated subpath", function () {
+            var text = "Foo";
+            Intercooler.pushRemoteHandler({
+              "url" : "/deps_test3",
+              "get" : function(url, params){
+                 return '<div id="ic-src-div5" ic-transition="none" ic-src="/deps_test3/sub">' + text + '</div>';
+              },
+              "post" : function(url, params){
+                  text = "Bar"
+              }
+            });
+            equal($('#ic-src-div5').text(), "Foo", "Updated");
+            $("#ic-dest-btn3").click();
+            equal($('#ic-src-div5').text(), "Bar", "Updated");
+          });
+        </script>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
+        <div id="ic-deps-div1" ic-transition="none" ic-src="/deps_test4" ic-deps="/deps_test5">Foo</div>
+        <button id="ic-deps-btn1" ic-dest="/deps_test5">Clicked</button>
+        <script>
+          test("Explicity dependency works", function () {
+            var text = "Foo";
+            Intercooler.pushRemoteHandler({
+              "url" : "/deps_test4",
+              "get" : function(url, params){
+                 return '<div id="ic-deps-div1" ic-transition="none" ic-src="/deps_test4" ic-deps="/deps_test5">' + text + '</div>';
+              }
+            });
+            Intercooler.pushRemoteHandler({
+              "url" : "/deps_test5",
+              "post" : function(url, params){
+                text = "Bar";
+              }
+            });
+            equal($('#ic-deps-div1').text(), "Foo", "Updated");
+            $("#ic-deps-btn1").click();
+            equal($('#ic-deps-div1').text(), "Bar", "Updated");
+          });
+        </script>
+      </div>
+    </div>
+
   </div>
 </div>
 </body>
