@@ -9,7 +9,7 @@ module.exports = function(grunt) {
       },
       build: {
         src: 'src/intercooler.js',
-        dest: 'www/release/intercooler-<%= pkg.version %>-.min.js'
+        dest: 'www/release/intercooler-<%= pkg.version %>.min.js'
       }
     }
   });

@@ -93,17 +93,16 @@ var Intercooler = Intercooler || (function () {
     for (var i = 0, l = _requestHandlers.length; i < l; i++) {
       var handler = _requestHandlers[i];
       var returnVal = null;
-      if (type == "GET" && handler.get) {
-        returnVal = handler.get(url, parseParams(data));
-        if (returnVal) {
+      if(handler.url == null || new RegExp(handler.url.replace(/\*/g, ".*").replace(/\//g, "\\/")).test(url)) {
+        if (type == "GET" && handler.get) {
+          returnVal = handler.get(url, parseParams(data));
           success(returnVal);
         }
-      }
-      if (type == "POST" && handler.post) {
-        returnVal = handler.post(url, parseParams(data));
-        if (returnVal) {
+        if (type == "POST" && handler.post) {
+          returnVal = handler.post(url, parseParams(data));
           success(returnVal);
         }
+        return;
       }
     }
     _remote.ajax({
@@ -245,15 +244,40 @@ var Intercooler = Intercooler || (function () {
     });
   }
 
+  function isDependent(src, dest) {
+    return (src && dest) && (dest.indexOf(src) == 0 || src.indexOf(dest) == 0);
+  }
+
   function refreshDependencies(dest) {
     withSourceAttrs(function (attr) {
       $('[' + attr + ']').each(function () {
-        if (dest.indexOf($(this).attr('ic-src')) == 0) {
+        if (isDependent(dest, $(this).attr('ic-src'))) {
           updateElement($(this));
-        } else if ($(this).attr('ic-deps') && dest.indexOf($(this).attr('ic-deps')) == 0) {
+        } else if (isDependent(dest, $(this).attr('ic-deps')) || $(this).attr('ic-deps') == "*") {
           updateElement($(this));
         }
       });
+    });
+  }
+
+  function initButtonDestination(target, elt) {
+    var destinationStr = $(target).attr('ic-dest');
+    $(elt).click(function () {
+      handleRemoteRequest("POST", destinationStr, getParametersForElement(elt),
+        function () {
+          refreshDependencies(destinationStr);
+        })
+    });
+  }
+
+  function initInputDestination(target, elt) {
+    var destinationStr = $(target).attr('ic-dest');
+    $(elt).change(function () {
+      handleRemoteRequest("POST", destinationStr, getParametersForElement(elt),
+        function (data) {
+          processICResponse(data, target);
+          refreshDependencies(destinationStr);
+        })
     });
   }
 
@@ -262,24 +286,11 @@ var Intercooler = Intercooler || (function () {
       target = elt;
     }
     if ($(elt).is('button')) {
-      var destinationStr = $(target).attr('ic-dest');
-      $(elt).click(function () {
-        handleRemoteRequest("POST", destinationStr, getParametersForElement(elt),
-          function () {
-            refreshDependencies(destinationStr);
-          })
-      });
+      initButtonDestination(target, elt);
     } else if ($(elt).is('input')) {
-      var destinationStr = $(target).attr('ic-dest');
-      $(elt).change(function () {
-        handleRemoteRequest("POST", destinationStr, getParametersForElement(elt),
-          function (data) {
-            processICResponse(data, target);
-            refreshDependencies(destinationStr);
-          })
-      });
+      initInputDestination(target, elt);
     } else if ($(elt).length > 0) {
-      initDestination($(elt).find("input"), target);
+      initDestination($(elt).find("input, button"), target);
     }
   }
 
@@ -416,6 +427,9 @@ var Intercooler = Intercooler || (function () {
      * Mock Testing API
      * =================================================== */
     pushRemoteHandler: function (handler) {
+      if(!handler.url) {
+        throw "Handlers must include a URL pattern"
+      }
       _requestHandlers.push(handler);
       return Intercooler;
     },
