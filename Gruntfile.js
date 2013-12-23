@@ -19,6 +19,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('release', "Releases a new version of the library", function () {
     grunt.file.copy("src/intercooler.js", 'www/release/intercooler-' + grunt.config.get('pkg').version + '.js');
+    grunt.file.copy("src/intercooler.js", 'www/js/intercooler.js');
     grunt.task.run('uglify');
   });
 

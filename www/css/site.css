@@ -31,3 +31,20 @@ body {
 .red {
   color: red;
 }
+
+.live-demo {
+  position: relative;
+  border: 1px solid #d3d3d3;
+  border-radius: 5px;
+  padding: 28px;
+  margin: 28px;
+}
+
+.live-demo:before {
+  position: absolute;
+  content: "Live Demo";
+  top: -15px;
+  left: 10px;
+  padding: 2px 4px;
+  background-color: white;
+}

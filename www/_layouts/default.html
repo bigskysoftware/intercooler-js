@@ -17,7 +17,7 @@
   <link
     href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
     rel="stylesheet" type="text/css">
-  <link href="./css/site.css" rel="stylesheet" type="text/css">
+  <link href="/css/site.css" rel="stylesheet" type="text/css">
 
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
@@ -33,7 +33,6 @@
           $('pre').addClass('prettyprint');
       }); // end document.ready
   </script>
-  <script type="text/javascript" src="../src/intercooler.js"></script>
   <script type="text/javascript" src="/js/intercooler.js"></script>
 </head>
 
@@ -52,12 +51,12 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="{% active docs %}"><a href="/docs.html">Introduction</a></li>
-            <li class="dropdown">
+            <li class="{% active intro %}"><a href="/intro.html">Introduction</a></li>
+            <li class="dropdown {% active attributes %}">
               <a href="/docs.html" class="dropdown-toggle" data-toggle="dropdown">Attributes <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li class="dropdown-header">Source Attributes</li>
-                <li><a href="#">ic-src</a></li>
+                <li><a href="/attributes/ic-src.html">ic-src</a></li>
                 <li><a href="#">ic-dest</a></li>
                 <li><a href="#">ic-deps</a></li>
                 <li><a href="#">ic-append-from</a></li>

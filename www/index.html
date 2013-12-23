@@ -45,20 +45,36 @@ layout: default
     <div class="col-md-8 col-md-offset-2">
       <h3 class="text-center">Some Example Code</h3>
 	        <pre>
-  &lt;-- This button posts to the /btn/1/clicks URL when it is clicked -->
-  &lt;button ic-dest="/btn/1/clicks">Click Me!&lt;button/>
+  &lt;-- This button posts to the /example/clicks URL when it is clicked -->
+  &lt;button class="btn btn-primary" ic-dest="/example/click">Click Me!&lt;/button>
 
-  &lt;-- This div is bound to a URL that returns an updated version  of the div when
-      the button is clicked -->
-  &lt;span ic-src="/btn/1/clicks">You have clicked the button 0 times...&lt;span/>
+  &lt;-- This span is bound to a URL that returns an updated
+      version when the button is clicked -->
+  &lt;span ic-src="/example/click">You have not yet clicked the button&lt;/span>
 		      </pre>
 
-      <h3 class="text-center">Live Demo</h3>
-      <div class="text-center">
-        <div class="well" style="font-size:22px">
-          <button class="btn btn-primary btn-lg" ic-dest="/btn/1/clicks">Click Me!</button>
-          &nbsp;&nbsp;&nbsp;&nbsp;<span ic-src="/btn/1/clicks">You have clicked the button 0 times...</span>
-        </div>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var clicks = 0;
+            Intercooler.pushRemoteHandler({
+              'url': '/example/click',
+              'get': function () {
+                if(clicks > 3) {
+                  return '<span>Alright, stop clicking and head over to the <a href="intro.html">introduction</a>...</span>'
+                } else {
+                  return '<span ic-src="/example/click">You have clicked the button ' + clicks + ' times</div>'
+                }
+              },
+              'post': function(){
+                clicks++;
+              }
+            });
+          })();
+        </script>
+        <button class="btn btn-primary" ic-dest="/example/click">Click Me!</button>&nbsp;
+        <span ic-src="/example/click">You have not yet clicked the button</span>
       </div>
 
       <hr/>
