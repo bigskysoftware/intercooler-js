@@ -21,6 +21,7 @@ var Intercooler = Intercooler || (function () {
   var _ERROR = 4;
 
   var _remote = $;
+  var _requestHandlers = [];
   var _logger = null;
   var _loggingLevel = null;
   var _loggingGrep = null;
@@ -84,6 +85,39 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
+  //============================================================
+  // Request/Parameter/Include Processing
+  //============================================================
+
+  function handleRemoteRequest(type, url, data, success) {
+    for (var i = 0, l = _requestHandlers.length; i < l; i++) {
+      var handler = _requestHandlers[i];
+      var returnVal = null;
+      if (type == "GET" && handler.get) {
+        returnVal = handler.get(url, parseParams(data));
+        if (returnVal) {
+          success(returnVal);
+        }
+      }
+      if (type == "POST" && handler.post) {
+        returnVal = handler.post(url, parseParams(data));
+        if (returnVal) {
+          success(returnVal);
+        }
+      }
+    }
+    _remote.ajax({
+      type: type,
+      url: url,
+      context: data,
+      dataType: 'text',
+      success: success,
+      error: function (str) {
+        log("An error occurred: " + str, _ERROR);
+      }
+    })
+  }
+
   // Taken from https://gist.github.com/kares/956897
   function parseParams(str) {
     var re = /([^&=]+)=?([^&]*)/g;
@@ -111,17 +145,14 @@ var Intercooler = Intercooler || (function () {
     return params;
   }
 
-  //============================================================
-  // Parameter/Include Processing
-  //============================================================
   function processInclude(str) {
-    if(str.indexOf('$') == 0) {
+    if (str.indexOf('$') == 0) {
       return eval(str).serialize();
     } else {
-      if(str.indexOf(":")) {
+      if (str.indexOf(":")) {
         var name = str.split(":")[0];
         var val = str.split(":")[1];
-        return encodeURIComponent(name) + "=" +encodeURIComponent(eval(val));
+        return encodeURIComponent(name) + "=" + encodeURIComponent(eval(val));
       } else {
         return "";
       }
@@ -136,18 +167,19 @@ var Intercooler = Intercooler || (function () {
     }
     return returnString;
   }
+
   function getParametersForElement(elt) {
     var str = "ic-request=true&" + elt.serialize();
-    if(elt.attr('ic-id')) {
+    if (elt.attr('ic-id')) {
       str += "&ic-id=" + elt.attr('ic-id');
     }
-    if(elt.attr('ic-last-refresh')) {
+    if (elt.attr('ic-last-refresh')) {
       str += "&ic-last-refresh=" + elt.attr('ic-last-refresh');
     }
-    if(elt.attr('ic-fingerprint')) {
+    if (elt.attr('ic-fingerprint')) {
       str += "&ic-fingerprint=" + elt.attr('ic-fingerprint');
     }
-    if(elt.attr('ic-include')) {
+    if (elt.attr('ic-include')) {
       str += processIncludes(elt.attr('ic-include'));
     }
     log("PARAMS: Returning parameters " + str + " for ");
@@ -170,7 +202,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function withSourceAttrs(func) {
-    var selectors = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from'];
+    var selectors = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
     for (var i = 0, l = selectors.length; i < l; i++) {
       func(selectors[i]);
     }
@@ -232,23 +264,21 @@ var Intercooler = Intercooler || (function () {
     if ($(elt).is('button')) {
       var destinationStr = $(target).attr('ic-dest');
       $(elt).click(function () {
-        _remote.post(destinationStr,
-          getParametersForElement(elt),
+        handleRemoteRequest("POST", destinationStr, getParametersForElement(elt),
           function () {
-          refreshDependencies(destinationStr);
-        })
+            refreshDependencies(destinationStr);
+          })
       });
     } else if ($(elt).is('input')) {
       var destinationStr = $(target).attr('ic-dest');
       $(elt).change(function () {
-        _remote.post(destinationStr,
-          getParametersForElement(elt),
+        handleRemoteRequest("POST", destinationStr, getParametersForElement(elt),
           function (data) {
-          processICResponse(data, target);
-          refreshDependencies(destinationStr);
-        })
+            processICResponse(data, target);
+            refreshDependencies(destinationStr);
+          })
       });
-    } else {
+    } else if ($(elt).length > 0) {
       initDestination($(elt).find("input"), target);
     }
   }
@@ -298,17 +328,15 @@ var Intercooler = Intercooler || (function () {
   function updateElement(element) {
     var elt = element;
     if (elt.attr('ic-src')) {
-      _remote.get(elt.attr('ic-src'),
-        getParametersForElement(elt),
+      handleRemoteRequest("GET", elt.attr('ic-src'), getParametersForElement(elt),
         function (data) {
-        processICResponse(data, elt);
-      });
+          processICResponse(data, elt);
+        });
     } else if (elt.attr('ic-prepend-from')) {
-      _remote.get(elt.attr('ic-prepend-from'),
-        getParametersForElement(elt),
+      handleRemoteRequest("GET", elt.attr('ic-prepend-from'), getParametersForElement(elt),
         function (data) {
           var elts = $(data);
-          if(elts.is('tr')) {
+          if (elts.is('tr')) {
             elts.children().hide();
           } else {
             elts.hide();
@@ -316,53 +344,50 @@ var Intercooler = Intercooler || (function () {
           elt.prepend(elts);
           log("elt is ");
           log(elt);
-          if(elts.is('tr')) {
+          if (elts.is('tr')) {
             elts.children().slideDown();
           } else {
             elts.slideDown();
           }
           processNodes(elts);
-          if(elt.attr('ic-limit-children')) {
+          if (elt.attr('ic-limit-children')) {
             var limit = parseInt(elt.attr('ic-limit-children'));
-            if(elt.children().length > limit) {
-              elt.children().slice(limit , elt.children().length).remove();
+            if (elt.children().length > limit) {
+              elt.children().slice(limit, elt.children().length).remove();
             }
           }
         });
     } else if (elt.attr('ic-append-from')) {
-      _remote.get(elt.attr('ic-append-from'),
-        getParametersForElement(elt),
+      handleRemoteRequest("GET", elt.attr('ic-append-from'), getParametersForElement(elt),
         function (data) {
           var elts = $(data);
           elts.hide();
           elt.append(elts);
-          if(elts.is('tr')) {
+          if (elts.is('tr')) {
             elts.children().slideDown();
           } else {
             elts.slideDown();
           }
           processNodes(elts);
-          if(elt.attr('ic-limit-children')) {
+          if (elt.attr('ic-limit-children')) {
             var limit = parseInt(elt.attr('ic-limit-children'));
-            if(elt.children().length > limit) {
-              elt.children().slice(0 , elt.children().length - limit).remove();
+            if (elt.children().length > limit) {
+              elt.children().slice(0, elt.children().length - limit).remove();
             }
           }
         });
     } else if (elt.attr('ic-style-src')) {
       var styleSrc = elt.attr('ic-style-src').split(":");
-      _remote.get(styleSrc[1],
-        getParametersForElement(elt),
+      handleRemoteRequest("GET", styleSrc[1], getParametersForElement(elt),
         function (data) {
-        elt.css(styleSrc[0], data);
-      });
+          elt.css(styleSrc[0], data);
+        });
     } else if (elt.attr('ic-attr-src')) {
       var attrSrc = elt.attr('ic-attr-src').split(":");
-      _remote.get(attrSrc[1],
-        getParametersForElement(elt),
+      handleRemoteRequest("GET", attrSrc[1], getParametersForElement(elt),
         function (data) {
-        elt.attr(attrSrc[0], data);
-      });
+          elt.attr(attrSrc[0], data);
+        });
     }
   }
 
@@ -390,21 +415,13 @@ var Intercooler = Intercooler || (function () {
     /* ===================================================
      * Mock Testing API
      * =================================================== */
-    setRemoteProxy: function (remoteProxy) {
-      _remote = {
-        get : function(path, params, callback) {
-          var returnVal = remoteProxy.get && remoteProxy.get(path, parseParams(params));
-          if(returnVal) {
-            callback(returnVal);
-          }
-        },
-        post : function(path, params, callback) {
-          var returnVal = remoteProxy.post && remoteProxy.post(path, parseParams(params));
-          if(returnVal) {
-            callback(returnVal);
-          }
-        }
-      };
+    pushRemoteHandler: function (handler) {
+      _requestHandlers.push(handler);
+      return Intercooler;
+    },
+
+    setRemote: function (remote) {
+      _remote = remote;
       return Intercooler;
     },
 
@@ -413,10 +430,10 @@ var Intercooler = Intercooler || (function () {
      * =================================================== */
     setLogger: function (logger, level, grep) {
       _logger = logger;
-      if(level) {
+      if (level) {
         _loggingLevel = level;
       }
-      if(grep) {
+      if (grep) {
         _loggingGrep = grep;
       }
       return Intercooler;
