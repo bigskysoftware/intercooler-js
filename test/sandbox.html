@@ -122,13 +122,13 @@
       <pre>
 
         &lt;div ic-src="/dependency_div">Sample Dependency Dectection. You have clicked 0 times&lt;/div>
-        &lt;button ic-dest="/dependency_div">Increment Counter&lt;/button>
+        &lt;button ic-post-to="/dependency_div">Increment Counter&lt;/button>
       </pre>
 
         <h4>Live Example</h4>
 
         <div ic-src="/dependency_div">Sample Dependency Dectection. You have clicked 0 times</div>
-        <button class="btn btn-primary" ic-dest="/dependency_div">Increment Counter</button>
+        <button class="btn btn-primary" ic-post-to="/dependency_div">Increment Counter</button>
       </div>
     </div>
 
@@ -196,11 +196,11 @@
   &lt;form role="form">
     &lt;div class="form-group">
       &lt;label>First Name&lt;/label>
-      &lt;input type="text" name="first_name" class="form-control" placeholder="Enter Your First Name" ic-dest="/contacts/1/first_name">
+      &lt;input type="text" name="first_name" class="form-control" placeholder="Enter Your First Name" ic-post-to="/contacts/1/first_name">
     &lt;/div>
     &lt;div class="form-group">
       &lt;label>Last Name&lt;/label>
-      &lt;input type="text" name="last_name" class="form-control" placeholder="Enter Your Last Name" ic-dest="/contacts/1/last_name">
+      &lt;input type="text" name="last_name" class="form-control" placeholder="Enter Your Last Name" ic-post-to="/contacts/1/last_name">
     &lt;/div>
   &lt;/form>
   &lt;div ic-src="/contacts/1/info_div" ic-deps="/contacts/1">Nothing Entered Yet...&lt;/div>
@@ -212,12 +212,12 @@
           <div class="form-group">
             <label>First Name</label>
             <input type="text" name="first_name" class="form-control" placeholder="Enter Your First Name"
-                   ic-dest="/contacts/1/first_name">
+                   ic-post-to="/contacts/1/first_name">
           </div>
           <div class="form-group">
             <label>Last Name</label>
             <input type="text" name="last_name" class="form-control" placeholder="Enter Your Last Name"
-                   ic-dest="/contacts/1/last_name">
+                   ic-post-to="/contacts/1/last_name">
           </div>
         </form>
         <div ic-src="/contacts/1/info_div" ic-deps="/contacts/1">Nothing Entered Yet...</div>
@@ -235,7 +235,7 @@
 
         <h4>Code</h4>
       <pre>
-  &lt;div class="form-group" ic-dest="/contacts/2/email" ic-transition="none">
+  &lt;div class="form-group" ic-post-to="/contacts/2/email" ic-transition="none">
     &lt;label>Enter An Email&lt;/label>
     &lt;input type="text" name="email" class="form-control" placeholder="Enter An Email">
   &lt;/div>
@@ -244,7 +244,7 @@
         <h4>Live Example</h4>
 
         <form role="form">
-          <div class="form-group" ic-dest="/contacts/2/email" ic-transition="none">
+          <div class="form-group" ic-post-to="/contacts/2/email" ic-transition="none">
             <label>Enter An Email</label>
             <input type="text" name="email" class="form-control" placeholder="Enter An Email">
           </div>

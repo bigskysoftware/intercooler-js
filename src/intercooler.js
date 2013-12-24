@@ -303,7 +303,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function initButtonDestination(target, elt) {
-    var destinationStr = $(target).attr('ic-dest');
+    var destinationStr = $(target).attr('ic-post-to');
     $(elt).click(function () {
       handleRemoteRequest("POST", destinationStr, getParametersForElement(elt),
         function () {
@@ -313,7 +313,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function initInputDestination(target, elt) {
-    var destinationStr = $(target).attr('ic-dest');
+    var destinationStr = $(target).attr('ic-post-to');
     $(elt).change(function () {
       handleRemoteRequest("POST", destinationStr, getParametersForElement(elt),
         function (data) {
@@ -337,11 +337,11 @@ var Intercooler = Intercooler || (function () {
   }
 
   function processDestinations(elt) {
-    if ($(elt).is('[ic-dest]')) {
+    if ($(elt).is('[ic-post-to]')) {
       maybeSetIntercoolerInfo($(elt));
       initDestination(elt);
     }
-    $(elt).find('[ic-dest]').each(function () {
+    $(elt).find('[ic-post-to]').each(function () {
       maybeSetIntercoolerInfo($(this));
       initDestination($(this));
     });

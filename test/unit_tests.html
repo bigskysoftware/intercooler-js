@@ -57,7 +57,7 @@
       <div class="col-md-12">
         <hr/>
         <div id="ic-src-div1" ic-src="/attr-test-1"></div>
-        <div id="ic-dest-div1" ic-dest="/attr-test-1"></div>
+        <div id="ic-post-to-div1" ic-post-to="/attr-test-1"></div>
         <div id="ic-append-from-div1" ic-append-from="/attr-test-1"></div>
         <div id="ic-prepend-from-div1" ic-prepend-from="/attr-test-1"></div>
         <div id="ic-style-src-div1" ic-style-src="/attr-test-1"></div>
@@ -68,9 +68,9 @@
             ok($('#ic-src-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
             ok($('#ic-src-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
 
-            ok($('#ic-dest-div1').attr('ic-id') != null, "Has ID");
-            ok($('#ic-dest-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-            ok($('#ic-dest-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+            ok($('#ic-post-to-div1').attr('ic-id') != null, "Has ID");
+            ok($('#ic-post-to-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
+            ok($('#ic-post-to-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
 
             ok($('#ic-append-from-div1').attr('ic-id') != null, "Has ID");
             ok($('#ic-append-from-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
@@ -117,7 +117,7 @@
         <hr/>
 
         <div id="ic-src-div3" ic-transition="none" ic-src="/deps_test1">Foo</div>
-        <button id="ic-dest-btn1" ic-dest="/deps_test1">Click</button>
+        <button id="ic-post-to-btn1" ic-post-to="/deps_test1">Click</button>
 
         <script>
           test("Dependency update", function () {
@@ -132,7 +132,7 @@
               }
             });
             equal($('#ic-src-div3').text(), "Foo", "Updated");
-            $("#ic-dest-btn1").click();
+            $("#ic-post-to-btn1").click();
             equal($('#ic-src-div3').text(), "Bar", "Updated");
           });
         </script>
@@ -143,7 +143,7 @@
       <div class="col-md-12">
         <hr/>
         <div id="ic-src-div4" ic-transition="none" ic-src="/deps_test2">Foo</div>
-        <button id="ic-dest-btn2" ic-dest="/deps_test2/super">Clicked</button>
+        <button id="ic-post-to-btn2" ic-post-to="/deps_test2/super">Clicked</button>
         <script>
           test("Dependency on updated superpath", function () {
             var text = "Foo";
@@ -158,7 +158,7 @@
             });
 
             equal($('#ic-src-div4').text(), "Foo", "Updated");
-            $("#ic-dest-btn2").click();
+            $("#ic-post-to-btn2").click();
             equal($('#ic-src-div4').text(), "Bar", "Updated");
           });
         </script>
@@ -169,7 +169,7 @@
       <div class="col-md-12">
         <hr/>
         <div id="ic-src-div5" ic-transition="none" ic-src="/deps_test3/sub">Foo</div>
-        <button id="ic-dest-btn3" ic-dest="/deps_test3">Clicked</button>
+        <button id="ic-post-to-btn3" ic-post-to="/deps_test3">Clicked</button>
         <script>
           test("Dependency on updated subpath", function () {
             var text = "Foo";
@@ -183,7 +183,7 @@
               }
             });
             equal($('#ic-src-div5').text(), "Foo", "Updated");
-            $("#ic-dest-btn3").click();
+            $("#ic-post-to-btn3").click();
             equal($('#ic-src-div5').text(), "Bar", "Updated");
           });
         </script>
@@ -194,7 +194,7 @@
       <div class="col-md-12">
         <hr/>
         <div id="ic-deps-div1" ic-transition="none" ic-src="/deps_test4" ic-deps="/deps_test5">Foo</div>
-        <button id="ic-deps-btn1" ic-dest="/deps_test5">Clicked</button>
+        <button id="ic-deps-btn1" ic-post-to="/deps_test5">Clicked</button>
         <script>
           test("Explicit dependency works", function () {
             var text = "Foo";
@@ -224,7 +224,7 @@
         <ul id="ic-prepend-from-div2" ic-transition="none" ic-prepend-from="/prepend_from1">
           <li>bar</li>
         </ul>
-        <button id="ic-prepend-from-btn1" ic-dest="/prepend_from1">Clicked</button>
+        <button id="ic-prepend-from-btn1" ic-post-to="/prepend_from1">Clicked</button>
         <script>
           test("Explicit dependency works", function () {
             var text = "Foo";

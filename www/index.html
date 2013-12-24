@@ -39,14 +39,11 @@ layout: default
       <div class="alert alert-info"><strong>*Warning*</strong>: Intercooler.JS is currently in the <strong>Pre-Alpha</strong> stage of development.
         If you are interested in contributing please consider forking the code <a href="https://github.com/LeadDyno/intercooler-js">here</a>,
         and joining the newsgroup <a href="https://groups.google.com/forum/#!forum/intercooler-js">here</a>.</div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-8 col-md-offset-2">
+
       <h3 class="text-center">Some Example Code</h3>
 	        <pre>
   &lt;-- This button posts to the /example/clicks URL when it is clicked -->
-  &lt;button class="btn btn-primary" ic-dest="/example/click">Click Me!&lt;/button>
+  &lt;button class="btn btn-primary" ic-post-to="/example/click">Click Me!&lt;/button>
 
   &lt;-- This span is bound to a URL that returns an updated
       version when the button is clicked -->
@@ -73,13 +70,14 @@ layout: default
             });
           })();
         </script>
-        <button class="btn btn-primary" ic-dest="/example/click">Click Me!</button>&nbsp;
+        <button class="btn btn-primary" ic-post-to="/example/click">Click Me!</button>&nbsp;
         <span ic-src="/example/click">You have not yet clicked the button</span>
       </div>
 
       <hr/>
     </div>
   </div>
+
 </div>
 
 <div class="container">

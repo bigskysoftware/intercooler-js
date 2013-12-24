@@ -112,12 +112,12 @@ nav: intro
         <pre>
 
     &lt;div ic-src="/example/click">You have not yet clicked the button&lt;/div>
-    &lt;button ic-dest="/example/click">Click Me!&lt;/button>
+    &lt;button ic-post-to="/example/click">Click Me!&lt;/button>
         </pre>
       </div>
 
       <p>Here we've removed the <code>ic-poll</code> attribute and introduced a button with a new attribute,
-        <code>ic-dest</code>.  This tells Intercooler to post to <code>/example/click</code> when the button
+        <code>ic-post-to</code>.  This tells Intercooler to post to <code>/example/click</code> when the button
       is clicked.  The server recieves the post and increments a server-side counter of the number of times
       you have clicked the button.</p>
 
@@ -145,7 +145,7 @@ nav: intro
           })();
         </script>
         <div ic-src="/example/click">You have not yet clicked the button</div>
-        <button class="btn btn-primary" ic-dest="/example/click">Click Me!</button>
+        <button class="btn btn-primary" ic-post-to="/example/click">Click Me!</button>
       </div>
 
       <h3>Adding Some Input</h3>
@@ -157,7 +157,7 @@ nav: intro
         <pre>
           &lt;div ic-src="/name">No name entered&lt;/div>
           &lt;input id="a_name" type="text" name="name" placeholder="Enter A Name"/>
-          &lt;button ic-dest="/name" ic-include="$('#a_name')">Upload Name&lt;/button>
+          &lt;button ic-post-to="/name" ic-include="$('#a_name')">Upload Name&lt;/button>
         </pre>
       </div>
 
@@ -186,7 +186,7 @@ nav: intro
         </script>
         <div ic-src="/name">No name entered</div>
         <input id="a_name" type="text" name="name" placeholder="Enter A Name"/>
-        <button class="btn btn-primary" ic-dest="/name" ic-include="$('#a_name')">Upload Name</button>
+        <button class="btn btn-primary" ic-post-to="/name" ic-include="$('#a_name')">Upload Name</button>
       </div>
 
       <h3>Switching To A List</h3>
@@ -199,7 +199,7 @@ nav: intro
       <div class="row">
         <pre>
   &lt;input id="item_name" type="text" name="item_name" placeholder="Enter Item Name"/>
-  &lt;button ic-dest="/items" ic-include="$('#item_name')">Upload Name&lt;/button>
+  &lt;button ic-post-to="/items" ic-include="$('#item_name')">Upload Name&lt;/button>
   &lt;ul ic-prepend-from="/items" ic-limit-children="3">
     &lt;li>Placeholder&lt;/li>
   &lt;/ul>
@@ -228,7 +228,7 @@ nav: intro
           })();
         </script>
         <input id="item_name" type="text" name="item_name" placeholder="Enter Item Name"/>
-        <button class="btn btn-primary" ic-dest="/items" ic-include="$('#item_name')">Upload Name</button>
+        <button class="btn btn-primary" ic-post-to="/items" ic-include="$('#item_name')">Upload Name</button>
         <ul ic-prepend-from="/items" ic-limit-children="3">
           <li>Placeholder</li>
         </ul>
@@ -247,7 +247,7 @@ nav: intro
 
       <div class="row">
         <pre>
-        &lt;button class="btn btn-primary" ic-dest="/job">Start Job&lt;/button>
+        &lt;button class="btn btn-primary" ic-post-to="/job">Start Job&lt;/button>
         &lt;div ic-src="/job">Job Not Running...&lt;/div>
         </pre>
       </div>
@@ -320,7 +320,7 @@ nav: intro
             });
           })();
         </script>
-        <button class="btn btn-primary" ic-dest="/job">Start Job</button>
+        <button class="btn btn-primary" ic-post-to="/job">Start Job</button>
         <div ic-src="/job">Job Not Running...</div>
       </div>
 
@@ -352,7 +352,7 @@ nav: intro
           </td>
         </tr>
         <tr>
-          <td>ic-dest</td>
+          <td>ic-post-to</td>
           <td>Intercooler&nbsp;Destination</td>
           <td>This attribute allows you to bind the "action" of an element to a given URL. Once it is bound, when an
             "action" occurs (e.g. clicking a button) Intercooler will issue
