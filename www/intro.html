@@ -35,11 +35,10 @@ nav: intro
     <div class="col-md-12">
       <h2>Installation</h2>
 
-      <p>Intercooler is just another javascript library. It depends on JQuery being installed.</p>
-
-      <p>Here is an example installation:</p>
+      <p>Intercooler depends on JQuery being installed, and can be installed like so:</p>
 
       <pre>
+
   &lt;script src="https://code.jquery.com/jquery-1.10.2.min.js">&lt;/script>
   &lt;script src="/js/intercooler-0.0.1-alpha1.min.js">&lt;/script>
       </pre>
@@ -63,11 +62,30 @@ nav: intro
         </pre>
       </div>
 
-      <p>This div will poll the given URL, <code>/visitors/count_div/</code> by issuing an AJAX <code>GET</code>
-        every two seconds. If (and only if) the response is different, it will swap in the html in place of the existing
-        div.</p>
+      <p>This is perhaps the simplest possible binding.  It uses the <code>ic-src</code> attribute to point this div to a
+        URL to refresh from, and the <code>ic-poll</code> attribute to tell Intercooler to poll the server.
+        This div will poll the given URL, <code>/visitors/count_div/</code> by issuing an AJAX <code>GET</code>
+        every two seconds.</p>
 
-      <p>Here is the div in action:</p>
+      <p>The response that will come back from the server will be an HTML Fragment (it can actually be more, see
+        <a href="requests.html">Requests</a> for more information).  If (and only if) the HTML in the response is different
+        than the existing HTML, Intercooler will swap in the new content in place of the existing div.</p>
+
+      <p>Here is an example of a returned fragment from <code>GET /visitors/count_div/</code>:</p>
+
+      <div class="row">
+      <pre class="col-md-8 col-md-offset-2">
+
+  &lt;div ic-src="/visitors/count_div" ic-poll="2s">You have had 103 visitors today&lt;/div>
+      </pre>
+      </div>
+
+      <p>Note that the returned div specifies the <code>ic-src</code> and <code>ic-poll</code> attributes, so
+      Intercooler knows to continue polling for the given element.  Typically, if you are using a framework like
+      <a href="http://rubyonrails.org/">Rails</a>, your endpoints will render partials, to keep everything
+      nice and <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a></p>
+
+      <p>Here is the div in action (be patient, sometimes no new visitors show up so it won't update on every 2 second interval):</p>
 
       <div class="live-demo">
         <script>
@@ -102,13 +120,16 @@ nav: intro
 
       <p>Here we've removed the <code>ic-poll</code> attribute and introduced a button with a new attribute,
         <code>ic-dest</code>.  This tells Intercooler to post to <code>/example/click</code> when the button
-      is clicked.</p>
+      is clicked.  The server recieves the post and increments a server-side counter of the number of times
+      you have clicked the button.</p>
 
-      <p><em>And then some magic happens...</em></p>
+      <p><em>NB: In these examples, we are actually mocking out the server, a technique you might find useful
+      when prototyping your UI.</em></p>
 
-      <p>Intercooler detects that the div <em>depends</em> on the URL that the button posted to, and so it does a
-      refresh on that element.  This is how Intercooler encodes UI dependencies: it uses URLs to determine what elements
-      on the current page need refreshing based on events and actions.</p>
+      <p>When the button is clicked, Intercooler does something kind of cool:  it detects that the div <em>depends</em>
+        on the URL that the button posted to, and so it does a refresh on that element.  This is how Intercooler
+        encodes UI dependencies: it uses URLs to determine what elements on the current page need refreshing based on
+        events and actions.</p>
 
       <div class="live-demo">
         <script>
@@ -127,6 +148,92 @@ nav: intro
         </script>
         <div ic-src="/example/click">You have not yet clicked the button</div>
         <button class="btn btn-primary" ic-dest="/example/click">Click Me!</button>
+      </div>
+
+      <h3>Adding Some Input</h3>
+
+      <p>Now let's make the example a bit more interactive by, rather than simply tracking clicks, allowing
+        the user to enter an item name that will be uploaded to the server.</p>
+
+      <div class="row">
+        <pre class="col-md-8 col-md-offset-2">
+          &lt;div ic-src="/name">No name entered&lt;/div>
+          &lt;input id="a_name" type="text" name="name" placeholder="Enter A Name"/>
+          &lt;button ic-dest="/name" ic-include="$('#a_name')">Upload Name&lt;/button>
+        </pre>
+      </div>
+
+      <p>We are tarketing a new URL, <code>/name</code>.  Notice that we've added the <code>ic-include</code>
+        attribute, which includes the input <code>#a_name</code> name and value in the POST that is
+        submitted by the button.</p>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var name = "";
+            Intercooler.pushRemoteHandler({
+              'url': '/name',
+              'get': function () {
+                if(name == "") {
+                  return '<div ic-src="/name">No name entered</div>'
+                } else {
+                  return '<div ic-src="/name">You entered the name: ' + name + '</div>'
+                }
+              },
+              'post': function (url, params) {
+                name = params['name'];
+              }
+            });
+          })();
+        </script>
+        <div ic-src="/name">No name entered</div>
+        <input id="a_name" type="text" name="name" placeholder="Enter A Name"/>
+        <button class="btn btn-primary" ic-dest="/name" ic-include="$('#a_name')">Upload Name</button>
+      </div>
+
+      <h3>Switching To A List</h3>
+
+      <p>Now lets get a bit more dynamic, and let's switch the div to an HTML list.  We will prepend the added items to
+        it, rather than simply replacing the whole list.  This will make for a smoother UI experience.</p>
+
+      <p>To do this, we will use Intercooler's <code>ic-prepend-from</code> attribute</p>
+
+      <div class="row">
+        <pre class="col-md-8 col-md-offset-2">
+  &lt;input id="item_name" type="text" name="item_name" placeholder="Enter Item Name"/>
+  &lt;button ic-dest="/items" ic-include="$('#item_name')">Upload Name&lt;/button>
+  &lt;ul ic-prepend-from="/items" ic-limit-children="3">
+    &lt;li>Placeholder&lt;/li>
+  &lt;/ul>
+        </pre>
+      </div>
+
+      <p>We are tarketing yet another a new URL, <code>/items</code>.  As before, we are passing up the item
+      name via the <code>ic-include</code> attribute, and we are limiting the number of children in the list
+      to a total of 3 with the <code>ic-limit-children</code> attirbute:</p>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var items = [];
+            Intercooler.pushRemoteHandler({
+              'url': '/items',
+              'get': function () {
+                var str = items.map(function(str) { return "<li>" + str + "</li>"}).join("\n")
+                items = [];
+                return str;
+              },
+              'post': function (url, params) {
+                items.push(params['item_name']);
+              }
+            });
+          })();
+        </script>
+        <input id="item_name" type="text" name="item_name" placeholder="Enter Item Name"/>
+        <button class="btn btn-primary" ic-dest="/items" ic-include="$('#item_name')">Upload Name</button>
+        <ul ic-prepend-from="/items" ic-limit-children="3">
+          <li>Placeholder</li>
+        </ul>
       </div>
 
     </div>

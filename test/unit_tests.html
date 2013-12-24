@@ -218,6 +218,30 @@
       </div>
     </div>
 
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
+        <ul id="ic-prepend-from-div2" ic-transition="none" ic-prepend-from="/prepend_from1">
+          <li>bar</li>
+        </ul>
+        <button id="ic-prepend-from-btn1" ic-dest="/prepend_from1">Clicked</button>
+        <script>
+          test("Explicit dependency works", function () {
+            var text = "Foo";
+            Intercooler.pushRemoteHandler({
+              "url" : "/prepend_from1",
+              "get" : function(url, params){
+                 return "<li>foo</li>";
+              }
+            });
+            equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g,''), "bar", "Updated");
+            $("#ic-prepend-from-btn1").click();
+            equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g,''), "foobar", "Updated");
+          });
+        </script>
+      </div>
+    </div>
+
   </div>
 </div>
 </body>

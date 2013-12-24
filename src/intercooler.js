@@ -95,11 +95,15 @@ var Intercooler = Intercooler || (function () {
       var returnVal = null;
       if(handler.url == null || new RegExp(handler.url.replace(/\*/g, ".*").replace(/\//g, "\\/")).test(url)) {
         if (type == "GET" && handler.get) {
-          returnVal = handler.get(url, parseParams(data));
+          if(handler.get) {
+            returnVal = handler.get(url, parseParams(data));
+          }
           success(returnVal);
         }
-        if (type == "POST" && handler.post) {
-          returnVal = handler.post(url, parseParams(data));
+        if (type == "POST") {
+          if(handler.post) {
+            returnVal = handler.post(url, parseParams(data));
+          }
           success(returnVal);
         }
         return;
@@ -251,7 +255,7 @@ var Intercooler = Intercooler || (function () {
   function refreshDependencies(dest) {
     withSourceAttrs(function (attr) {
       $('[' + attr + ']').each(function () {
-        if (isDependent(dest, $(this).attr('ic-src'))) {
+        if (isDependent(dest, $(this).attr(attr))) {
           updateElement($(this));
         } else if (isDependent(dest, $(this).attr('ic-deps')) || $(this).attr('ic-deps') == "*") {
           updateElement($(this));
