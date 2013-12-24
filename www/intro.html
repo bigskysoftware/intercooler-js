@@ -236,10 +236,71 @@ nav: intro
         </ul>
       </div>
 
+      <h3>Implementing A Dynamic Progress Bar</h3>
+
+      <p>Finally, lets change gears entirely and rework the example to mimic a job-monitoring UI</p>
+
+      <p>To do this, we will use Intercooler's <code>ic-style-src</code> attribute, which allows us to bind
+      a style property to a URL.  The UI will first start of with a placeholder div.  When the button is clicked,
+      the job will start, replacing the div with a progress bar.  When the job completes, the original placeholder
+      div will return.</p>
+
+      <p>We will start with the following code:</p>
+
+      <div class="row">
+        <pre class="col-md-8 col-md-offset-2">
+  &lt;input id="item_name" type="text" name="item_name" placeholder="Enter Item Name"/>
+  &lt;button ic-dest="/items" ic-include="$('#item_name')">Upload Name&lt;/button>
+  &lt;ul ic-prepend-from="/items" ic-limit-children="3">
+    &lt;li>Placeholder&lt;/li>
+  &lt;/ul>
+        </pre>
+      </div>
+
+      <p></p>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var process = null;
+            Intercooler.pushRemoteHandler({
+              'url': '/job',
+              'get': function (url) {
+                if(url == "/job/percent_complete") {
+                  if(process != null && process < 100) {
+                    process += Math.min(100, Math.floor(33 * Math.random()));
+                    return process + "%";
+                  } else {
+                    process = null;
+                    return "---\n" +
+                           "@refresh: /job\n" +
+                           "---\n" +
+                           "100%";
+                  }
+                } else {
+                  if(process != null) {
+                    return '<div ic-src="/job">Job Running:' +
+                      '  <div class="progress progress-striped active">' +
+                      '   <div class="progress-bar" ic-style-src="width:/job/percent_complete" ic-poll="1s" style="width:0%"></div>' +
+                      '  </div>' +
+                      '</div>'
+                  } else {
+                    return '<div ic-src="/job">Job Complete!</div>'
+                  }
+                }
+              },
+              'post': function (url, params) {
+                process = 0;
+              }
+            });
+          })();
+        </script>
+        <button class="btn btn-primary" ic-dest="/job">Start Job</button>
+        <div ic-src="/job">Job Not Running...</div>
+      </div>
+
     </div>
   </div>
-
-
 
   <div class="row">
     <div class="col-md-12">

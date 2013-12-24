@@ -89,6 +89,44 @@ var Intercooler = Intercooler || (function () {
   // Request/Parameter/Include Processing
   //============================================================
 
+  function processCommand(command, rest) {
+    if(command = "@refresh") {
+      var pathsToRefresh = rest.split(",");
+      $.each(pathsToRefresh, function(i, str) {
+        refreshDependencies(str.replace(/ /g, ""));
+      });
+    } else {
+      log("Did not understand command " + command, _ERROR);
+    }
+  }
+
+  function processFrontMatterItem(firstLine, lines) {
+    var cmdRegExp = /([^: ]*)\:(.*)/;
+    var match = cmdRegExp.exec(firstLine);
+    var rest = match.pop();
+    var command = match.pop();
+    while(lines.length > 0 &&
+      lines[lines.length - 1] != "---" &&
+      !cmdRegExp.test(lines[lines.length - 1])) {
+      rest += "\n" + lines.pop();
+    }
+    processCommand(command, rest);
+  }
+
+  function processFrontMatter(data) {
+    if(data && data.indexOf("---\n") == 0) {
+      var lines = data.split("\n").reverse();
+      lines.pop(); // consume first frontmatter delimiter
+      while(lines[lines.length - 1] != "---\n") {
+        processFrontMatterItem(lines.pop(), lines);
+      }
+      lines.pop(); // consume last frontmatter delimiter
+      return lines.reverse().join("\n"); // return remainder of data
+    } else {
+      return data;
+    }
+  }
+
   function handleRemoteRequest(type, url, data, success) {
     for (var i = 0, l = _requestHandlers.length; i < l; i++) {
       var handler = _requestHandlers[i];
@@ -98,13 +136,13 @@ var Intercooler = Intercooler || (function () {
           if(handler.get) {
             returnVal = handler.get(url, parseParams(data));
           }
-          success(returnVal);
+          success(processFrontMatter(returnVal));
         }
         if (type == "POST") {
           if(handler.post) {
             returnVal = handler.post(url, parseParams(data));
           }
-          success(returnVal);
+          success(processFrontMatter(returnVal));
         }
         return;
       }
@@ -114,7 +152,7 @@ var Intercooler = Intercooler || (function () {
       url: url,
       context: data,
       dataType: 'text',
-      success: success,
+      success: function(data) { success(processFrontMatter(data)) },
       error: function (str) {
         log("An error occurred: " + str, _ERROR);
       }
