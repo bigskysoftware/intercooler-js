@@ -38,7 +38,6 @@ nav: intro
       <p>Intercooler depends on JQuery being installed, and can be installed like so:</p>
 
       <pre>
-
   &lt;script src="https://code.jquery.com/jquery-1.10.2.min.js">&lt;/script>
   &lt;script src="/js/intercooler-0.0.1-alpha1.min.js">&lt;/script>
       </pre>
@@ -56,8 +55,7 @@ nav: intro
         a simple div that has an Intercooler binding:</p>
 
       <div class="row">
-        <pre class="col-md-8 col-md-offset-2">
-
+        <pre>
     &lt;div ic-src="/visitors/count_div" ic-poll="2s">You have had 42 visitors today&lt;/div>
         </pre>
       </div>
@@ -74,7 +72,7 @@ nav: intro
       <p>Here is an example of a returned fragment from <code>GET /visitors/count_div/</code>:</p>
 
       <div class="row">
-      <pre class="col-md-8 col-md-offset-2">
+      <pre>
 
   &lt;div ic-src="/visitors/count_div" ic-poll="2s">You have had 103 visitors today&lt;/div>
       </pre>
@@ -111,7 +109,7 @@ nav: intro
       that and, instead, make it respond to a button click:</p>
 
       <div class="row">
-        <pre class="col-md-8 col-md-offset-2">
+        <pre>
 
     &lt;div ic-src="/example/click">You have not yet clicked the button&lt;/div>
     &lt;button ic-dest="/example/click">Click Me!&lt;/button>
@@ -156,7 +154,7 @@ nav: intro
         the user to enter an item name that will be uploaded to the server.</p>
 
       <div class="row">
-        <pre class="col-md-8 col-md-offset-2">
+        <pre>
           &lt;div ic-src="/name">No name entered&lt;/div>
           &lt;input id="a_name" type="text" name="name" placeholder="Enter A Name"/>
           &lt;button ic-dest="/name" ic-include="$('#a_name')">Upload Name&lt;/button>
@@ -199,7 +197,7 @@ nav: intro
       <p>To do this, we will use Intercooler's <code>ic-prepend-from</code> attribute</p>
 
       <div class="row">
-        <pre class="col-md-8 col-md-offset-2">
+        <pre>
   &lt;input id="item_name" type="text" name="item_name" placeholder="Enter Item Name"/>
   &lt;button ic-dest="/items" ic-include="$('#item_name')">Upload Name&lt;/button>
   &lt;ul ic-prepend-from="/items" ic-limit-children="3">
@@ -248,16 +246,43 @@ nav: intro
       <p>We will start with the following code:</p>
 
       <div class="row">
-        <pre class="col-md-8 col-md-offset-2">
-  &lt;input id="item_name" type="text" name="item_name" placeholder="Enter Item Name"/>
-  &lt;button ic-dest="/items" ic-include="$('#item_name')">Upload Name&lt;/button>
-  &lt;ul ic-prepend-from="/items" ic-limit-children="3">
-    &lt;li>Placeholder&lt;/li>
-  &lt;/ul>
+        <pre>
+        &lt;button class="btn btn-primary" ic-dest="/job">Start Job&lt;/button>
+        &lt;div ic-src="/job">Job Not Running...&lt;/div>
         </pre>
       </div>
 
-      <p></p>
+      <p>Pretty simple, just a div and a button that are both tied to the same URL.  Remember, this means that
+      the div depends on the button, and it will be refreshed after the button is clicked.</p>
+
+      <p>When the button is clicked a (simulated) job is kicked off.  When a request for the div is made, the
+      following HTML is returned:</p>
+
+      <div class="row">
+        <pre>
+          &lt;div ic-src="/job">Job Running:
+            &lt;div class="progress progress-striped active">
+              &lt;div class="progress-bar"
+                   ic-style-src="width:/job/percent_complete"
+                   ic-poll="1s" style="width:0%">&lt;/div>
+            &lt;/div>
+          &lt;/div></pre>
+      </div>
+
+      <p>
+        This HTML is swapped in for the existing div, and includes a Bootstrap-based progress bar.  The <code>width</code>
+        style attribute of the progress bar is tied to the <code>/job/percent_complete</code> URL using the <code>ic-style-src</code>
+        directive, which it polls ever second.  That URL will return values like <code>37%</code> and <code>78%</code>,
+        which will update the width of the progress bar.
+      </p>
+
+      <p>
+        When the job is finished the request to <code>/job/percent_complete</code> includes a
+        <a href="responses.html#frontmatter">front matter</a> directive telling Intercooler to refresh all elements that
+        depend on the <code>/job</code> path, which refreshes the parent div and removes the progress bar.
+      </p>
+
+      <p>Here is the code in action:</p>
 
       <div class="live-demo">
         <script>
