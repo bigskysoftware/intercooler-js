@@ -90,11 +90,13 @@ var Intercooler = Intercooler || (function () {
   //============================================================
 
   function processCommand(command, rest) {
-    if(command = "@refresh") {
+    if(command = "!refresh") {
       var pathsToRefresh = rest.split(",");
       $.each(pathsToRefresh, function(i, str) {
         refreshDependencies(str.replace(/ /g, ""));
       });
+    } else if(command = "!script") {
+      eval(rest);
     } else {
       log("Did not understand command " + command, _ERROR);
     }

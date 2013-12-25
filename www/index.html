@@ -55,7 +55,7 @@ layout: default
         <script>
           (function () {
             var clicks = 0;
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               'url': '/example/click',
               'get': function () {
                 if(clicks > 3) {

@@ -21,7 +21,7 @@ var Intercooler = Intercooler || (function () {
   var _ERROR = 4;
 
   var _remote = $;
-  var _requestHandlers = [];
+  var _urlHandlers = [];
   var _logger = null;
   var _loggingLevel = null;
   var _loggingGrep = null;
@@ -90,11 +90,13 @@ var Intercooler = Intercooler || (function () {
   //============================================================
 
   function processCommand(command, rest) {
-    if(command = "@refresh") {
+    if(command == "!refresh") {
       var pathsToRefresh = rest.split(",");
       $.each(pathsToRefresh, function(i, str) {
         refreshDependencies(str.replace(/ /g, ""));
       });
+    } else if(command == "!script") {
+      eval(rest);
     } else {
       log("Did not understand command " + command, _ERROR);
     }
@@ -103,24 +105,28 @@ var Intercooler = Intercooler || (function () {
   function processFrontMatterItem(firstLine, lines) {
     var cmdRegExp = /([^: ]*)\:(.*)/;
     var match = cmdRegExp.exec(firstLine);
-    var rest = match.pop();
-    var command = match.pop();
-    while(lines.length > 0 &&
-      lines[lines.length - 1] != "---" &&
-      !cmdRegExp.test(lines[lines.length - 1])) {
-      rest += "\n" + lines.pop();
+    if(match) {
+      var rest = match.pop();
+      var command = match.pop();
+      while(lines.length > 0 &&
+        lines[lines.length - 1] != "---" &&
+        !cmdRegExp.test(lines[lines.length - 1])) {
+        rest += "\n" + lines.pop();
+      }
+      processCommand(command, rest);
     }
-    processCommand(command, rest);
   }
 
   function processFrontMatter(data) {
     if(data && data.indexOf("---\n") == 0) {
       var lines = data.split("\n").reverse();
       lines.pop(); // consume first frontmatter delimiter
-      while(lines[lines.length - 1] != "---\n") {
+      while(lines.length > 0 && lines[lines.length - 1] != "---\n") {
         processFrontMatterItem(lines.pop(), lines);
       }
-      lines.pop(); // consume last frontmatter delimiter
+      if(lines.length > 0) {
+        lines.pop(); // consume last frontmatter delimiter
+      }
       return lines.reverse().join("\n"); // return remainder of data
     } else {
       return data;
@@ -128,8 +134,8 @@ var Intercooler = Intercooler || (function () {
   }
 
   function handleRemoteRequest(type, url, data, success) {
-    for (var i = 0, l = _requestHandlers.length; i < l; i++) {
-      var handler = _requestHandlers[i];
+    for (var i = 0, l = _urlHandlers.length; i < l; i++) {
+      var handler = _urlHandlers[i];
       var returnVal = null;
       if(handler.url == null || new RegExp(handler.url.replace(/\*/g, ".*").replace(/\//g, "\\/")).test(url)) {
         if (type == "GET" && handler.get) {
@@ -468,11 +474,11 @@ var Intercooler = Intercooler || (function () {
     /* ===================================================
      * Mock Testing API
      * =================================================== */
-    pushRemoteHandler: function (handler) {
+    addURLHandler: function (handler) {
       if(!handler.url) {
         throw "Handlers must include a URL pattern"
       }
-      _requestHandlers.push(handler);
+      _urlHandlers.push(handler);
       return Intercooler;
     },
 
@@ -508,6 +514,11 @@ var Intercooler = Intercooler || (function () {
       INFO: _INFO,
       WARNING: _WARN,
       ERROR: _ERROR
+    },
+    testSupport : {
+      processFrontMatter : function(str) {
+        return processFrontMatter(str);
+      }
     }
   }
 })();

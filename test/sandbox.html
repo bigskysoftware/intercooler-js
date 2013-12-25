@@ -44,7 +44,7 @@
     }, 500);
 
     Intercooler.setLogger(console)
-              .pushRemoteHandler({
+              .addURLHandler({
                 get: function (path, params) {
                   console.log(params);
                   return '<tr><td>Smergy</td><td>' + counter + '</td></tr>';

@@ -89,7 +89,7 @@ nav: intro
         <script>
           (function () {
             var count = 42;
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               'url': '/visitors/count_div',
               'get': function () {
                 if(Math.random() > .5) {
@@ -133,7 +133,7 @@ nav: intro
         <script>
           (function () {
             var clicks = 0;
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               'url': '/example/click',
               'get': function () {
                 return '<div ic-src="/example/click">You have clicked the button ' + clicks + ' times</div>'
@@ -169,7 +169,7 @@ nav: intro
         <script>
           (function () {
             var name = "";
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               'url': '/name',
               'get': function () {
                 if(name == "") {
@@ -214,7 +214,7 @@ nav: intro
         <script>
           (function () {
             var items = [];
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               'url': '/items',
               'get': function () {
                 var str = items.map(function(str) { return "<li>" + str + "</li>"}).join("\n")
@@ -288,7 +288,7 @@ nav: intro
         <script>
           (function () {
             var process = null;
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               'url': '/job',
               'get': function (url) {
                 if(url == "/job/percent_complete") {
@@ -298,7 +298,7 @@ nav: intro
                   } else {
                     process = null;
                     return "---\n" +
-                           "@refresh: /job\n" +
+                           "!refresh: /job\n" +
                            "---\n" +
                            "100%";
                   }

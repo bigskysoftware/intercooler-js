@@ -98,7 +98,7 @@
         <div id="ic-src-div2" ic-transition="none" ic-src="/basic_update">Foo</div>
         <script>
           test("Simple update", function () {
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               "url" : "/basic_update",
               "get": function (url, params) {
                 return '<div id="ic-src-div2" ic-src="/basic_update">Bar</div>'
@@ -122,7 +122,7 @@
         <script>
           test("Dependency update", function () {
             var text = "Foo";
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               "url" : "/deps_test1",
               "get": function (url, params) {
                 return '<div id="ic-src-div3" ic-transition="none" ic-src="/deps_test1">' + text + '</div>';
@@ -147,7 +147,7 @@
         <script>
           test("Dependency on updated superpath", function () {
             var text = "Foo";
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               "url" : "/deps_test2",
               "get": function (url, params) {
                 return '<div id="ic-src-div4" ic-transition="none" ic-src="/deps_test2">' + text + '</div>';
@@ -173,7 +173,7 @@
         <script>
           test("Dependency on updated subpath", function () {
             var text = "Foo";
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               "url" : "/deps_test3",
               "get" : function(url, params){
                  return '<div id="ic-src-div5" ic-transition="none" ic-src="/deps_test3/sub">' + text + '</div>';
@@ -198,13 +198,13 @@
         <script>
           test("Explicit dependency works", function () {
             var text = "Foo";
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               "url" : "/deps_test4",
               "get" : function(url, params){
                  return '<div id="ic-deps-div1" ic-transition="none" ic-src="/deps_test4" ic-deps="/deps_test5">' + text + '</div>';
               }
             });
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               "url" : "/deps_test5",
               "post" : function(url, params){
                 text = "Bar";
@@ -228,7 +228,7 @@
         <script>
           test("Explicit dependency works", function () {
             var text = "Foo";
-            Intercooler.pushRemoteHandler({
+            Intercooler.addURLHandler({
               "url" : "/prepend_from1",
               "get" : function(url, params){
                  return "<li>foo</li>";
@@ -237,6 +237,43 @@
             equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g,''), "bar", "Updated");
             $("#ic-prepend-from-btn1").click();
             equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g,''), "foobar", "Updated");
+          });
+        </script>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
+        <script>
+          test("Frontmatter parsing test", function () {
+            equal(Intercooler.testSupport.processFrontMatter(""), "");
+            equal(Intercooler.testSupport.processFrontMatter(" "), " ");
+            equal(Intercooler.testSupport.processFrontMatter("---\n"), "");
+            equal(Intercooler.testSupport.processFrontMatter("---\n---\n"), "");
+            equal(Intercooler.testSupport.processFrontMatter("---\n\n---\n"), "");
+            equal(Intercooler.testSupport.processFrontMatter("---\n!script: window.eval_test_var = 10;\n---\n"), "");
+            equal(window.eval_test_var, 10);
+          });
+        </script>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
+        <button id="eval-btn" ic-post-to="/frontmatter_eval">Eval</button>
+        <script>
+          test("Eval frontmatter works", function () {
+            Intercooler.addURLHandler({
+              "url" : "/frontmatter_eval",
+              "post" : function(){
+                 return "---\n" +
+                   "!script: alert('foo');\n" +
+                   "---\n";
+              }
+            });
+            $("#eval-btn").click();
           });
         </script>
       </div>
