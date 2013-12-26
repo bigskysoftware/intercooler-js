@@ -269,11 +269,12 @@
               "url" : "/frontmatter_eval",
               "post" : function(){
                  return "---\n" +
-                   "!script: alert('foo');\n" +
+                   "!script: window.eval_test_var2 = 10;\n" +
                    "---\n";
               }
             });
             $("#eval-btn").click();
+            equal(window.eval_test_var2, 10);
           });
         </script>
       </div>
