@@ -20,9 +20,12 @@ var Intercooler = Intercooler || (function () {
   var _WARN = 3;
   var _ERROR = 4;
 
+  var _SRC_ATTRS = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
+  var _DEST_ATTRS = ['ic-post-to', 'ic-put-to', 'ic-delete-to'];
+
   var _remote = $;
-  var _requestHandlers = [];
-  var _logger = null;
+  var _urlHandlers = [];
+  var _logger = window.console;
   var _loggingLevel = null;
   var _loggingGrep = null;
 
@@ -50,11 +53,25 @@ var Intercooler = Intercooler || (function () {
     return CryptoJS.SHA1(elt.html()).toString();
   }
 
+  function levelPrefix(level) {
+    if(level == _DEBUG) {
+      return "IC DEBUG: ";
+    } else if(level == _INFO) {
+      return "IC INFO: ";
+    } else if(level == _WARN) {
+      return "IC WARN: ";
+    } else if(level == _ERROR) {
+      return "IC ERROR: ";
+    } else {
+      return "IC UNKNOWN: ";
+    }
+  }
+
   function log(msg, level) {
     var srcLevel = level || _INFO;
     var targetLevel = _loggingLevel || _ERROR;
     if (_logger && (srcLevel >= targetLevel) && (_loggingGrep == null || _loggingGrep.test(msg))) {
-      _logger.log(msg);
+      _logger.log(levelPrefix(srcLevel), msg);
     }
   }
 
@@ -89,62 +106,112 @@ var Intercooler = Intercooler || (function () {
   // Request/Parameter/Include Processing
   //============================================================
 
-  function processCommand(command, rest) {
-    if(command = "!refresh") {
+  function getTarget(elt) {
+    if(elt.attr('ic-target')) {
+      return $(elt.attr('ic-target'));
+    } else {
+      return elt;
+    }
+  }
+
+  function processCommand(command, rest, elt) {
+    log("Command: " + command + ", rest: " + rest, _DEBUG);
+    if(command == "!refresh") {
       var pathsToRefresh = rest.split(",");
+      log("IC FRONTMATTER: refreshing " + pathsToRefresh, _DEBUG);
       $.each(pathsToRefresh, function(i, str) {
         refreshDependencies(str.replace(/ /g, ""));
       });
-    } else if(command = "!script") {
+    } else if(command == "!script") {
+      log("IC FRONTMATTER: evaling " + rest, _DEBUG);
       eval(rest);
+    } else if(command == "!remove") {
+      log("IC FRONTMATTER REMOVE COMMAND");
+      if(elt) {
+        var target = getTarget(elt);
+        log("IC REMOVING: " + target.html(), _DEBUG);
+        if (target.attr('ic-transition') == "none") {
+          target.remove();
+        } else {
+          target.fadeOut('fast', function () {
+            target.remove();
+          });
+        }
+      }
     } else {
       log("Did not understand command " + command, _ERROR);
     }
   }
 
-  function processFrontMatterItem(firstLine, lines) {
+  function processFrontMatterItem(firstLine, lines, elt) {
     var cmdRegExp = /([^: ]*)\:(.*)/;
     var match = cmdRegExp.exec(firstLine);
-    var rest = match.pop();
-    var command = match.pop();
-    while(lines.length > 0 &&
-      lines[lines.length - 1] != "---" &&
-      !cmdRegExp.test(lines[lines.length - 1])) {
-      rest += "\n" + lines.pop();
+    if(match) {
+      var rest = match.pop();
+      var command = match.pop();
+      while(lines.length > 0 &&
+        lines[lines.length - 1] != "---" &&
+        !cmdRegExp.test(lines[lines.length - 1])) {
+        rest += "\n" + lines.pop();
+      }
+      processCommand(command, rest, elt);
+    } else {
+      log("Bad Intercooler front matter Item: " + firstLine, _ERROR);
+      log("All front matter items must begin start with a valid command followed by a colon.", _ERROR);
     }
-    processCommand(command, rest);
   }
 
-  function processFrontMatter(data) {
+  function processFrontMatter(data, elt) {
     if(data && data.indexOf("---\n") == 0) {
+      log("Processing front matter for:\n" + data, _DEBUG);
       var lines = data.split("\n").reverse();
       lines.pop(); // consume first frontmatter delimiter
-      while(lines[lines.length - 1] != "---\n") {
-        processFrontMatterItem(lines.pop(), lines);
+      while(lines.length > 0 && lines[lines.length - 1] != "---") {
+        processFrontMatterItem(lines.pop(), lines, elt);
       }
-      lines.pop(); // consume last frontmatter delimiter
+      if(lines.length > 0) {
+        lines.pop(); // consume last frontmatter delimiter
+      }
       return lines.reverse().join("\n"); // return remainder of data
     } else {
       return data;
     }
   }
 
-  function handleRemoteRequest(type, url, data, success) {
-    for (var i = 0, l = _requestHandlers.length; i < l; i++) {
-      var handler = _requestHandlers[i];
+  function handleRemoteRequest(elt, type, url, data, success) {
+    if(type == "PUT") {
+      data += "&_method=PUT";
+    }
+    if(type == "DELETE") {
+      data += "&_method=DELETE";
+    }
+    for (var i = 0, l = _urlHandlers.length; i < l; i++) {
+      var handler = _urlHandlers[i];
       var returnVal = null;
       if(handler.url == null || new RegExp(handler.url.replace(/\*/g, ".*").replace(/\//g, "\\/")).test(url)) {
         if (type == "GET" && handler.get) {
           if(handler.get) {
             returnVal = handler.get(url, parseParams(data));
           }
-          success(processFrontMatter(returnVal));
+          success(processFrontMatter(returnVal, elt));
         }
         if (type == "POST") {
           if(handler.post) {
             returnVal = handler.post(url, parseParams(data));
           }
-          success(processFrontMatter(returnVal));
+          success(processFrontMatter(returnVal, elt));
+        }
+        if (type == "PUT") {
+          if(handler.put) {
+            returnVal = handler.put(url, parseParams(data));
+          }
+          success(processFrontMatter(returnVal, elt));
+        }
+        if (type == "DELETE") {
+          if(handler.delete) {
+            returnVal = handler.delete(url, parseParams(data));
+          }
+          success(processFrontMatter(returnVal, elt));
         }
         return;
       }
@@ -154,7 +221,7 @@ var Intercooler = Intercooler || (function () {
       url: url,
       context: data,
       dataType: 'text',
-      success: function(data) { success(processFrontMatter(data)) },
+      success: function(data) { success(processFrontMatter(data, elt)) },
       error: function (str) {
         log("An error occurred: " + str, _ERROR);
       }
@@ -212,20 +279,21 @@ var Intercooler = Intercooler || (function () {
   }
 
   function getParametersForElement(elt) {
+    var target = getTarget(elt);
     var str = "ic-request=true&" + elt.serialize();
-    if (elt.attr('ic-id')) {
-      str += "&ic-id=" + elt.attr('ic-id');
+    if (target.attr('ic-id')) {
+      str += "&ic-id=" + target.attr('ic-id');
     }
-    if (elt.attr('ic-last-refresh')) {
-      str += "&ic-last-refresh=" + elt.attr('ic-last-refresh');
+    if (target.attr('ic-last-refresh')) {
+      str += "&ic-last-refresh=" + target.attr('ic-last-refresh');
     }
-    if (elt.attr('ic-fingerprint')) {
-      str += "&ic-fingerprint=" + elt.attr('ic-fingerprint');
+    if (target.attr('ic-fingerprint')) {
+      str += "&ic-fingerprint=" + target.attr('ic-fingerprint');
     }
     if (elt.attr('ic-include')) {
       str += processIncludes(elt.attr('ic-include'));
     }
-    log("PARAMS: Returning parameters " + str + " for ");
+    log("PARAMS: Returning parameters " + str + " for " + elt);
     return str;
   }
 
@@ -234,25 +302,25 @@ var Intercooler = Intercooler || (function () {
   //============================================================
 
   function maybeSetIntercoolerInfo(elt) {
-    if (!elt.data('ic-id')) {
+    var target = getTarget(elt);
+    if (!target.data('ic-id')) {
       var eltFingerPrint = fp(elt);
       var icId = uuid();
       var lastRefresh = new Date().getTime();
-      elt.attr('ic-id', icId);
-      elt.attr('ic-last-refresh', lastRefresh);
-      elt.attr('ic-fingerprint', eltFingerPrint);
+      target.attr('ic-id', icId);
+      target.attr('ic-last-refresh', lastRefresh);
+      target.attr('ic-fingerprint', eltFingerPrint);
     }
   }
 
-  function withSourceAttrs(func) {
-    var selectors = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
-    for (var i = 0, l = selectors.length; i < l; i++) {
-      func(selectors[i]);
-    }
+  function withAttrs(attributes, func) {
+    $.each(attributes, function(i, attr) {
+      func(attr);
+    });
   }
 
   function processSources(elt) {
-    withSourceAttrs(function (attr) {
+    withAttrs(_SRC_ATTRS, function (attr) {
       if ($(elt).is("[" + attr + "]")) {
         maybeSetIntercoolerInfo($(elt));
       }
@@ -293,7 +361,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function refreshDependencies(dest) {
-    withSourceAttrs(function (attr) {
+    withAttrs(_SRC_ATTRS, function (attr) {
       $('[' + attr + ']').each(function () {
         if (isDependent(dest, $(this).attr(attr))) {
           updateElement($(this));
@@ -304,48 +372,57 @@ var Intercooler = Intercooler || (function () {
     });
   }
 
-  function initButtonDestination(target, elt) {
-    var destinationStr = $(target).attr('ic-post-to');
+  function verbFor(attr) {
+    if(attr == "ic-post-to") {
+      return "POST";
+    } else if(attr == "ic-put-to") {
+      return "PUT";
+    } else if (attr == "ic-delete-to") {
+      return "DELETE";
+    } else {
+      return "POST";
+    }
+  }
+
+  function initButtonDestination(elt, attr) {
+    var destinationStr = $(elt).attr(attr);
     $(elt).click(function () {
-      handleRemoteRequest("POST", destinationStr, getParametersForElement(elt),
+      handleRemoteRequest(elt, verbFor(attr), destinationStr, getParametersForElement(elt),
         function () {
           refreshDependencies(destinationStr);
         })
     });
   }
 
-  function initInputDestination(target, elt) {
-    var destinationStr = $(target).attr('ic-post-to');
+  function initInputDestination(elt, attr) {
+    var destinationStr = $(elt).attr(attr);
     $(elt).change(function () {
-      handleRemoteRequest("POST", destinationStr, getParametersForElement(elt),
+      handleRemoteRequest(elt, verbFor(attr), destinationStr, getParametersForElement(elt),
         function (data) {
-          processICResponse(data, target);
+          processICResponse(data, elt);
           refreshDependencies(destinationStr);
         })
     });
   }
 
-  function initDestination(elt, target) {
-    if (!target) {
-      target = elt;
-    }
-    if ($(elt).is('button')) {
-      initButtonDestination(target, elt);
-    } else if ($(elt).is('input')) {
-      initInputDestination(target, elt);
-    } else if ($(elt).length > 0) {
-      initDestination($(elt).find("input, button"), target);
+  function initDestination(elt, attr) {
+    if ($(elt).is('button, a, div, span')) {
+      initButtonDestination(elt, attr);
+    } else if ($(elt).is('input, select')) {
+      initInputDestination(elt, attr);
     }
   }
 
   function processDestinations(elt) {
-    if ($(elt).is('[ic-post-to]')) {
-      maybeSetIntercoolerInfo($(elt));
-      initDestination(elt);
-    }
-    $(elt).find('[ic-post-to]').each(function () {
-      maybeSetIntercoolerInfo($(this));
-      initDestination($(this));
+    withAttrs(_DEST_ATTRS, function(attr){
+      if ($(elt).is('[' + attr + ']')) {
+        maybeSetIntercoolerInfo($(elt));
+        initDestination(elt, attr);
+      }
+      $(elt).find('[' + attr + ']').each(function () {
+        maybeSetIntercoolerInfo($(this));
+        initDestination($(this), attr);
+      });
     });
   }
 
@@ -359,17 +436,18 @@ var Intercooler = Intercooler || (function () {
     if (data != "") {
       log("IC RESPONSE: Received: " + data, _DEBUG);
       var newElt = $(data);
+      var target = getTarget(elt);
       maybeSetIntercoolerInfo(newElt);
-      if (newElt.attr('ic-fingerprint') != $(elt).attr('ic-fingerprint')) {
-        if (elt.attr('ic-transition') == "none") {
-          elt.replaceWith(newElt);
+      if (newElt.attr('ic-fingerprint') != target.attr('ic-fingerprint')) {
+        if (target.attr('ic-transition') == "none") {
+          target.replaceWith(newElt);
           processNodes(newElt);
-          log("IC RESPONSE: Replacing " + elt.html() + " with " + elt.html(), _DEBUG);
+          log("IC RESPONSE: Replacing " + target.html() + " with " + newElt.html(), _DEBUG);
         } else {
           elt.fadeOut('fast', function () {
             newElt.hide();
-            elt.replaceWith(newElt);
-            log("IC RESPONSE:  Replacing " + elt.html() + " with " + elt.html(), _DEBUG);
+            target.replaceWith(newElt);
+            log("IC RESPONSE:  Replacing " + target.html() + " with " + newElt.html(), _DEBUG);
             processNodes(newElt);
             newElt.fadeIn('slow');
           });
@@ -383,12 +461,12 @@ var Intercooler = Intercooler || (function () {
   function updateElement(element) {
     var elt = element;
     if (elt.attr('ic-src')) {
-      handleRemoteRequest("GET", elt.attr('ic-src'), getParametersForElement(elt),
+      handleRemoteRequest(element, "GET", elt.attr('ic-src'), getParametersForElement(elt),
         function (data) {
           processICResponse(data, elt);
         });
     } else if (elt.attr('ic-prepend-from')) {
-      handleRemoteRequest("GET", elt.attr('ic-prepend-from'), getParametersForElement(elt),
+      handleRemoteRequest(element, "GET", elt.attr('ic-prepend-from'), getParametersForElement(elt),
         function (data) {
           var elts = $(data);
           if (elts.is('tr')) {
@@ -413,7 +491,7 @@ var Intercooler = Intercooler || (function () {
           }
         });
     } else if (elt.attr('ic-append-from')) {
-      handleRemoteRequest("GET", elt.attr('ic-append-from'), getParametersForElement(elt),
+      handleRemoteRequest(element, "GET", elt.attr('ic-append-from'), getParametersForElement(elt),
         function (data) {
           var elts = $(data);
           elts.hide();
@@ -433,13 +511,13 @@ var Intercooler = Intercooler || (function () {
         });
     } else if (elt.attr('ic-style-src')) {
       var styleSrc = elt.attr('ic-style-src').split(":");
-      handleRemoteRequest("GET", styleSrc[1], getParametersForElement(elt),
+      handleRemoteRequest(element, "GET", styleSrc[1], getParametersForElement(elt),
         function (data) {
           elt.css(styleSrc[0], data);
         });
     } else if (elt.attr('ic-attr-src')) {
       var attrSrc = elt.attr('ic-attr-src').split(":");
-      handleRemoteRequest("GET", attrSrc[1], getParametersForElement(elt),
+      handleRemoteRequest(element, "GET", attrSrc[1], getParametersForElement(elt),
         function (data) {
           elt.attr(attrSrc[0], data);
         });
@@ -474,7 +552,7 @@ var Intercooler = Intercooler || (function () {
       if(!handler.url) {
         throw "Handlers must include a URL pattern"
       }
-      _requestHandlers.push(handler);
+      _urlHandlers.push(handler);
       return Intercooler;
     },
 
@@ -510,6 +588,11 @@ var Intercooler = Intercooler || (function () {
       INFO: _INFO,
       WARNING: _WARN,
       ERROR: _ERROR
+    },
+    testSupport : {
+      processFrontMatter : function(str) {
+        return processFrontMatter(str);
+      }
     }
   }
 })();
