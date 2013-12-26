@@ -28,7 +28,8 @@
   <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="../src/intercooler.js"></script>
   <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.12.0.css">
-
+  <script>
+  </script>
 </head>
 <body>
 
@@ -120,7 +121,7 @@
         <button id="ic-post-to-btn1" ic-post-to="/deps_test1">Click</button>
 
         <script>
-          test("Dependency update", function () {
+          test("Dependency update w/ POST", function () {
             var text = "Foo";
             Intercooler.addURLHandler({
               "url" : "/deps_test1",
@@ -134,6 +135,85 @@
             equal($('#ic-src-div3').text(), "Foo", "Updated");
             $("#ic-post-to-btn1").click();
             equal($('#ic-src-div3').text(), "Bar", "Updated");
+          });
+        </script>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
+
+        <div id="ic-src-div6" ic-transition="none" ic-src="/deps_put_test1">Foo</div>
+        <button id="ic-put-to-btn1" ic-put-to="/deps_put_test1">Click</button>
+
+        <script>
+          test("Dependency update w/ PUT", function () {
+            var text = "Foo";
+            Intercooler.addURLHandler({
+              "url" : "/deps_put_test1",
+              "get": function (url, params) {
+                return '<div id="ic-src-div6" ic-transition="none" ic-src="/deps_put_test1">' + text + '</div>';
+              },
+              "put": function (url, params) {
+                equal(params['_method'], "PUT");
+                text = "Bar";
+              }
+            });
+            equal($('#ic-src-div6').text(), "Foo", "Updated");
+            $("#ic-put-to-btn1").click();
+            equal($('#ic-src-div6').text(), "Bar", "Updated");
+          });
+        </script>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
+
+        <div id="ic-src-div7" ic-transition="none" ic-src="/deps_delete_test1">Foo</div>
+        <button id="ic-delete-to-btn1" ic-delete-to="/deps_delete_test1">Click</button>
+
+        <script>
+          test("Dependency update w/ DELETE", function () {
+            var text = "Foo";
+            Intercooler.addURLHandler({
+              "url" : "/deps_delete_test1",
+              "get": function (url, params) {
+                return '<div id="ic-src-div7" ic-transition="none" ic-src="/deps_delete_test1">' + text + '</div>';
+              },
+              "delete": function (url, params) {
+                equal(params['_method'], "DELETE");
+                text = "Bar";
+              }
+            });
+            equal($('#ic-src-div7').text(), "Foo", "Updated");
+            $("#ic-delete-to-btn1").click();
+            equal($('#ic-src-div7').text(), "Bar", "Updated");
+          });
+        </script>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
+
+        <div id="ic-src-div8" ic-transition="none">Foo</div>
+        <button id="ic-delete-to-btn2" ic-delete-to="/deps_delete_test2" ic-target="#ic-src-div8">Click</button>
+
+        <script>
+          test("DELETE with removal", function () {
+            Intercooler.addURLHandler({
+              "url" : "/deps_delete_test2",
+              "delete": function (url, params) {
+                console.log("Here");
+                return "---\n!remove:\n---\n"
+              }
+            });
+            $("#ic-delete-to-btn2").click();
+            equal($('#ic-src-div8').length, 0);
           });
         </script>
       </div>
