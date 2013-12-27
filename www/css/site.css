@@ -52,6 +52,5 @@ body {
 
 pre {
   width: 70%;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 36px auto;
 }

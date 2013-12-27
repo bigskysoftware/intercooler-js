@@ -1,6 +1,6 @@
 ---
 layout: default
-nav: attributes > ic-src
+nav: attributes > ic-style-src
 ---
 
 <div class="container">
@@ -12,15 +12,15 @@ nav: attributes > ic-src
 
       <h3>Summary</h3>
 
-      <p>The <code>ic-src</code> attribute binds a given HTML element's style attribute to a URL.  It does not cause any
+      <p>The <code>ic-style-src</code> attribute binds a given HTML element's style attribute to a URL.  It does not cause any
         requests to happen by itself, but it can respond to events caused by other attributes.</p>
 
-      <p>When Intercooler issues a request for an element with an <code>ic-src</code>, it will issue a <code>GET</code>
-      and will replace the current element with resulting text fragment.</p>
+      <p>When Intercooler issues a request for an element with an <code>ic-style-src</code>, it will issue a <code>GET</code>
+      and will replace the current element's style value with resulting text fragment.</p>
 
       <h3>Syntax</h3>
 
-      <p>The value of the attribute should be a valid style attribute, followed by a colon, then a valid relative
+      <p>The value of the attribute should be a valid style attribute name, followed by a colon, then a valid relative
         path
         (e.g. <code>ic-style-src="color:/foo/bar"</code>).</p>
 
