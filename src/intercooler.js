@@ -21,7 +21,7 @@ var Intercooler = Intercooler || (function () {
   var _ERROR = 4;
 
   var _SRC_ATTRS = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
-  var _DEST_ATTRS = ['ic-post-to', 'ic-put-to', 'ic-delete-to'];
+  var _DEST_ATTRS = ['ic-post-to', 'ic-put-to', 'ic-delete-from'];
 
   var _remote = $;
   var _urlHandlers = [];
@@ -377,7 +377,7 @@ var Intercooler = Intercooler || (function () {
       return "POST";
     } else if(attr == "ic-put-to") {
       return "PUT";
-    } else if (attr == "ic-delete-to") {
+    } else if (attr == "ic-delete-from") {
       return "DELETE";
     } else {
       return "POST";
