@@ -173,7 +173,7 @@
         <hr/>
 
         <div id="ic-src-div7" ic-transition="none" ic-src="/deps_delete_test1">Foo</div>
-        <button id="ic-delete-to-btn1" ic-delete-to="/deps_delete_test1">Click</button>
+        <button id="ic-delete-from-btn1" ic-delete-from="/deps_delete_test1">Click</button>
 
         <script>
           test("Dependency update w/ DELETE", function () {
@@ -189,7 +189,7 @@
               }
             });
             equal($('#ic-src-div7').text(), "Foo", "Updated");
-            $("#ic-delete-to-btn1").click();
+            $("#ic-delete-from-btn1").click();
             equal($('#ic-src-div7').text(), "Bar", "Updated");
           });
         </script>
@@ -201,7 +201,7 @@
         <hr/>
 
         <div id="ic-src-div8" ic-transition="none">Foo</div>
-        <button id="ic-delete-to-btn2" ic-delete-to="/deps_delete_test2" ic-target="#ic-src-div8">Click</button>
+        <button id="ic-delete-from-btn2" ic-delete-from="/deps_delete_test2" ic-target="#ic-src-div8">Click</button>
 
         <script>
           test("DELETE with removal", function () {
@@ -212,7 +212,7 @@
                 return "---\n!remove:\n---\n"
               }
             });
-            $("#ic-delete-to-btn2").click();
+            $("#ic-delete-from-btn2").click();
             equal($('#ic-src-div8').length, 0);
           });
         </script>
