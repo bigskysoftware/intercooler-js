@@ -1,5 +1,9 @@
 .body-wrapper {
-  margin-top: 50px !important;
+  margin-top: 55px !important;
+}
+
+.jumbotron {
+  padding-top: 30px !important;
 }
 
 h1, h2, h3, h4 {
@@ -15,6 +19,11 @@ h1, h2, h3, h4 {
 p {
   font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 14pt;
+}
+
+ul {
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 li {
