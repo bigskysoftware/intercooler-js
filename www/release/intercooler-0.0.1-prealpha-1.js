@@ -434,7 +434,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function processICResponse(data, elt) {
-    if (data != "") {
+    if (data && (data != '')) {
       log("IC RESPONSE: Received: " + data, _DEBUG);
       var newElt = $(data);
       var target = getTarget(elt);
