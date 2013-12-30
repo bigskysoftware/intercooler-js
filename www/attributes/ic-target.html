@@ -43,6 +43,7 @@ nav: attributes > ic-target
             Intercooler.addURLHandler({
               'url': '/update',
               'post': function () {
+                clicks++;
                 return '<div id="target">' + clicks + ' Clicks</div>';
               }
             });
