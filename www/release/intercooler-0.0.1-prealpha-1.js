@@ -388,7 +388,8 @@ var Intercooler = Intercooler || (function () {
     var destinationStr = $(elt).attr(attr);
     $(elt).click(function () {
       handleRemoteRequest(elt, verbFor(attr), destinationStr, getParametersForElement(elt),
-        function () {
+        function (data) {
+          processICResponse(data, elt);
           refreshDependencies(destinationStr);
         })
     });
@@ -444,7 +445,7 @@ var Intercooler = Intercooler || (function () {
           processNodes(newElt);
           log("IC RESPONSE: Replacing " + target.html() + " with " + newElt.html(), _DEBUG);
         } else {
-          elt.fadeOut('fast', function () {
+          target.fadeOut('fast', function () {
             newElt.hide();
             target.replaceWith(newElt);
             log("IC RESPONSE:  Replacing " + target.html() + " with " + newElt.html(), _DEBUG);

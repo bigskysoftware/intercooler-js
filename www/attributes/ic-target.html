@@ -1,0 +1,99 @@
+---
+layout: default
+nav: attributes > ic-target
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-target</code> - The Dependencies Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-target</code> attribute tells Intercooler that an element depends on a given path and should be
+        updated if a change to that path is detected.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the <code>ic-target</code> attribute is a comma-separated list of paths that the element depends on.
+      Note that the special single character "*" indicates that an element depends on <strong>all</strong> detected
+      changed.</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-target</code> adds the dependencies it specifies to the element it is on.</p>
+
+      <h3>Button Example</h3>
+
+      <p>Here is a simple button that updates a div on click:</p>
+
+      <pre>
+  &lt;div id="target">0 Clicks&lt;/div>
+  &lt;button class="btn btn-lg btn-primary" ic-post-to="/update" ic-target="#target">Update Div&lt;/button>
+      </pre>
+
+      <p>Note that the response to the button click is the content to swap in for the <em>div</em>, not the button.</p>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var clicks = 0;
+            Intercooler.addURLHandler({
+              'url': '/update',
+              'post': function () {
+                return '<div id="target">' + clicks + ' Clicks</div>';
+              }
+            });
+          })();
+        </script>
+        <div id="target">0 Clicks</div>
+        <button class="btn btn-lg btn-primary" ic-post-to="/update" ic-target="#target">Update Div</button>
+      </div>
+
+      <h3>Input Example</h3>
+
+      <p>Here is an example of an input that posts its input to the server to validate it, replacing the
+      enclosing div (using standard Boostrap error classes.)</p>
+
+      <pre>
+  &lt;div id="emailDiv" class="form-group">
+    &lt;label class="control-label">Enter Email:&lt;/label>
+    &lt;input type="text" class="form-control" name="email" ic-post-to="/verify_email" ic-target="#emailDiv">
+  &lt;/div>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            Intercooler.addURLHandler({
+              'url': '/verify_email',
+              'post': function (url, params) {
+                if(/\S+@\S+\.\S+/.test(params['email'])) {
+                  return '<div id="emailDiv" class="form-group has-success">' +
+                    '<label class="control-label">Valid Email!</label>' +
+                    '<input type="text" class="form-control" name="email" ic-post-to="/verify_email" value="' + params['email'] + '" ic-target="#emailDiv">' +
+                    '</div>'
+                } else {
+                  return '<div id="emailDiv" class="form-group has-error">' +
+                    '<label class="control-label">Please Enter A Valid Email!</label>' +
+                    '<input type="text" class="form-control" name="email" ic-post-to="/verify_email" value="' + params['email'] + '" ic-target="#emailDiv">' +
+                    '</div>'
+                }
+              }
+            });
+          })();
+        </script>
+
+        <div id="emailDiv" class="form-group">
+          <label class="control-label">Enter Email:</label>
+          <input type="text" class="form-control" name="email" ic-post-to="/verify_email" ic-target="#emailDiv">
+        </div>
+        <em>Tab out of the input to trigger a post...</em>
+      </div>
+
+    </div>
+  </div>
+</div>
