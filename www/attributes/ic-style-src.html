@@ -26,9 +26,10 @@ nav: attributes > ic-style-src
 
       <h3>Dependencies</h3>
 
-      <p><code>ic-style-src</code> implied a dependency on its path, and Intercooler will issue requests for elements
-        whenever it detects an action that the path depends on.  See <a href="/dependencies.html">Dependencies</a> for
-      more information.</p>
+      <p><code>ic-style-src</code> implies a mutation to any dependency on its path, and Intercooler will issue
+        <code>GET</code> requests for elements that depend on that path after the <code>POST</code> completes.</p>
+
+      <p>See <a href="/dependencies.html">Dependencies</a> for more information.</p>
 
       <h3>Example</h3>
 
