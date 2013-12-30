@@ -1,0 +1,82 @@
+---
+layout: default
+nav: attributes > ic-put-to
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-put-to</code> - The Put-To Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-put-to</code> attribute binds the <em>default action</em> (see below) of HTML element to a
+        <code>PUT</code> to the given URL.  For example, on a button, when the button is clicked, an
+        AJAX <code>PUT</code> will be issued to the given URL.</p>
+
+      <p>As with a <code>GET</code>, any content that is returned will be used to replace the current element.  An empty
+        response will be interpreted as a No-Op.  See <a href="/responses.html">Intercooler Responses</a> for
+        more info.</p>
+
+      <p>Since it is common for an action to replace a <em>different</em> element than the one that the action occured
+      on, you may want to use the <a href="/attributes/ic-target.html"><code>ic-target</code></a> attribute to target
+      a different element for replacement.</p>
+
+      <h3>What is the Default Action?</h3>
+
+      <p>The default action depends on the type of an HTML element:</p>
+
+      <ul>
+        <li><code>input</code>, <code>select</code> - A value change.</li>
+        <li><code>form</code> - A form submission.</li>
+        <li>Everything else - A click.</li>
+      </ul>
+
+      <p>You can override the default action using the <a href="/attributes/ic-action.html"><code>ic-action</code></a>
+      attribute.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid relative path (e.g. <code>ic-put-to="/foo/bar"</code>).</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-put-to</code> implies a dependency on its path, and Intercooler will issue requests for elements
+        whenever it detects an action that the path depends on.  See <a href="/dependencies.html">Dependencies</a> for
+      more information.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example, with a span that depends on the updated URL:</p>
+
+      <pre>
+  &lt;button ic-put-to="/target_url">Click Me!&lt;/button>
+
+  &lt;span ic-src="/target_url">You haven't clicked yet...&lt;/span>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var init = Math.floor(new Date().getTime() / 1000);
+            Intercooler.addURLHandler({
+              'url': '/target_url',
+              'get': function () {
+                return '<span ic-src="/target_url">Thanks for clicking!</span>'
+              },
+              'put': function() {
+                return "";
+              }
+            });
+          })();
+        </script>
+        <button class="btn btn-lg btn-primary" ic-put-to="/target_url">Click Me!</button>
+        <span ic-src="/target_url">You haven't clicked yet...</span>
+      </div>
+
+    </div>
+  </div>
+</div>
