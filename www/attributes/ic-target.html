@@ -31,7 +31,7 @@ nav: attributes > ic-target
 
       <pre>
   &lt;div id="target">0 Clicks&lt;/div>
-  &lt;button class="btn btn-lg btn-primary" ic-post-to="/update" ic-target="#target">Update Div&lt;/button>
+  &lt;button ic-post-to="/update" ic-target="#target">Update Div&lt;/button>
       </pre>
 
       <p>Note that the response to the button click is the content to swap in for the <em>div</em>, not the button.</p>
@@ -60,7 +60,8 @@ nav: attributes > ic-target
       <pre>
   &lt;div id="emailDiv" class="form-group">
     &lt;label class="control-label">Enter Email:&lt;/label>
-    &lt;input type="text" class="form-control" name="email" ic-post-to="/verify_email" ic-target="#emailDiv">
+    &lt;input type="text" class="form-control" name="email"
+              ic-post-to="/verify_email" ic-target="#emailDiv">
   &lt;/div>
       </pre>
 
