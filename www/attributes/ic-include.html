@@ -1,0 +1,65 @@
+---
+layout: default
+nav: attributes > ic-include
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-include</code> - The Include Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-include</code> attribute tells Intercooler to include additional parameters in a request that
+        it makes to the server, allowing you to pass up additional UI information to the server..</p>
+
+      <h3>Syntax</h3>
+
+      <p><strong>NB: WORK IN PROGRESS</strong> The value of the <code>ic-include</code> attribute is a comma-separated list of element selectors that will
+        be serialized into parameters to be submitted to the server..</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-include</code> has no effect on dependencies.</p>
+
+      <h3>Example</h3>
+
+      <p>In this example, the button includes the value of the input when it POSTs to the server.</p>
+
+      <pre>
+  &lt;div ic-src="/update">Please Enter A Name...&lt;/div>
+  &lt;input id="name" name="name"/>
+  &lt;button ic-post-to="/update" ic-include="$('#name')">Upload Name&lt;/button>
+      </pre>
+
+      <p>Note that the response to the button click is the content to swap in for the <em>div</em>, not the button.</p>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var name = '';
+            Intercooler.addURLHandler({
+              'url': '/update',
+              'get' : function() {
+                if(name == "") {
+                  return '<div ic-src="/update">Please Enter A Valid Name...</div>'
+                } else {
+                  return '<div ic-src="/update"> Great Name: ' + name + '</div>'
+                }
+              },
+              'post': function (url, params) {
+                name = params['name'];
+              }
+            });
+          })();
+        </script>
+        <div ic-src="/update">Please Enter A Name...</div>
+        <input id="name" name="name"/>
+        <button class="btn btn-lg btn-primary" ic-post-to="/update" ic-include="$('#name')">Upload Name</button>
+      </div>
+
+    </div>
+  </div>
+</div>
