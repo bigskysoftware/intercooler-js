@@ -209,7 +209,7 @@
               "url" : "/deps_delete_test2",
               "delete": function (url, params) {
                 console.log("Here");
-                return "---\n!remove:\n---\n"
+                return "---\nremove:\n---\n"
               }
             });
             $("#ic-delete-from-btn2").click();
@@ -332,7 +332,7 @@
             equal(Intercooler.testSupport.processFrontMatter("---\n"), "");
             equal(Intercooler.testSupport.processFrontMatter("---\n---\n"), "");
             equal(Intercooler.testSupport.processFrontMatter("---\n\n---\n"), "");
-            equal(Intercooler.testSupport.processFrontMatter("---\n!script: window.eval_test_var = 10;\n---\n"), "");
+            equal(Intercooler.testSupport.processFrontMatter("---\nscript: window.eval_test_var = 10;\n---\n"), "");
             equal(window.eval_test_var, 10);
           });
         </script>
@@ -349,7 +349,7 @@
               "url" : "/frontmatter_eval",
               "post" : function(){
                  return "---\n" +
-                   "!script: window.eval_test_var2 = 10;\n" +
+                   "script: window.eval_test_var2 = 10;\n" +
                    "---\n";
               }
             });

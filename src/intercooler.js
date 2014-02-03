@@ -91,8 +91,8 @@ var Intercooler = Intercooler || (function () {
 
   function parseInterval(str) {
     log("POLL: Parsing interval string " + str, _DEBUG);
-    if (str == "") {
-      return 1000;
+    if (str == "null" || str == "false" || str == "") {
+      return null;
     } else if (str.lastIndexOf("ms") == str.length - 2) {
       return parseInt(str.substr(0, str.length - 2));
     } else if (str.lastIndexOf("s") == str.length - 1) {
@@ -120,7 +120,7 @@ var Intercooler = Intercooler || (function () {
       var pathsToRefresh = rest.split(",");
       log("IC FRONTMATTER: refreshing " + pathsToRefresh, _DEBUG);
       $.each(pathsToRefresh, function(i, str) {
-        refreshDependencies(str.replace(/ /g, ""));
+        refreshDependencies(str.replace(/ /g, ""), elt);
       });
     } else if(command == "script") {
       log("IC FRONTMATTER: evaling " + rest, _DEBUG);
@@ -354,17 +354,19 @@ var Intercooler = Intercooler || (function () {
 
   function startPolling(elt) {
     var interval = parseInterval(elt.attr('ic-poll'));
-    var selector = icSelectorFor(elt);
-    log("POLL: Starting poll for element " + selector, _DEBUG);
-    var timerId = setInterval(function () {
-      var target = $(selector);
-      if (target.length == 0) {
-        log("POLL: Clearing poll for element " + selector, _DEBUG);
-        clearTimeout(timerId);
-      } else {
-        updateElement(target);
-      }
-    }, interval);
+    if(interval != null) {
+      var selector = icSelectorFor(elt);
+      log("POLL: Starting poll for element " + selector, _DEBUG);
+      var timerId = setInterval(function () {
+        var target = $(selector);
+        if (target.length == 0) {
+          log("POLL: Clearing poll for element " + selector, _DEBUG);
+          clearTimeout(timerId);
+        } else {
+          updateElement(target);
+        }
+      }, interval);
+    }
   }
 
   function processPolling(elt) {
@@ -382,13 +384,17 @@ var Intercooler = Intercooler || (function () {
     return (src && dest) && (dest.indexOf(src) == 0 || src.indexOf(dest) == 0);
   }
 
-  function refreshDependencies(dest) {
+  function refreshDependencies(dest, src) {
     withAttrs(_SRC_ATTRS, function (attr) {
       $('[' + attr + ']').each(function () {
         if (isDependent(dest, $(this).attr(attr))) {
-          updateElement($(this));
+          if(src == null || $(src)[0] != $(this)[0]) {
+            updateElement($(this));
+          }
         } else if (isDependent(dest, $(this).attr('ic-deps')) || $(this).attr('ic-deps') == "*") {
-          updateElement($(this));
+          if(src == null || $(src)[0] != $(this)[0]) {
+            updateElement($(this));
+          }
         }
       });
     });
