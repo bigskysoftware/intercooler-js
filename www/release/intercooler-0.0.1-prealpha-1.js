@@ -20,7 +20,7 @@ var Intercooler = Intercooler || (function () {
   var _WARN = 3;
   var _ERROR = 4;
 
-  var _SRC_ATTRS = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
+  var _SRC_ATTRS = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from', 'ic-text-src'];
   var _DEST_ATTRS = ['ic-post-to', 'ic-put-to', 'ic-delete-from'];
 
   var _remote = $;
@@ -116,16 +116,22 @@ var Intercooler = Intercooler || (function () {
 
   function processCommand(command, rest, elt) {
     log("Command: " + command + ", rest: " + rest, _DEBUG);
-    if(command == "!refresh") {
+    if(command == "refresh") {
       var pathsToRefresh = rest.split(",");
       log("IC FRONTMATTER: refreshing " + pathsToRefresh, _DEBUG);
       $.each(pathsToRefresh, function(i, str) {
         refreshDependencies(str.replace(/ /g, ""));
       });
-    } else if(command == "!script") {
+    } else if(command == "script") {
       log("IC FRONTMATTER: evaling " + rest, _DEBUG);
       eval(rest);
-    } else if(command == "!remove") {
+    } else if(command == "redirect") {
+      log("IC FRONTMATTER: redirecting to " + rest, _DEBUG);
+      window.location = rest;
+    } else if(command == "open") {
+      log("IC FRONTMATTER: opening " + rest, _DEBUG);
+      window.open(rest);
+    } else if(command == "remove") {
       log("IC FRONTMATTER REMOVE COMMAND");
       if(elt) {
         var target = getTarget(elt);
@@ -219,10 +225,10 @@ var Intercooler = Intercooler || (function () {
     _remote.ajax({
       type: type,
       url: url,
-      context: data,
+      data: data,
       dataType: 'text',
       success: function(data) { success(processFrontMatter(data, elt)) },
-      error: function (str) {
+      error: function (req, status, str) {
         log("An error occurred: " + str, _ERROR);
       }
     })
@@ -280,7 +286,23 @@ var Intercooler = Intercooler || (function () {
 
   function getParametersForElement(elt) {
     var target = getTarget(elt);
-    var str = "ic-request=true&" + elt.serialize();
+    var str = "ic-request=true";
+
+    // if the element is in a form, include the entire form
+    if(elt.closest('form').length > 0) {
+      str += "&" + elt.closest('form').serialize();
+    } else { // otherwise include the element
+      str += "&" + elt.serialize();
+    }
+    if (target.attr('id')) {
+      str += "&ic-element-id=" + target.attr('id');
+    }
+    if (target.attr('name')) {
+      str += "&ic-element-name=" + target.attr('name');
+    }
+    if (target.attr('ic-id')) {
+      str += "&ic-id=" + target.attr('ic-id');
+    }
     if (target.attr('ic-id')) {
       str += "&ic-id=" + target.attr('ic-id');
     }
@@ -386,7 +408,8 @@ var Intercooler = Intercooler || (function () {
 
   function initButtonDestination(elt, attr) {
     var destinationStr = $(elt).attr(attr);
-    $(elt).click(function () {
+    $(elt).click(function (event) {
+      event.preventDefault();
       handleRemoteRequest(elt, verbFor(attr), destinationStr, getParametersForElement(elt),
         function (data) {
           processICResponse(data, elt);
@@ -465,6 +488,16 @@ var Intercooler = Intercooler || (function () {
       handleRemoteRequest(element, "GET", elt.attr('ic-src'), getParametersForElement(elt),
         function (data) {
           processICResponse(data, elt);
+        });
+    } else if (elt.attr('ic-text-src')) {
+      handleRemoteRequest(element, "GET", elt.attr('ic-text-src'), getParametersForElement(elt),
+        function (data) {
+          if(data != elt.text()) {
+            elt.fadeOut('fast', function(){
+              elt.text(data);
+              elt.fadeIn('fast');
+            })
+          }
         });
     } else if (elt.attr('ic-prepend-from')) {
       handleRemoteRequest(element, "GET", elt.attr('ic-prepend-from'), getParametersForElement(elt),
