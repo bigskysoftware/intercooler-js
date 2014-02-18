@@ -209,7 +209,12 @@
               "url" : "/deps_delete_test2",
               "delete": function (url, params) {
                 console.log("Here");
-                return "---\nremove:\n---\n"
+                return {
+                  'headers' : {
+                    'X-ic-remove' : true
+                  },
+                  'body': ""
+                }
               }
             });
             $("#ic-delete-from-btn2").click();
@@ -325,32 +330,18 @@
     <div class="row">
       <div class="col-md-12">
         <hr/>
-        <script>
-          test("Frontmatter parsing test", function () {
-            equal(Intercooler.testSupport.processFrontMatter(""), "");
-            equal(Intercooler.testSupport.processFrontMatter(" "), " ");
-            equal(Intercooler.testSupport.processFrontMatter("---\n"), "");
-            equal(Intercooler.testSupport.processFrontMatter("---\n---\n"), "");
-            equal(Intercooler.testSupport.processFrontMatter("---\n\n---\n"), "");
-            equal(Intercooler.testSupport.processFrontMatter("---\nscript: window.eval_test_var = 10;\n---\n"), "");
-            equal(window.eval_test_var, 10);
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
         <button id="eval-btn" ic-post-to="/frontmatter_eval">Eval</button>
         <script>
-          test("Eval frontmatter works", function () {
+          test("Eval works", function () {
             Intercooler.addURLHandler({
               "url" : "/frontmatter_eval",
               "post" : function(){
-                 return "---\n" +
-                   "script: window.eval_test_var2 = 10;\n" +
-                   "---\n";
+                 return {
+                   "headers" : {
+                     "X-ic-script" : "window.eval_test_var2 = 10;"
+                   },
+                   body: ""
+                 };
               }
             });
             $("#eval-btn").click();
