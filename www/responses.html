@@ -80,38 +80,25 @@ nav: responses
 
       <p>Intercooler interprets an empty body in a request as a No-Op, and will do nothing in response.</p>
 
-      <h4>The Front Matter</h4>
+      <h4>Intercooler Response Headers</h4>
 
-      <p>Sadly, not all UI patterns can be elegantly captured via straight element swapping.  Occasionally
-      you need to invoke a bit more client side javascript, let other elements know to refresh themselves,
-      etc.</p>
+      <p>Sadly, not all UI patterns can be elegantly captured via straight element swapping. Occasionally
+        you need to invoke a bit more client side javascript, let other elements know to refresh themselves,
+        redirect the user entirely, etc.</p>
 
-      <p>To handle these situations, Intercooler responses have at their disposal a front matter.  The
-      response front matter is optional, and consists of three dashes at the very start of the response,
-      a series of front matter items, and then three dashes terminating the front matter.  Here is an example:
+      <p>To handle these situations, Intercooler responses have at their disposal some custom HTTP headers.  These
+        headers can be used to instruct intercooler to perform additional work :
       </p>
 
-      <pre>
----
-script: alert('yay!');
----
-  &lt;div>Here Is Some Content!&lt;div>
-      </pre>
-
-      <p>Front matter items take the format: <i>command</i>:<i>data</i></p>
-
-      <p>The following commands are available in the front matter:</p>
+      <p>The following Intercooler response headers are available:</p>
 
       <ul>
-        <li><code>script:</code> - Allows you to evaluate arbitrary javascript.</li>
-        <li><code>refresh:</code> - Allows you to pass down arbitrary dependency paths to refresh.</li>
-        <li><code>remove:</code> - Allows you to remove an item from the UI (rather than replacing it.)</li>
-        <li><code>redirect:</code> - Allows you to redirect the browser to a new location</li>
-        <li><code>open:</code> - Allows you to open a new URL in the browser</li>
+        <li><code>X-ic-script</code> - Allows you to evaluate arbitrary javascript.</li>
+        <li><code>X-ic-refresh</code> - Allows you to pass down arbitrary dependency paths to refresh.</li>
+        <li><code>X-ic-remove</code> - Allows you to remove an item from the UI (rather than replacing it.)</li>
+        <li><code>X-ic-redirect</code> - Allows you to redirect the browser to a new location</li>
+        <li><code>X-ic-open</code> - Allows you to open a new URL in the browser</li>
       </ul>
-
-      <p>The Front Matter can be used as an escape hatch, when you need to do something a bit fancier than
-      simply swapping in new content.</p>
 
     </div>
   </div>

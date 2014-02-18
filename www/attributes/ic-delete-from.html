@@ -62,9 +62,12 @@ nav: attributes > ic-delete-from
             Intercooler.addURLHandler({
               'url': '/delete_me',
               'delete': function() {
-                return "---\n" +
-                       "!remove:" +
-                       "---\n";
+                return {
+                  "headers" : {
+                    "X-ic-remove" : true
+                  },
+                  "body" : ""
+                };
               }
             });
           })();

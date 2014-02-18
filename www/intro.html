@@ -295,10 +295,12 @@ nav: intro
                     return process + "%";
                   } else {
                     process = null;
-                    return "---\n" +
-                           "refresh: /job\n" +
-                           "---\n" +
-                           "100%";
+                    return {
+                      'headers' : {
+                        "X-ic-refresh:" : "/job"
+                      },
+                      "body" :  "100%"
+                    };
                   }
                 } else {
                   if(process != null) {
