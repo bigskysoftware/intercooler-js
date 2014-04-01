@@ -1,0 +1,100 @@
+---
+layout: default
+nav: why
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2>What Is Intercooler?</h2>
+
+      <p>Intercooler is a <em>Partial View Controller</em> client-side framework: it communicates with the server
+        via fragments of HTML, which are loaded into the DOM.</p>
+
+      <p>This is in contrast with more traditional
+        client side MVC frameworks such as <a href="http://emberjs.com/">Ember.js</a> or <a
+          href="http://angularjs.org/">Angular.js</a>
+        which communicate with the server using JSON requests and JSON responses.</p>
+
+      <p>Here is a diagram how a PVC framework works:</p>
+
+      <p class="text-center">
+        <img src="images/pvc_request.svg"/>
+      </p>
+
+      <p>Note that the response content is a <em>partial</em> bit of HTML, and it is swapped in place
+      of the target div.</p>
+
+      <p>Intercooler formalizes this approach, using HTML5-style attributes to drive the AJAX requests.</p>
+
+      <p>Other examples of PVC-like frameworks are <a href="https://github.com/rails/turbolinks">Turbolinks</a> and
+        <a href="https://github.com/defunkt/jquery-pjax">pjax</a>.</p>
+
+
+      <h2>Why would I use a PVC framework?</h2>
+
+      <p>The primary advantages of PVC frameworks is their <strong>simplicity</strong>: they preserve many of
+      the advantages, advances and concepts of traditional server-side web applications and typically involve
+      only slight modifications to existing applications to work.</p>
+
+      <p>This is in contrast to most Javascript MVC frameworks, which are very heavyweight. They give you a lot, but they require a lot as well: you must
+        set up a client side model, manage routing, use client-side templates, etc. You are going to have to write a
+        fair bit of Javascript to get things rolling.<p>
+
+      <p>Depending on how you implement things, you are going to probably have a bunch of server side logic lying around
+      as well.</p>
+
+      <p>With a PVC framework, on the other hand, keeps the majority of your logic on the server side. Depending on the framework, you
+        end up writing only a bit more code than you would in a more traditional web application and, since everything is still rendered server
+        side, you eliminate the need for heavy client-side work.</p>
+
+      <h2>Why would I use Intercooler?</h2>
+
+      <p>Both TurboLinks and pjax are targeted PVC frameworks: they are mostly concerned with navigation.</p>
+
+      <p>Intercooler is a more complete PVC framework: there are patterns for updating things as small as a
+        progress bar width, for polling, for passing actions to the server, for working with tables/bulk operations,
+        refreshing specific elements in the DOM, etc.</p>
+
+      <p>One way to think about Intercooler is as an Angular alternative, with REST-ful bindings to a
+        server side model &amp; renderer.</p>
+
+      <p>And a <strong>lot</strong> less code.</p>
+
+      <h2>What are the core concepts?</h2>
+
+      <p>The core concepts in Intercooler are:</p>
+
+      <ul>
+        <li>HTML Elements are <em>declaratively</em> bound to REST-ful HTTP endpoints via the standard HTTP verbs (GET,
+          POST, etc.)
+        </li>
+        <li>Dependencies between elements are encoded in their REST-ful path bindings</li>
+        <li>Server responses are HTML fragments that will be swapped in place of existing elements</li>
+        <li>Server responses can have header directives as well, enabling fine-grain control over the UI</li>
+      </ul>
+
+      <h2>I'm skeptical.</h2>
+
+      <p>Sure, as you should be. This is an as-yet uncodified approach to building web applications. However, many
+        successful web applications are already being built this way. <a href="https://basecamp.com/">Basecamp</a>,
+        for example, is a famous one. It doesn't use Intercooler, of course, but it does use the PVC-style.</p>
+
+      <p>And this approach isn't right for every UI: if you have a bunch of stuff flying around on your UI and lots
+        of user input patterns, Intercooler isn't the right thing.
+
+      <i>However</i>, even in applications like that you probably have some plain old form or table UI's sitting
+        around for which a full Javascript MVC framework is overkill. There, Intercooler can help.</p>
+
+      <h2>Alright, I'll give you one more page...</h2>
+
+      <p>
+        Great! On to the <a href="intro.html">introduction!</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

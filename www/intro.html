@@ -6,40 +6,13 @@ nav: intro
 
   <div class="row">
     <div class="col-md-12">
-      <h2>Introduction</h2>
-
-      <p>Intercooler is a javascript library that lets you introduce dynamic behavior to your web applications without
-        adding much javascript. It accomplishes this by allowing you to bind various elements (and attributes) to HTTP
-        end points using custom HTML attributes.</p>
-
-      <p>The core ideas in Intercooler are:</p>
-
-      <ul>
-        <li>HTML Elements are declaratively bound to HTTP endpoints via standard HTTP verbs (GET, POST, etc.)</li>
-        <li>Dependencies between elements are encoded in URL paths</li>
-        <li>The API is scaleable, and you can use it for as much or as little of your UI as you'd like</li>
-        <li>The API is pluggable, allowing you to override many behaviors, <em>however</em> it provides
-          good defaults for things like transitions so, if you aren't interested, you won't need to
-          change anything to have an attractive, usable app.
-        </li>
-      </ul>
-
-      <p>Intercooler was inspired by the <a href="https://github.com/rails/turbolinks/">Turbolinks</a> project,
-        <a href="http://angularjs.org/">AngularJS</a>, and <a href="https://twitter.com/dhh">DHH's</a> various posts
-        regarding using incremental DOM updates in Basecamp.</p>
-
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
       <h2>Installation</h2>
 
       <p>Intercooler depends on JQuery being installed, and can be installed like so:</p>
 
       <pre>
   &lt;script src="https://code.jquery.com/jquery-1.10.2.min.js">&lt;/script>
-  &lt;script src="/js/intercooler-0.0.1-alpha1.min.js">&lt;/script>
+  &lt;script src="/js/intercooler-0.0.1.min.js">&lt;/script>
       </pre>
 
       <p>You can grab the latest code from the <a href="download.html">Downloads</a> page.</p>
@@ -93,7 +66,7 @@ nav: intro
                 if(Math.random() > .5) {
                   count += Math.floor(Math.random() * 6);
                 }
-                return '<div ic-src="/visitors/count_div" ic-poll="2s">You have had ' + count + ' visitors today</div>'
+                return 'You have had ' + count + ' visitors today'
               }
             });
           })();
@@ -134,7 +107,7 @@ nav: intro
             Intercooler.addURLHandler({
               'url': '/example/click',
               'get': function () {
-                return '<div ic-src="/example/click">You have clicked the button ' + clicks + ' times</div>'
+                return 'You have clicked the button ' + clicks + ' times'
               },
               'post': function(){
                 clicks++;
@@ -155,7 +128,7 @@ nav: intro
         <pre>
           &lt;div ic-src="/name">No name entered&lt;/div>
           &lt;input id="a_name" type="text" name="name" placeholder="Enter A Name"/>
-          &lt;button ic-post-to="/name" ic-include="$('#a_name')">Upload Name&lt;/button>
+          &lt;button ic-post-to="/name" ic-include="#a_name">Upload Name&lt;/button>
         </pre>
       </div>
 
@@ -171,9 +144,9 @@ nav: intro
               'url': '/name',
               'get': function () {
                 if(name == "") {
-                  return '<div ic-src="/name">No name entered</div>'
+                  return 'No name entered'
                 } else {
-                  return '<div ic-src="/name">You entered the name: ' + name + '</div>'
+                  return 'You entered the name: ' + name + ''
                 }
               },
               'post': function (url, params) {
@@ -184,7 +157,7 @@ nav: intro
         </script>
         <div ic-src="/name">No name entered</div>
         <input id="a_name" type="text" name="name" placeholder="Enter A Name"/>
-        <button class="btn btn-primary" ic-post-to="/name" ic-include="$('#a_name')">Upload Name</button>
+        <button class="btn btn-primary" ic-post-to="/name" ic-include="#a_name">Upload Name</button>
       </div>
 
       <h3>Switching To A List</h3>
@@ -197,7 +170,7 @@ nav: intro
       <div class="row">
         <pre>
   &lt;input id="item_name" type="text" name="item_name" placeholder="Enter Item Name"/>
-  &lt;button ic-post-to="/items" ic-include="$('#item_name')">Upload Name&lt;/button>
+  &lt;button ic-post-to="/items" ic-include="#item_name">Upload Name&lt;/button>
   &lt;ul ic-prepend-from="/items" ic-limit-children="3">
     &lt;li>Placeholder&lt;/li>
   &lt;/ul>
@@ -226,7 +199,7 @@ nav: intro
           })();
         </script>
         <input id="item_name" type="text" name="item_name" placeholder="Enter Item Name"/>
-        <button class="btn btn-primary" ic-post-to="/items" ic-include="$('#item_name')">Upload Name</button>
+        <button class="btn btn-primary" ic-post-to="/items" ic-include="#item_name">Upload Name</button>
         <ul ic-prepend-from="/items" ic-limit-children="3">
           <li>Placeholder</li>
         </ul>
@@ -304,13 +277,12 @@ nav: intro
                   }
                 } else {
                   if(process != null) {
-                    return '<div ic-src="/job">Job Running:' +
+                    return 'Job Running:' +
                       '  <div class="progress progress-striped active">' +
                       '   <div class="progress-bar" ic-style-src="width:/job/percent_complete" ic-poll="1s" style="width:0%"></div>' +
-                      '  </div>' +
-                      '</div>'
+                      '  </div>'
                   } else {
-                    return '<div ic-src="/job">Job Complete!</div>'
+                    return 'Job Complete!'
                   }
                 }
               },

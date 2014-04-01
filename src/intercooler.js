@@ -28,6 +28,7 @@ var Intercooler = Intercooler || (function () {
   var _logger = window.console;
   var _loggingLevel = null;
   var _loggingGrep = null;
+  var _scrollHandler = null;
 
   //============================================================
   // Utility Methods
@@ -120,6 +121,9 @@ var Intercooler = Intercooler || (function () {
   }
 
   function processHeaders(elt, xhr, pop) {
+
+    elt.trigger("ic.beforeHeaders", elt, xhr);
+
     if (xhr.getResponseHeader("X-IC-Refresh")) {
       var pathsToRefresh = xhr.getResponseHeader("X-IC-Refresh").split(",");
       log("IC HEADER: refreshing " + pathsToRefresh, _DEBUG);
@@ -150,12 +154,17 @@ var Intercooler = Intercooler || (function () {
       log("IC HEADER: pushing " + xhr.getResponseHeader("X-IC-SetLocation"), _DEBUG);
       _historySupport.pushUrl(xhr.getResponseHeader("X-IC-SetLocation"), elt);
     }
+    if(xhr.getResponseHeader("X-IC-Transition")) {
+      log("IC HEADER: setting transition to  " + xhr.getResponseHeader("X-IC-Transition"), _DEBUG);
+      var target = getTarget(elt);
+      target.data("ic-tmp-transition", xhr.getResponseHeader("X-IC-Transition"));
+    }
     if (xhr.getResponseHeader("X-IC-Remove")) {
       log("IC HEADER REMOVE COMMAND");
       if (elt) {
         var target = getTarget(elt);
         log("IC REMOVING: " + target.html(), _DEBUG);
-        if (target.attr('ic-transition') == "none") {
+        if (isTransition(target, "none")) {
           target.remove();
         } else {
           target.fadeOut('fast', function () {
@@ -164,6 +173,9 @@ var Intercooler = Intercooler || (function () {
         }
       }
     }
+
+    elt.trigger("ic.afterHeaders", elt, xhr);
+
     return true;
   }
 
@@ -249,24 +261,33 @@ var Intercooler = Intercooler || (function () {
 
     // Spinner support
     var spinner = findSpinner(elt);
-    spinner.fadeIn();
+    spinner.fadeIn('fast');
 
     _remote.ajax({
       type: type,
       url: url,
       data: data,
       dataType: 'text',
+      beforeSend : function(){
+        elt.trigger("ic.beforeSend", elt, data);
+      },
       success: function (data, textStatus, xhr) {
+        elt.trigger("ic.success", elt, data, textStatus, xhr);
+        var target = getTarget(elt);
+        target.data("ic-tmp-transition",  elt.attr('ic-transition')); // copy transition
         if (processHeaders(elt, xhr, pop)) {
-          success(data, textStatus, elt, xhr)
+          success(data, textStatus, elt, xhr);
         }
+        target.data("ic-tmp-transition", null);
       },
       error: function (req, status, str) {
+        elt.trigger("ic.error", elt, req, status, str);
         log("An error occurred: " + str, _ERROR);
       },
       complete : function(){
+        elt.trigger("ic.complete", elt, data);
         if(spinner.length > 0) {
-          spinner.fadeOut(function(){
+          spinner.fadeOut('fast', function(){
             afterRequest(elt);
           });
         } else {
@@ -411,6 +432,7 @@ var Intercooler = Intercooler || (function () {
         log("POLL: Starting poll for element " + selector, _DEBUG);
         var timerId = setInterval(function () {
           var target = $(selector);
+          elt.trigger("ic.onPoll", target);
           if (target.length == 0) {
             log("POLL: Clearing poll for element " + selector, _DEBUG);
             clearTimeout(timerId);
@@ -518,16 +540,51 @@ var Intercooler = Intercooler || (function () {
     });
   }
 
-  function maybeLazyLoad(elt) {
-    if ($(elt).attr('ic-lazy') == 'true' && $(elt).data('ic-lazy-loaded') != true) {
-      $(elt).data('ic-lazy-loaded', true);
-      updateElement(elt);
+  function isScrolledIntoView(elem) {
+    var docViewTop = $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
+
+    var elemTop = $(elem).offset().top;
+    var elemBottom = elemTop + $(elem).height();
+
+    return ((elemBottom >= docViewTop) && (elemTop <= docViewBottom)
+      && (elemBottom <= docViewBottom) &&  (elemTop >= docViewTop) );
+  }
+
+  function handleLoadOn(elt) {
+    if ($(elt).attr('ic-load-on')) {
+      if($(elt).attr('ic-load-on') == 'load') {
+        updateElement(elt);
+      } else if($(elt).attr('ic-load-on') == 'scrolled-into-view') {
+        if(isScrolledIntoView(elt) && elt.data('ic-scrolled-into-view-loaded') != true){
+          $(this).data('ic-scrolled-into-view-loaded', true);
+          updateElement($(this));
+        } else {
+          if(_scrollHandler == null) {
+            _scrollHandler = function() {
+              $("[ic-load-on='scrolled-into-view']").each(function(){
+                if(isScrolledIntoView($(this)) && $(this).data('ic-scrolled-into-view-loaded') != true){
+                  $(this).data('ic-scrolled-into-view-loaded', true);
+                  updateElement($(this));
+                }
+              })
+            };
+            $(window).scroll(_scrollHandler);
+          }
+        }
+
+      } else {
+        $(elt).on($(elt).attr('ic-load-on'), function(){
+          updateElement(elt);
+        });
+      }
     }
   }
-  function loadLazyNodes(elt) {
-    maybeLazyLoad(elt);
-    $(elt).find('[ic-lazy]').each(function () {
-      maybeLazyLoad($(this));
+
+  function processLoadOn(elt) {
+    handleLoadOn(elt);
+    $(elt).find('[ic-load-on]').each(function () {
+      handleLoadOn($(this));
     });
   }
 
@@ -535,7 +592,12 @@ var Intercooler = Intercooler || (function () {
     processSources(elt);
     processPolling(elt);
     processDestinations(elt);
-    loadLazyNodes(elt)
+    processLoadOn(elt)
+  }
+
+  function isTransition(target, transitionName) {
+    return target.attr('ic-transition') == transitionName ||
+      target.data('ic-tmp-transition') == transitionName;
   }
 
   function processICResponse(data, elt) {
@@ -544,7 +606,7 @@ var Intercooler = Intercooler || (function () {
       var target = getTarget(elt);
       var dummy = $("<div></div>").html(data);
       if (fp(dummy.text()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
-        if (target.attr('ic-transition') == "none") {
+        if (isTransition(target, 'none')) {
           target.html(data);
           processNodes(target);
         } else {

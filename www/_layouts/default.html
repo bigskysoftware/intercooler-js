@@ -34,48 +34,57 @@
           $('pre').addClass('prettyprint');
       }); // end document.ready
   </script>
-  <script type="text/javascript" src="/js/intercooler.js"></script>
+  <script type="text/javascript" src="/release/intercooler-0.0.1.js"></script>
 </head>
 
 <body>
-<a href="https://github.com/LeadDyno/intercooler-js">
-  <img style="z-index:10000; position: fixed; top: 0; right: 0; border: 0;width:149px;height:149px"
-       src="http://aral.github.com/fork-me-on-github-retina-ribbons/right-red@2x.png"
-       alt="Fork me on GitHub">
-</a>
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/">Intercooler.JS</a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="{% active intro %}"><a href="/intro.html">Why?</a></li>
-            <li class="{% active intro %}"><a href="/intro.html">Intro</a></li>
-            <li class="dropdown {% active attributes %}">
-              <a href="/docs.html" class="dropdown-toggle" data-toggle="dropdown">Attributes <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li class="dropdown-header">Core Attributes</li>
-                <li><a href="/attributes/ic-src.html">ic-src</a></li>
-                <li><a href="/attributes/ic-src.html">ic-post-to</a></li>
-                <li><a href="/attributes/ic-src.html">ic-target</a></li>
-                <li><a href="/attributes/ic-src.html">ic-poll</a></li>
-                <li class="divider"></li>
-                <li><a href="/attributes/all.html">View All Attributes</a></li>
-              </ul>
-            </li>
-            <li class="{% active responses %}"><a href="/responses.html">Responses</a></li>
-            <li class="{% active dependencies %}"><a href="/dependencies.html">Dependencies</a></li>
-            <li class="disabled {% active extending %}"><a href="/extending.html">API</a></li>
-            <!--<li class=""><a href="/#">Examples</a></li>-->
-            <li class="{% active download %}"><a href="/download.html">Download</a></li>
-          </ul>
+
+    <div class="container">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Intercooler.JS</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class="{% active why %}"><a href="/why.html">Why?</a></li>
+              <li class="{% active intro %}"><a href="/intro.html">Intro</a></li>
+              <li class="dropdown {% active attributes %}">
+                <a href="/docs.html" class="dropdown-toggle" data-toggle="dropdown">Attributes <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Core Attributes</li>
+                  <li><a href="/attributes/ic-src.html">ic-src</a></li>
+                  <li><a href="/attributes/ic-src.html">ic-post-to</a></li>
+                  <li><a href="/attributes/ic-src.html">ic-target</a></li>
+                  <li><a href="/attributes/ic-src.html">ic-poll</a></li>
+                  <li class="divider"></li>
+                  <li><a href="/attributes/all.html">View All Attributes</a></li>
+                </ul>
+              </li>
+              <li class="dropdown {% active api %}">
+                <a href="/docs.html" class="dropdown-toggle" data-toggle="dropdown">API <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li class="{% active responses %}"><a href="/responses.html">HTTP Responses</a></li>
+                  <li class="{% active dependencies %}"><a href="/dependencies.html">Dependencies</a></li>
+                  <li class="{% active extending %}"><a href="/extending.html">Javascript API</a></li>
+                </ul>
+              </li>
+              <li class="{% active download %}"><a href="/download.html">Download</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li class="{% active blog %}"><a href="/blog.html">Blog</a></li>
+              <li><a href="https://github.com/LeadDyno/intercooler-js"><i class="fa fa-github"></i></a></li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>  </div>
-</div>
+    </div>
 
 <div class="body-wrapper">
   {{content}}

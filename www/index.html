@@ -5,9 +5,9 @@ layout: default
   <div class="container">
     <h1><img src="/images/Intercooler_CMYK_noType_64.png" style="margin-right:12px"> Intercooler.JS</h1>
 
-    <p>Intercooler is a <a href="why.html">PVC</a> framework that allows you to add AJAX to your application with as
-      little (or as much) javascript as you would like.  All UI bindings are managed via REST-ful URLs specified
-      using custom HTML5-style attributes.</p>
+    <p>Intercooler is a <a href="why.html"><strong>PVC</strong></a> framework that allows you to add AJAX to your application
+      with declarative HTML5-style bindings and REST-ful URLs, giving your web application a rich UX
+      experience with a minimal, well-organized code base.</p>
   </div>
 </div>
 
@@ -54,10 +54,10 @@ layout: default
             Intercooler.addURLHandler({
               'url': '/example/click',
               'get': function () {
-                if(clicks > 3) {
-                  return '<span>Alright, stop clicking and head over to the <a href="intro.html">introduction</a>...</span>'
+                if(clicks > 2) {
+                  return 'Alright, Alright.  Stop clicking and learn about <a href="/why.html">why you should use intercooler</a>...'
                 } else {
-                  return '<span ic-src="/example/click">You have clicked the button ' + clicks + ' times</div>'
+                  return 'You have clicked the button ' + clicks + ' times'
                 }
               },
               'post': function(){
