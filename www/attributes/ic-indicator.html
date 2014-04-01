@@ -1,0 +1,61 @@
+---
+layout: default
+nav: attributes > ic-indicator
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-indicator</code> - The Indicator Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The indicator attribute can be used to show an indicator while a request is in process.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid selector of the indicator element to show</p>
+
+      <p>You can also use the <code>ic-indicator</code> CSS class on elements <em>within</em> an element
+      to specify an indicator.</p>
+
+      <p>Finally, you can use the <code>ic-indicator</code> attribute on a parent of multiple elements, and all
+      elements will use the parent indicator.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example of an indicator next to a button:</p>
+
+      <pre>
+  &lt;button ic-post-to="/target_url" ic-indicator="#indicator">
+    Click Me!
+  &lt;/button>
+
+  &lt;i id="indicator" class="fa fa-spinner fa-spin" style="display:none">&lt;/i>
+</pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            Intercooler.addURLHandler({
+              'url': '/target_url',
+              'post': function() {
+                return "";
+              }
+            });
+          })();
+        </script>
+
+        <button class="btn btn-lg btn-primary" ic-post-to="/target_url" ic-indicator="#indicator">
+          Click Me!
+        </button>
+
+        <i id="indicator" class="fa fa-spinner fa-spin" style="display:none"></i>
+      </div>
+
+    </div>
+  </div>
+</div>

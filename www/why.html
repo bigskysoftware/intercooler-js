@@ -11,7 +11,10 @@ nav: why
       <h2>What Is Intercooler?</h2>
 
       <p>Intercooler is a <em>Partial View Controller</em> client-side framework: it communicates with the server
-        via fragments of HTML, which are loaded into the DOM.</p>
+        via AJAX, but rather than expecting JSON responses it expects fragments of HTML (i.e.
+        <em>Partial Views</em>), which are then
+        loaded into the
+        DOM directly.</p>
 
       <p>This is in contrast with more traditional
         client side MVC frameworks such as <a href="http://emberjs.com/">Ember.js</a> or <a
@@ -36,8 +39,8 @@ nav: why
       <h2>Why would I use a PVC framework?</h2>
 
       <p>The primary advantages of PVC frameworks is their <strong>simplicity</strong>: they preserve many of
-      the advantages, advances and concepts of traditional server-side web applications and typically involve
-      only slight modifications to existing applications to work.</p>
+        the advantages, advances, tools and concepts of traditional server-side web applications and can often involve
+        only slight modifications to existing applications to move over to.</p>
 
       <p>This is in contrast to most Javascript MVC frameworks, which are very heavyweight. They give you a lot, but they require a lot as well: you must
         set up a client side model, manage routing, use client-side templates, etc. You are going to have to write a
@@ -71,9 +74,9 @@ nav: why
         <li>HTML Elements are <em>declaratively</em> bound to REST-ful HTTP endpoints via the standard HTTP verbs (GET,
           POST, etc.)
         </li>
-        <li>Dependencies between elements are encoded in their REST-ful path bindings</li>
-        <li>Server responses are HTML fragments that will be swapped in place of existing elements</li>
-        <li>Server responses can have header directives as well, enabling fine-grain control over the UI</li>
+        <li><a href="/dependencies.html">Dependencies</a> between elements are encoded in their REST-ful path bindings</li>
+        <li>Server responses are HTML fragments that will be swapped in place of an existing elemtents content</li>
+        <li>Server responses can have <a href="/responses.html#http_headers">HTTP header directives</a> as well, enabling fine-grain control over the UI</li>
       </ul>
 
       <h2>I'm skeptical.</h2>

@@ -1,0 +1,70 @@
+---
+layout: default
+nav: attributes > ic-load-on
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-load-on</code> - The Load On Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-load-on</code> attribute tells Intercooler to load the content of a <code>ic-src</code> attribute
+        when a given event occurs.</p>
+
+      <p>This can be used to implement infinite scrolling, lazy loading of elements, etc.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid JQuery event:</p>
+
+      <a href="http://api.jquery.com/category/events/">http://api.jquery.com/category/events/</a>
+
+      <p>Also supported is the special event <code>scrolled-into-view</code>, which will fire when an element
+        first scrolls into view.</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-target</code> has no effect on dependencies..</p>
+
+      <h3>Simple Example</h3>
+
+      <p>Here is a simple button that updates a div on click:</p>
+
+      <pre>
+  &lt;h2>Scroll Down To Load &lt;i class="fa fa-arrow-down" style="margin-bottom:150%">&lt;/i> &lt;/h2>
+
+  &lt;h2 ic-src="/get_it" ic-load-on="scrolled-into-view">
+    Not Loaded Yet...
+  &lt;/h2>
+</pre>
+
+      <p>Note that the response to the button click is the content to swap in for the <em>div</em>, not the button.</p>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var clicks = 0;
+            Intercooler.addURLHandler({
+              'url': '/get_it',
+              'get': function () {
+                return  "Loaded!!!";
+              }
+            });
+          })();
+        </script>
+
+        <h2>Scroll Down To Load <i class="fa fa-arrow-down" style="margin-bottom:150%"></i> </h2>
+
+        <h2 ic-src="/get_it" ic-load-on="scrolled-into-view">
+          Not Loaded Yet...
+        </h2>
+      </div>
+
+
+    </div>
+  </div>
+</div>

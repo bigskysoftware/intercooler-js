@@ -17,8 +17,7 @@ nav: attributes > ic-include
 
       <h3>Syntax</h3>
 
-      <p><strong>NB: WORK IN PROGRESS</strong> The value of the <code>ic-include</code> attribute is a comma-separated list of element selectors that will
-        be serialized into parameters to be submitted to the server..</p>
+      <p>The value of the <code>ic-include</code> attribute is a CSS/JQuery element selector.</p>
 
       <h3>Dependencies</h3>
 
@@ -31,7 +30,7 @@ nav: attributes > ic-include
       <pre>
   &lt;div ic-src="/update">Please Enter A Name...&lt;/div>
   &lt;input id="name" name="name"/>
-  &lt;button ic-post-to="/update" ic-include="$('#name')">Upload Name&lt;/button>
+  &lt;button ic-post-to="/update" ic-include="#name">Upload Name&lt;/button>
       </pre>
 
       <p>Note that the response to the button click is the content to swap in for the <em>div</em>, not the button.</p>
@@ -57,7 +56,7 @@ nav: attributes > ic-include
         </script>
         <div ic-src="/update">Please Enter A Name...</div>
         <input id="name" name="name"/>
-        <button class="btn btn-lg btn-primary" ic-post-to="/update" ic-include="$('#name')">Upload Name</button>
+        <button class="btn btn-lg btn-primary" ic-post-to="/update" ic-include="#name">Upload Name</button>
       </div>
 
     </div>

@@ -20,7 +20,7 @@ var Intercooler = Intercooler || (function () {
   var _WARN = 3;
   var _ERROR = 4;
 
-  var _SRC_ATTRS = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from', 'ic-text-src'];
+  var _SRC_ATTRS = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
   var _DEST_ATTRS = ['ic-get-from', 'ic-post-to', 'ic-put-to', 'ic-delete-from'];
 
   var _remote = $;
@@ -142,10 +142,6 @@ var Intercooler = Intercooler || (function () {
     if (xhr.getResponseHeader("X-IC-CancelPolling") == "true") {
       cancelPolling(elt);
     }
-    if (xhr.getResponseHeader("X-IC-Redirect")) {
-      log("IC HEADER: redirecting to " + xhr.getResponseHeader("X-IC-Redirect"), _DEBUG);
-      window.location = xhr.getResponseHeader("X-IC-Redirect");
-    }
     if (xhr.getResponseHeader("X-IC-Open")) {
       log("IC HEADER: opening " + xhr.getResponseHeader("X-IC-Open"), _DEBUG);
       window.open(xhr.getResponseHeader("X-IC-Open"));
@@ -180,6 +176,8 @@ var Intercooler = Intercooler || (function () {
   }
 
   function handleTestResponse(elt, success, returnVal) {
+    var spinner = findSpinner(elt);
+    spinner.fadeIn('fast');
     var headers = {};
     if(returnVal && returnVal.headers) {
       headers = returnVal.headers;
@@ -198,6 +196,7 @@ var Intercooler = Intercooler || (function () {
       }
     });
     success(body, "", elt);
+    setTimeout(function(){ spinner.fadeOut('fast'); }, 800);
   }
 
   function beforeRequest(elt) {
@@ -557,8 +556,8 @@ var Intercooler = Intercooler || (function () {
         updateElement(elt);
       } else if($(elt).attr('ic-load-on') == 'scrolled-into-view') {
         if(isScrolledIntoView(elt) && elt.data('ic-scrolled-into-view-loaded') != true){
-          $(this).data('ic-scrolled-into-view-loaded', true);
-          updateElement($(this));
+          $(elt).data('ic-scrolled-into-view-loaded', true);
+          updateElement($(elt));
         } else {
           if(_scrollHandler == null) {
             _scrollHandler = function() {

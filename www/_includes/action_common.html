@@ -1,0 +1,18 @@
+<p>Any content that is returned will be used to replace the current element (or, more commonly, another element, via
+  the <code><a href="/attributes/ic-target.html">ic-target</a></code> attribute, see belwo).  An empty
+  response will be interpreted as a No-Op.  See <a href="/responses.html">Intercooler Responses</a> for
+  more info.</p>
+
+<p>Since it is common for an action to replace a <em>different</em> element than the one that the action occured
+  on, you may want to use the <a href="/attributes/ic-target.html"><code>ic-target</code></a> attribute to target
+  a different element for replacement.</p>
+
+<h3>What is the Default Action?</h3>
+
+<p>The default action depends on the type of an HTML element:</p>
+
+<ul>
+  <li><code>input</code>, <code>select</code> - A value change.</li>
+  <li><code>form</code> - A form submission.</li>
+  <li>Everything else - A click.</li>
+</ul>

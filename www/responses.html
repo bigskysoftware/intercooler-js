@@ -67,7 +67,7 @@ nav: responses
   &lt;div>Here Is Some Content!&lt;div>
       </pre>
 
-      <p>This would be swapped in in place of the element that initiated the request.</p>
+      <p>This would be swapped in as the body of the element that initiated the request.</p>
 
       <p>The returned content can contain Intercooler attributes itself, which will be all wired up.</p>
 
@@ -93,13 +93,81 @@ nav: responses
 
       <p>The following Intercooler response headers are available:</p>
 
-      <ul>
-        <li><code>X-ic-script</code> - Allows you to evaluate arbitrary javascript.</li>
-        <li><code>X-ic-refresh</code> - Allows you to pass down arbitrary dependency paths to refresh.</li>
-        <li><code>X-ic-remove</code> - Allows you to remove an item from the UI (rather than replacing it.)</li>
-        <li><code>X-ic-redirect</code> - Allows you to redirect the browser to a new location</li>
-        <li><code>X-ic-open</code> - Allows you to open a new URL in the browser</li>
-      </ul>
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th style="width:360px">Header</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <code>X-IC-Script</code>
+            </td>
+            <td>
+              Allows you to evaluate arbitrary javascript.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>X-IC-Refresh</code>
+            </td>
+            <td>
+              A comma separated list of dependency paths to refresh.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>X-IC-Redirect</code>
+            </td>
+            <td>
+              Causes a client-side redirect to the given URL.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>X-IC-CancelPolling</code>
+            </td>
+            <td>
+              Cancels any polling associated with the target element.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>X-IC-Open</code>
+            </td>
+            <td>
+              Opens a new window at the given location.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>X-IC-SetLocation</code> (Experimental)
+            </td>
+            <td>
+              Pushes a new location (still in development)
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>X-IC-Transition</code>
+            </td>
+            <td>
+              Overrides the elements normal transition.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>X-IC-Remove</code>
+            </td>
+            <td>
+              Removes the target element.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
 
     </div>
   </div>

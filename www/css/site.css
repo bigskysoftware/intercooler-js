@@ -63,3 +63,8 @@ pre {
   width: 70%;
   margin: 8px auto;
 }
+
+code {
+  color: #008800;
+  background-color: #f5f5f5;
+}
