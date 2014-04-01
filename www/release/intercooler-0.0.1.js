@@ -605,13 +605,30 @@ var Intercooler = Intercooler || (function () {
       log("IC RESPONSE: Received: " + data, _DEBUG);
       var target = getTarget(elt);
       var dummy = $("<div></div>").html(data);
+
+      // FP Debugging
+//      console.log("---------------------------------")
+//      console.log("Dummy TXT----")
+//      console.log(dummy.text());
+//      console.log("Dummy FP----")
+//      console.log(fp(dummy.text()));
+//      console.log("Target TXT----")
+//      console.log(target.text());
+//      console.log("Target FP----")
+//      console.log(fp(target.text()));
+//      console.log("Target FP attr----")
+//      console.log(fp(target.attr('ic-fingerprint')));
+//      console.log("---------------------------------\n\n\n");
+
       if (fp(dummy.text()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
         if (isTransition(target, 'none')) {
           target.html(data);
+          updateIntercoolerMetaData(target);
           processNodes(target);
         } else {
           target.fadeOut('fast', function () {
             target.html(data);
+            updateIntercoolerMetaData(target);
             processNodes(target);
             target.fadeIn('fast');
           });
