@@ -34,13 +34,15 @@ nav: intro
 </pre>
 
       <p>This is perhaps the simplest possible binding.  It uses the <code>ic-src</code> attribute to point this div to a
-        URL to refresh from, and the <code>ic-poll</code> attribute to tell Intercooler to poll the server.
-        This div will poll the given URL, <code>/visitors/count_div/</code> by issuing an AJAX <code>GET</code>
+        URL to refresh from, and the <code>ic-poll</code> attribute to tell Intercooler to poll the server.</p>
+
+      <p>This div will poll the given URL, <code>/visitors/count_div/</code> by issuing an AJAX <code>GET</code>
         every two seconds.</p>
 
       <p>The response that will come back from the server will be an HTML Fragment (it can actually be more, see
         <a href="responses.html">Requests</a> for more information).  If (and only if) the HTML in the response is different
-        than the existing HTML, Intercooler will swap in the new content in place of the existing div.</p>
+        than the existing body of the element, Intercooler will swap in the new content in place of the divs current
+        content.</p>
 
       <p>Here is an example of a returned fragment from <code>GET /visitors/count_div/</code>:</p>
 
@@ -93,16 +95,18 @@ nav: intro
 
       <p>Here we've removed the <code>ic-poll</code> attribute and introduced a button with a new attribute,
         <code>ic-post-to</code>.  This tells Intercooler to post to <code>/example/click</code> when the button
-      is clicked.  The server recieves the post and increments a server-side counter of the number of times
+      is clicked.  The server receives the post and increments a server-side counter of the number of times
       you have clicked the button.</p>
 
-      <p><em>NB: In these examples, we are actually mocking out the server, a technique you might find useful
-      when prototyping your UI.</em></p>
+        <div style="width:70%;margin:30px auto;" class="alert alert-info"><strong>Note:</strong> In these examples, we are actually mocking out the server, a technique you might find useful
+          when prototyping your UI.</div>
 
-      <p>When the button is clicked, Intercooler does something kind of cool:  it detects that the div <em>depends</em>
-        on the URL that the button posted to, and so it does a refresh on that element.  This is how Intercooler
-        encodes UI dependencies: it uses URLs to determine what elements on the current page need refreshing based on
-        events and actions.</p>
+      <p>When the button is clicked, Intercooler does something kind of cool: it detects that the div <em>depends</em>
+        on the URL that the button posted to, and so it automatically does a refresh of the div, issuing a <code>GET</code>
+        and, if the result is different than the elements current body, it swaps the new content in.<p>
+
+      <p>This is how Intercooler encodes UI dependencies: it uses URLs to determine what elements on the current page
+        need refreshing based on events and actions.</p>
 
       <div class="live-demo">
         <script>
@@ -237,21 +241,21 @@ nav: intro
       the div depends on the button, and it will be refreshed after the button is clicked.</p>
 
       <p>When the button is clicked a (simulated) job is kicked off.  When a request for the div is made, the
-      following HTML is returned:</p>
+      following HTML fragment is returned:</p>
 
       <div class="row">
         <pre>
-          &lt;div ic-src="/job">Job Running:
-            &lt;div class="progress progress-striped active">
-              &lt;div class="progress-bar"
-                   ic-style-src="width:/job/percent_complete"
-                   ic-poll="1s" style="width:0%">&lt;/div>
-            &lt;/div>
-          &lt;/div></pre>
+  Job Running:
+  &lt;div class="progress progress-striped active">
+    &lt;div class="progress-bar"
+         ic-style-src="width:/job/percent_complete"
+         ic-poll="1s" style="width:0%">&lt;/div>
+  &lt;/div>
+          </pre>
       </div>
 
       <p>
-        This HTML is swapped in for the existing div, and includes a Bootstrap-based progress bar.  The <code>width</code>
+        This HTML is swapped in for the body of the div, and includes a Bootstrap-based progress bar.  The <code>width</code>
         style attribute of the progress bar is tied to the <code>/job/percent_complete</code> URL using the <code>ic-style-src</code>
         directive, which it polls ever second.  That URL will return values like <code>37%</code> and <code>78%</code>,
         which will update the width of the progress bar.

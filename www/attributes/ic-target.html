@@ -43,7 +43,7 @@ nav: attributes > ic-target
               'url': '/update',
               'post': function () {
                 clicks++;
-                return '<div id="target">' + clicks + ' Clicks</div>';
+                return clicks + ' Clicks';
               }
             });
           })();
@@ -58,12 +58,13 @@ nav: attributes > ic-target
       enclosing div (using standard Boostrap error classes.)</p>
 
       <pre>
-  &lt;div id="emailDiv" class="form-group">
-    &lt;label class="control-label">Enter Email:&lt;/label>
-    &lt;input type="text" class="form-control" name="email"
-              ic-post-to="/verify_email" ic-target="#emailDiv">
+  &lt;div id="emailDiv">
+    &lt;div class="form-group">
+      &lt;label class="control-label">Enter Email:&lt;/label>
+      &lt;input type="text" class="form-control" name="email" ic-post-to="/verify_email" ic-target="#emailDiv">
+    &lt;/div>
   &lt;/div>
-      </pre>
+</pre>
 
 
       <div class="live-demo">
@@ -73,12 +74,12 @@ nav: attributes > ic-target
               'url': '/verify_email',
               'post': function (url, params) {
                 if(/\S+@\S+\.\S+/.test(params['email'])) {
-                  return '<div id="emailDiv" class="form-group has-success">' +
+                  return '<div class="form-group has-success">' +
                     '<label class="control-label">Valid Email!</label>' +
                     '<input type="text" class="form-control" name="email" ic-post-to="/verify_email" value="' + params['email'] + '" ic-target="#emailDiv">' +
                     '</div>'
                 } else {
-                  return '<div id="emailDiv" class="form-group has-error">' +
+                  return '<div class="form-group has-error">' +
                     '<label class="control-label">Please Enter A Valid Email!</label>' +
                     '<input type="text" class="form-control" name="email" ic-post-to="/verify_email" value="' + params['email'] + '" ic-target="#emailDiv">' +
                     '</div>'
@@ -88,9 +89,11 @@ nav: attributes > ic-target
           })();
         </script>
 
-        <div id="emailDiv" class="form-group">
-          <label class="control-label">Enter Email:</label>
-          <input type="text" class="form-control" name="email" ic-post-to="/verify_email" ic-target="#emailDiv">
+        <div id="emailDiv">
+          <div class="form-group">
+            <label class="control-label">Enter Email:</label>
+            <input type="text" class="form-control" name="email" ic-post-to="/verify_email" ic-target="#emailDiv">
+          </div>
         </div>
         <em>Tab out of the input to trigger a post...</em>
       </div>

@@ -47,7 +47,7 @@ nav: attributes > ic-poll
               'url': '/seconds',
               'get': function () {
                 var seconds = Math.floor((new Date().getTime() / 1000) - init);
-                return '<div ic-src="/seconds" ic-poll="2s">You have been on this page for ' + seconds + ' seconds...</div>'
+                return 'You have been on this page for ' + seconds + ' seconds...'
               }
             });
           })();

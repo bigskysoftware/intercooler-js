@@ -18,7 +18,8 @@ nav: attributes > ic-src
         <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a>.</p>
 
       <p>When Intercooler issues a request for an element with an <code>ic-src</code>, it will issue a <code>GET</code>
-      and will replace the current element with resulting HTML fragment, if it is different.</p>
+      and will replace the current elements content with resulting HTML fragment, if it is different than the
+        current content.</p>
 
       <h3>Syntax</h3>
 
@@ -47,7 +48,7 @@ nav: attributes > ic-src
               'url': '/seconds',
               'get': function () {
                 var seconds = Math.floor((new Date().getTime() / 1000) - init);
-                return '<div ic-src="/seconds" ic-poll="5s">You have been on this page for ' + seconds + ' seconds...</div>'
+                return 'You have been on this page for ' + seconds + ' seconds...'
               }
             });
           })();

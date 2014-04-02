@@ -43,9 +43,9 @@ nav: attributes > ic-include
               'url': '/update',
               'get' : function() {
                 if(name == "") {
-                  return '<div ic-src="/update">Please Enter A Valid Name...</div>'
+                  return 'Please Enter A Valid Name...'
                 } else {
-                  return '<div ic-src="/update"> Great Name: ' + name + '</div>'
+                  return 'Great Name: ' + name
                 }
               },
               'post': function (url, params) {
