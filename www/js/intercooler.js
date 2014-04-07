@@ -546,8 +546,10 @@ var Intercooler = Intercooler || (function () {
     var elemTop = $(elem).offset().top;
     var elemBottom = elemTop + $(elem).height();
 
-    return ((elemBottom >= docViewTop) && (elemTop <= docViewBottom)
-      && (elemBottom <= docViewBottom) &&  (elemTop >= docViewTop) );
+    var inViewport = ((elemBottom >= docViewTop) && (elemTop <= docViewBottom)
+      && (elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+
+    return inViewport;
   }
 
   function handleLoadOn(elt) {
@@ -555,23 +557,18 @@ var Intercooler = Intercooler || (function () {
       if($(elt).attr('ic-load-on') == 'load') {
         updateElement(elt);
       } else if($(elt).attr('ic-load-on') == 'scrolled-into-view') {
-        if(isScrolledIntoView(elt) && elt.data('ic-scrolled-into-view-loaded') != true){
-          $(elt).data('ic-scrolled-into-view-loaded', true);
-          updateElement($(elt));
-        } else {
-          if(_scrollHandler == null) {
-            _scrollHandler = function() {
-              $("[ic-load-on='scrolled-into-view']").each(function(){
-                if(isScrolledIntoView($(this)) && $(this).data('ic-scrolled-into-view-loaded') != true){
-                  $(this).data('ic-scrolled-into-view-loaded', true);
-                  updateElement($(this));
-                }
-              })
-            };
-            $(window).scroll(_scrollHandler);
-          }
+        if (_scrollHandler == null) {
+          _scrollHandler = function () {
+            $("[ic-load-on='scrolled-into-view']").each(function () {
+              if (isScrolledIntoView($(this)) && $(this).data('ic-scrolled-into-view-loaded') != true) {
+                $(this).data('ic-scrolled-into-view-loaded', true);
+                updateElement($(this));
+              }
+            })
+          };
+          $(window).scroll(_scrollHandler);
         }
-
+        setTimeout(function(){$(window).trigger('scroll');}, 100); // Trigger a scroll in case element is already viewable
       } else {
         $(elt).on($(elt).attr('ic-load-on'), function(){
           updateElement(elt);
