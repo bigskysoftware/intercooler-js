@@ -209,7 +209,7 @@ var Intercooler = Intercooler || (function () {
 
   function replaceOrAddMethod(data, actualMethod) {
     var regex = /(&|^)_method=[^&]*/;
-    var content = "_method=" + actualMethod;
+    var content = "&_method=" + actualMethod;
     if(regex.test(data)) {
       return data.replace(regex, content)
     } else {
@@ -651,9 +651,10 @@ var Intercooler = Intercooler || (function () {
           } else {
             elts.hide();
           }
-          elt.prepend(elts);
-          log("elt is ");
-          log(elt);
+          var target = getTarget(elt);
+          target.prepend(elts);
+          log("target is ");
+          log(target);
           if (elts.is('tr')) {
             //noinspection JSCheckFunctionSignatures
             elts.children().slideDown();
@@ -661,10 +662,10 @@ var Intercooler = Intercooler || (function () {
             elts.slideDown();
           }
           processNodes(elts);
-          if (elt.attr('ic-limit-children')) {
+          if (target.attr('ic-limit-children')) {
             var limit = parseInt(elt.attr('ic-limit-children'));
             if (elt.children().length > limit) {
-              elt.children().slice(limit, elt.children().length).remove();
+              target.children().slice(limit, target.children().length).remove();
             }
           }
         });
@@ -673,7 +674,8 @@ var Intercooler = Intercooler || (function () {
         function (data) {
           var elts = $(data);
           elts.hide();
-          elt.append(elts);
+          var target = getTarget(elt);
+          target.append(elts);
           if (elts.is('tr')) {
             //noinspection JSCheckFunctionSignatures
             elts.children().slideDown();
@@ -681,10 +683,10 @@ var Intercooler = Intercooler || (function () {
             elts.slideDown();
           }
           processNodes(elts);
-          if (elt.attr('ic-limit-children')) {
+          if (target.attr('ic-limit-children')) {
             var limit = parseInt(elt.attr('ic-limit-children'));
-            if (elt.children().length > limit) {
-              elt.children().slice(0, elt.children().length - limit).remove();
+            if (target.children().length > limit) {
+              target.children().slice(0, target.children().length - limit).remove();
             }
           }
         });
