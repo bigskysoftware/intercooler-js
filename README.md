@@ -57,3 +57,7 @@ This AJAX includes the value of `#password` in it's request.
 
 Learn more at [intercoolerjs.org](http://intercoolerjs.org) (there's lots
 more!).
+
+## Versioning
+
+We have adopted [Semantic Versioning](http://semver.org/) for IntercoolerJS as of the 0.2.0 release.

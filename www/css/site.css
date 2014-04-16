@@ -68,3 +68,8 @@ code {
   color: #008800;
   background-color: #f5f5f5;
 }
+
+.navbar-nav>li>a {
+  padding-left: 10px;
+  padding-right: 10px;
+}

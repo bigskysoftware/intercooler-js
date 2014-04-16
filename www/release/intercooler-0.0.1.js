@@ -481,7 +481,10 @@ var Intercooler = Intercooler || (function () {
     });
   }
 
-  function verbFor(attr) {
+  function verbFor(elt, attr) {
+    if(elt.attr('ic-verb')) {
+      return elt.attr('ic-verb').toUpperCase();
+    }
     if(attr == "ic-post-to") {
       return "POST";
     } else if(attr == "ic-put-to") {
@@ -499,7 +502,7 @@ var Intercooler = Intercooler || (function () {
     var destinationStr = $(elt).attr(attr);
     $(elt).click(function (event) {
       event.preventDefault();
-      handleRemoteRequest(elt, verbFor(attr), destinationStr, getParametersForElement(elt),
+      handleRemoteRequest(elt, verbFor(elt, attr), destinationStr, getParametersForElement(elt),
         function (data) {
           processICResponse(data, elt);
           refreshDependencies(destinationStr);
@@ -510,7 +513,7 @@ var Intercooler = Intercooler || (function () {
   function initInputDestination(elt, attr) {
     var destinationStr = $(elt).attr(attr);
     $(elt).change(function () {
-      handleRemoteRequest(elt, verbFor(attr), destinationStr, getParametersForElement(elt),
+      handleRemoteRequest(elt, verbFor(elt, attr), destinationStr, getParametersForElement(elt),
         function (data) {
           processICResponse(data, elt);
           refreshDependencies(destinationStr);
@@ -645,22 +648,12 @@ var Intercooler = Intercooler || (function () {
       handleRemoteRequest(element, "GET", elt.attr('ic-prepend-from'), getParametersForElement(elt),
         function (data) {
           var elts = $(data);
-          if (elts.is('tr')) {
-            //noinspection JSCheckFunctionSignatures
-            elts.children().hide();
-          } else {
-            elts.hide();
-          }
+          elts.hide();
           var target = getTarget(elt);
-          target.prepend(elts);
           log("target is ");
           log(target);
-          if (elts.is('tr')) {
-            //noinspection JSCheckFunctionSignatures
-            elts.children().slideDown();
-          } else {
-            elts.slideDown();
-          }
+          target.prepend(elts);
+          elts.fadeIn();
           processNodes(elts);
           if (target.attr('ic-limit-children')) {
             var limit = parseInt(elt.attr('ic-limit-children'));
@@ -676,12 +669,7 @@ var Intercooler = Intercooler || (function () {
           elts.hide();
           var target = getTarget(elt);
           target.append(elts);
-          if (elts.is('tr')) {
-            //noinspection JSCheckFunctionSignatures
-            elts.children().slideDown();
-          } else {
-            elts.slideDown();
-          }
+          elts.fadeIn();
           processNodes(elts);
           if (target.attr('ic-limit-children')) {
             var limit = parseInt(elt.attr('ic-limit-children'));

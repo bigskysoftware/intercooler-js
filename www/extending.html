@@ -134,6 +134,21 @@ nav: extending
         </tbody>
       </table>
 
+      <h3>Example</h3>
+
+      <p>Here is some code that uses the BlockUI library to block the UI when an intercooler request
+      is in flight:</p>
+
+      <pre>
+        $(function(){
+          $('.btn').on('ic.beforeSend', function(){
+            $.blockUI();
+          }).on('ic.complete', function(){
+            $.unblockUI();
+          });
+        })
+      </pre>
+
     </div>
   </div>
 

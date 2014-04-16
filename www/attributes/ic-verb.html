@@ -1,6 +1,6 @@
 ---
 layout: default
-nav: attributes > ic-deps
+nav: attributes > ic-verb
 ---
 
 <div class="container">
@@ -8,67 +8,30 @@ nav: attributes > ic-deps
   <div class="row">
     <div class="col-md-12">
 
-      <h2><code>ic-deps</code> - The Dependencies Attribute</h2>
+      <h2><code>ic-verb</code> - The Verb Attribute</h2>
 
       <h3>Summary</h3>
 
-      <p>The <code>ic-deps</code> attribute tells Intercooler that an element depends on a given path and should be
-        updated if a change to that path is detected.</p>
+      <p>The <code>ic-verb</code> attribute tells Intercooler to use a different HTTP verb when issuing
+        a request than it would otherwise.</p>
+
+      <p>This can be useful in cases where, for example, you want to reuse a form for both editing and
+        creating new models, and need to select the appropriate verb.</p>
 
       <h3>Syntax</h3>
 
-      <p>The value of the <code>ic-deps</code> attribute is a comma-separated list of paths that the element depends on.
-      Note that the special single character "*" indicates that an element depends on <strong>all</strong> detected
-      changed.</p>
+      <p>The value of the <code>ic-verb</code> attribute should be one of:</p>
+
+      <ul>
+        <li><code>GET</code></li>
+        <li><code>POST</code></li>
+        <li><code>PUT</code></li>
+        <li><code>DELETE</code></li>
+      </ul>
 
       <h3>Dependencies</h3>
 
-      <p><code>ic-deps</code> adds the dependencies it specifies to the element it is on.</p>
-
-      <h3>Example</h3>
-
-      <p>Here is a simple element that depends on any changes:</p>
-
-      <pre>
-  &lt;button ic-post-to="/path/1">Button 1&lt;/button>
-  &lt;button ic-post-to="/path/2">Button 2&lt;/button>
-  &lt;div ic-src="/src" ic-deps="*">0 Clicks&lt;/div>
-      </pre>
-
-
-      <div class="live-demo">
-        <script>
-          (function () {
-            var clicks = 0;
-            var init = Math.floor(new Date().getTime() / 1000);
-
-            Intercooler.addURLHandler({
-              'url': '/src',
-              'get': function () {
-                return clicks + ' Clicks'
-              }
-            });
-
-            Intercooler.addURLHandler({
-              'url': '/path/1',
-              'post': function () {
-                clicks++;
-              }
-            });
-
-            Intercooler.addURLHandler({
-              'url': '/path/2',
-              'post': function () {
-                clicks++;
-              }
-            });
-
-          })();
-        </script>
-        <button class="btn btn-lg btn-primary" ic-post-to="/path/1">Button 1</button>
-        <button class="btn btn-lg btn-primary" ic-post-to="/path/2">Button 2</button>
-        <div ic-src="/src" ic-deps="*">0 Clicks</div>
-      </div>
+      <p><code>ic-verb</code> attribute has no effect on dependencies.</p>
 
     </div>
   </div>
