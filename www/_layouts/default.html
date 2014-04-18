@@ -75,7 +75,17 @@
                   <li><a href="/extending.html">Javascript API</a></li>
                 </ul>
               </li>
-              <li class="{% active tutorials %}"><a href="/tutorials/">Tutorials</a></li>
+              <li class="dropdown {% active api %}">
+                <a href="/docs.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="/tutorials">Overview</a></li>
+                  <li class="divider"></li>
+                  <li><a href="/tutorials/crud.html">Tutorial 1: AJAX-powering A Rails CRUD UI</a></li>
+                  <li><a href="/tutorials/flash.html">Tutorial 2: Making The Rails Flash IntercoolerJS Friendly</a></li>
+                  <li><a href="/tutorials/infinite.html">Tutorial 3: Infinite Scroll</a></li>
+                </ul>
+              </li>
+              <li class="{% active tutorials %}"><a href="/tutorials/"></a></li>
               <li class="{% active download %}"><a href="/download.html">Download</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
