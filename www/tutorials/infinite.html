@@ -15,16 +15,17 @@ nav: tutorial
       <h3>Video</h3>
 
       <div class="text-center">
-        <iframe src="//player.vimeo.com/video/92342606" width="1000" height="750" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="max-width:100%"></iframe>
+        <iframe src="//player.vimeo.com/video/92358424" width="1000" height="750" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="max-width:100%"></iframe>
       </div>
 
       <h3>Outline</h3>
 
-      <p>Here are the steps for implementing inifinite scroll</p>
+      <p>Here are the steps for implementing infinite scroll</p>
 
       <ul>
         <li>
-          Extract a partial of the
+          Extract a partial of the row rendering for your table, and add an id to the enclosing <code>tbody</code> so
+          we can target it for appending.
         </li>
         <li>
           Add an empty <code>span</code> to the last element in the table that uses the
@@ -37,10 +38,10 @@ nav: tutorial
 
       <h3>Git Diff</h3>
 
-      <p>Here is a diff between the will-paginate code and Intercooler code:</p>
+      <p>Here is a diff between infinite scroll and click-to-load:</p>
 
-      <a href="https://github.com/LeadDyno/intercooler-tutorial-app/commit/11322f35cda1a7c9fa480f845b43cb28e162f64a">
-        https://github.com/LeadDyno/intercooler-tutorial-app/commit/11322f35cda1a7c9fa480f845b43cb28e162f64a
+      <a href="https://github.com/LeadDyno/intercooler-tutorial-app/commit/13daf988bc86c5da1e62fea8def155e3e8ea5307">
+        https://github.com/LeadDyno/intercooler-tutorial-app/commit/13daf988bc86c5da1e62fea8def155e3e8ea5307
       </a>
 
     </div>
