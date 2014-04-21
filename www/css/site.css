@@ -3,7 +3,8 @@
 }
 
 .jumbotron {
-  padding-top: 30px !important;
+  padding-bottom:32px !important;
+  padding-top: 42px !important;
 }
 
 h1, h2, h3, h4 {
@@ -76,4 +77,11 @@ code {
 
 .tutorial-overview {
   padding: 8px 12px;
+}
+
+.intercooler-dot {
+  color: #26628E;
+}
+.intercooler-js {
+  color: #8EB3D0;
 }
