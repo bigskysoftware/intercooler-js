@@ -96,7 +96,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function findById(x) {
-    return $("[id='" + x + "']");
+    return $("#" + x);
   }
 
   function parseInterval(str) {
