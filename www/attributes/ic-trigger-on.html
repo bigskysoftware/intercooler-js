@@ -1,6 +1,6 @@
 ---
 layout: default
-nav: attributes > ic-load-on
+nav: attributes > ic-trigger-on
 ---
 
 <div class="container">
@@ -8,11 +8,11 @@ nav: attributes > ic-load-on
   <div class="row">
     <div class="col-md-12">
 
-      <h2><code>ic-load-on</code> - The Load On Attribute</h2>
+      <h2><code>ic-trigger-on</code> - The Load On Attribute</h2>
 
       <h3>Summary</h3>
 
-      <p>The <code>ic-load-on</code> attribute tells Intercooler to load the content of a <code>ic-src</code> attribute
+      <p>The <code>ic-trigger-on</code> attribute tells Intercooler to load the content of a <code>ic-src</code> attribute
         when a given event occurs.</p>
 
       <p>This can be used to implement infinite scrolling, lazy loading of elements, etc.</p>
@@ -37,7 +37,7 @@ nav: attributes > ic-load-on
       <pre>
   &lt;h2>Scroll Down To Load &lt;i class="fa fa-arrow-down" style="margin-bottom:150%">&lt;/i> &lt;/h2>
 
-  &lt;h2 ic-src="/get_it" ic-load-on="scrolled-into-view">
+  &lt;h2 ic-src="/get_it" ic-trigger-on="scrolled-into-view">
     Not Loaded Yet...
   &lt;/h2>
 </pre>
@@ -59,7 +59,7 @@ nav: attributes > ic-load-on
 
         <h2>Scroll Down To Load <i class="fa fa-arrow-down" style="margin-bottom:150%"></i> </h2>
 
-        <h2 ic-src="/get_it" ic-load-on="scrolled-into-view">
+        <h2 ic-src="/get_it" ic-trigger-on="scrolled-into-view">
           Not Loaded Yet...
         </h2>
       </div>

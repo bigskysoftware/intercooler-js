@@ -20,8 +20,8 @@ var Intercooler = Intercooler || (function () {
   var _WARN = 3;
   var _ERROR = 4;
 
-  var _SRC_ATTRS = ['ic-src', 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
-  var _DEST_ATTRS = ['ic-get-from', 'ic-post-to', 'ic-put-to', 'ic-delete-from'];
+  var _MACROS = ['ic-get-from', 'ic-post-to', 'ic-put-to', 'ic-delete-from',
+                 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
 
   var _remote = $;
   var _urlHandlers = [];
@@ -29,6 +29,82 @@ var Intercooler = Intercooler || (function () {
   var _loggingLevel = null;
   var _loggingGrep = null;
   var _scrollHandler = null;
+
+  var _UUID = 1;
+
+  //============================================================
+  // Base Transition Definitions
+  //============================================================
+  var _transitions = {
+    'none': function (elt, kind, content, onCompletion) {
+      if (kind == 'remove') {
+        elt.remove();
+      } else if (kind == 'hide') {
+        elt.hide();
+      } else if (kind == 'show') {
+        elt.show();
+      } else {
+        elt.html(content);
+      }
+      onCompletion();
+    },
+    'fadeFast': function (elt, kind, content, onCompletion) {
+      if (kind == 'remove') {
+        elt.fadeOut('fast', function () {
+          elt.remove();
+          onCompletion();
+        });
+      } else if (kind == 'hide') {
+        elt.fadeOut('fast', function () {
+          onCompletion();
+        });
+      } else if (kind == 'show') {
+        elt.fadeIn('fast', function () {
+          onCompletion();
+        });
+      } else {
+        elt.fadeOut('fast', function(){
+          elt.html(content);
+          onCompletion();
+          elt.fadeIn('fast');
+        });
+      }
+    },
+    'prepend': function (elt, kind, content, onCompletion) {
+      if(kind != 'replace') {
+        throw "'prepend' transition only supports replace"
+      }
+      var elts = $(content);
+      elts.hide();
+      elt.prepend(elts);
+      elts.fadeIn();
+      onCompletion();
+      if (elt.attr('ic-limit-children')) {
+        var limit = parseInt(elt.attr('ic-limit-children'));
+        if (elt.children().length > limit) {
+          elt.children().slice(limit, elt.children().length).remove();
+        }
+      }
+    },
+    'append': function (elt, kind, content, onCompletion) {
+      if(kind != 'replace') {
+        throw "'append' transition only supports replace"
+      }
+      var elts = $(content);
+      elts.hide();
+      elt.append(elts);
+      elts.fadeIn();
+      onCompletion();
+      if (elt.attr('ic-limit-children')) {
+        var limit = parseInt(elt.attr('ic-limit-children'));
+        if (elt.children().length > limit) {
+          elt.children().slice(0, elt.children().length - limit).remove();
+        }
+      }
+
+    }
+  };
+  var _defaultTransition = 'fadeFast';
 
   //============================================================
   // Utility Methods
@@ -77,26 +153,15 @@ var Intercooler = Intercooler || (function () {
   }
 
   function uuid() {
-    var d = new Date().getTime();
-    //noinspection UnnecessaryLocalVariableJS
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = (d + Math.random() * 16) % 16 | 0;
-      d = Math.floor(d / 16);
-      return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
-    });
-    return uuid;
+    return _UUID++;
   }
 
   function icSelectorFor(elt) {
     return "[ic-id='" + elt.attr("ic-id") + "']";
   }
 
-  function findByICId(icId) {
-    return $("[ic-id='" + icId + "']");
-  }
-
   function findById(x) {
-    return $("[id='" + x + "']");
+    return $("#" + x);
   }
 
   function parseInterval(str) {
@@ -109,6 +174,20 @@ var Intercooler = Intercooler || (function () {
       return parseInt(str.substr(0, str.length - 1)) * 1000;
     } else {
       return 1000;
+    }
+  }
+
+  function initScrollHandler() {
+    if (_scrollHandler == null) {
+      _scrollHandler = function () {
+        $("[ic-trigger-on='scrolled-into-view']").each(function () {
+          if (isScrolledIntoView($(this)) && $(this).data('ic-scrolled-into-view-loaded') != true) {
+            $(this).data('ic-scrolled-into-view-loaded', true);
+            fireICRequest($(this));
+          }
+        })
+      };
+      $(window).scroll(_scrollHandler);
     }
   }
 
@@ -164,13 +243,8 @@ var Intercooler = Intercooler || (function () {
       if (elt) {
         var target = getTarget(elt);
         log("IC REMOVING: " + target.html(), _DEBUG);
-        if (isTransition(target, "none")) {
-          target.remove();
-        } else {
-          target.fadeOut('fast', function () {
-            target.remove();
-          });
-        }
+        var transition = getTransition(elt, target);
+        transition(elt, 'remove', null, function(){});
       }
     }
 
@@ -180,7 +254,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function handleTestResponse(elt, success, returnVal) {
-    var spinner = findSpinner(elt);
+    var spinner = findIndicator(elt);
     spinner.fadeIn('fast');
     var headers = {};
     if(returnVal && returnVal.headers) {
@@ -227,6 +301,7 @@ var Intercooler = Intercooler || (function () {
 
     var pop = data.indexOf("&ic-handle-pop=true") >= 0;
 
+    //TODO cgross - abstract this into the handler, so we don't duplicate all the code
     for (var i = 0, l = _urlHandlers.length; i < l; i++) {
       var handler = _urlHandlers[i];
       var returnVal = null;
@@ -263,16 +338,19 @@ var Intercooler = Intercooler || (function () {
     beforeRequest(elt);
 
     // Spinner support
-    var spinner = findSpinner(elt);
-    spinner.fadeIn('fast');
+    var indicator = findIndicator(elt);
+    var indicatorTransition = getTransition(indicator, indicator);
+    if(indicator.length > 0) {
+      indicatorTransition(indicator, 'show', null, function(){});
+    }
 
     _remote.ajax({
       type: type,
       url: url,
       data: data,
       dataType: 'text',
-      beforeSend : function(){
-        elt.trigger("ic.beforeSend", elt, data);
+      beforeSend : function(xhr, settings){
+        elt.trigger("ic.beforeSend", elt, data, settings, xhr);
       },
       success: function (data, textStatus, xhr) {
         elt.trigger("ic.success", elt, data, textStatus, xhr);
@@ -283,14 +361,14 @@ var Intercooler = Intercooler || (function () {
         }
         target.data("ic-tmp-transition", null);
       },
-      error: function (req, status, str) {
-        elt.trigger("ic.error", elt, req, status, str);
+      error: function (xhr, status, str) {
+        elt.trigger("ic.error", elt, status, str, xhr);
         log("An error occurred: " + str, _ERROR);
       },
-      complete : function(){
-        elt.trigger("ic.complete", elt, data);
-        if(spinner.length > 0) {
-          spinner.fadeOut('fast', function(){
+      complete : function(xhr, status){
+        elt.trigger("ic.complete", elt, data, status, xhr);
+        if (indicator.length > 0) {
+          indicatorTransition(indicator, 'hide', null, function () {
             afterRequest(elt);
           });
         } else {
@@ -300,16 +378,17 @@ var Intercooler = Intercooler || (function () {
     })
   }
 
-  function findSpinner(elt) {
+  function findIndicator(elt) {
     var child = null;
     if ($(elt).attr('ic-indicator')) {
       child = $($(elt).attr('ic-indicator')).first();
     } else {
-      var nearestParentWithSpinner = $(elt).closest("[ic-indicator]");
-      if(nearestParentWithSpinner.length > 0) {
-        child = $(nearestParentWithSpinner.first().attr('ic-indicator')).first();
-      } else {
-        child = $(elt).find(".ic-indicator").first();
+      child = $(elt).find(".ic-indicator").first();
+      if (child.length == 0) {
+        var parent = $(elt).closest("[ic-indicator]");
+        if (parent.length > 0) {
+          child = $(parent.first().attr('ic-indicator')).first();
+        }
       }
     }
     return child;
@@ -360,6 +439,7 @@ var Intercooler = Intercooler || (function () {
     } else { // otherwise include the element
       str += "&" + elt.serialize();
     }
+
     if (elt.attr('id')) {
       str += "&ic-element-id=" + elt.attr('id');
     }
@@ -381,10 +461,6 @@ var Intercooler = Intercooler || (function () {
     log("PARAMS: Returning parameters " + str + " for " + elt);
     return str;
   }
-
-  //============================================================
-  // Tree Processing
-  //============================================================
 
   function maybeSetIntercoolerInfo(elt) {
     var target = getTarget(elt);
@@ -410,22 +486,29 @@ var Intercooler = Intercooler || (function () {
     return elt.attr('ic-id');
   }
 
-  function withAttrs(attributes, func) {
-    $.each(attributes, function(i, attr) {
-      func(attr);
-    });
+  //============================================================
+  // Tree Processing
+  //============================================================
+
+  function processNodes(elt) {
+    processMacros(elt);
+    processSources(elt);
+    processPolling(elt);
+    processTriggerOn(elt)
   }
 
   function processSources(elt) {
-    withAttrs(_SRC_ATTRS, function (attr) {
-      if ($(elt).is("[" + attr + "]")) {
-        maybeSetIntercoolerInfo($(elt));
-      }
-      $(elt).find("[" + attr + "]").each(function () {
-        maybeSetIntercoolerInfo($(this));
-      });
+    if ($(elt).is("[ic-src]")) {
+      maybeSetIntercoolerInfo($(elt));
+    }
+    $(elt).find("[ic-src]").each(function () {
+      maybeSetIntercoolerInfo($(this));
     });
   }
+
+  //============================================================
+  // Polling support
+  //============================================================
 
   function startPolling(elt) {
     if(elt.data('ic-poll-interval-id') == null) {
@@ -440,7 +523,7 @@ var Intercooler = Intercooler || (function () {
             log("POLL: Clearing poll for element " + selector, _DEBUG);
             clearTimeout(timerId);
           } else {
-            updateElement(target);
+            fireICRequest(target);
           }
         }, interval);
         elt.data('ic-poll-interval-id', timerId);
@@ -465,86 +548,154 @@ var Intercooler = Intercooler || (function () {
     });
   }
 
+  //============================================================----
+  // Dependency support
+  //============================================================----
+
+  function refreshDependencies(dest, src) {
+    $('[ic-src]').each(function () {
+      if(verbFor($(this)) == "GET" && $(this).attr('ic-deps') != 'ignore') {
+        if (isDependent(dest, $(this).attr('ic-src'))) {
+          if (src == null || $(src)[0] != $(this)[0]) {
+            fireICRequest($(this));
+          }
+        } else if (isDependent(dest, $(this).attr('ic-deps')) || $(this).attr('ic-deps') == "*") {
+          if (src == null || $(src)[0] != $(this)[0]) {
+            fireICRequest($(this));
+          }
+        }
+      }
+    });
+  }
+
   function isDependent(src, dest) {
     return (src && dest) && (dest.indexOf(src) == 0 || src.indexOf(dest) == 0);
   }
 
-  function refreshDependencies(dest, src) {
-    withAttrs(_SRC_ATTRS, function (attr) {
-      $('[' + attr + ']').each(function () {
-        if (isDependent(dest, $(this).attr(attr))) {
-          if(src == null || $(src)[0] != $(this)[0]) {
-            updateElement($(this));
-          }
-        } else if (isDependent(dest, $(this).attr('ic-deps')) || $(this).attr('ic-deps') == "*") {
-          if(src == null || $(src)[0] != $(this)[0]) {
-            updateElement($(this));
-          }
-        }
-      });
-    });
-  }
+  //============================================================----
+  // Trigger-On support
+  //============================================================----
 
-  function verbFor(elt, attr) {
-    if(elt.attr('ic-verb')) {
+  function verbFor(elt) {
+    if (elt.attr('ic-verb')) {
       return elt.attr('ic-verb').toUpperCase();
     }
-    if(attr == "ic-post-to") {
-      return "POST";
-    } else if(attr == "ic-put-to") {
-      return "PUT";
-    } else if (attr == "ic-delete-from") {
-      return "DELETE";
-    } else if (attr == "ic-get-from") {
-      return "GET";
-    } else {
-      return "POST";
-    }
+    return "GET";
   }
 
-  function initButtonDestination(elt, attr) {
-    var destinationStr = $(elt).attr(attr);
-    $(elt).click(function (event) {
-      event.preventDefault();
-      handleRemoteRequest(elt, verbFor(elt, attr), destinationStr, getParametersForElement(elt),
-        function (data) {
-          processICResponse(data, elt);
-          refreshDependencies(destinationStr);
-        })
-    });
-  }
-
-  function initInputDestination(elt, attr) {
-    var destinationStr = $(elt).attr(attr);
-    $(elt).change(function () {
-      handleRemoteRequest(elt, verbFor(elt, attr), destinationStr, getParametersForElement(elt),
-        function (data) {
-          processICResponse(data, elt);
-          refreshDependencies(destinationStr);
-        })
-    });
-  }
-
-  function initDestination(elt, attr) {
-    if ($(elt).is('button, a, div, span')) {
-      initButtonDestination(elt, attr);
-    } else if ($(elt).is('input, select')) {
-      initInputDestination(elt, attr);
-    }
-  }
-
-  function processDestinations(elt) {
-    withAttrs(_DEST_ATTRS, function(attr){
-      if ($(elt).is('[' + attr + ']')) {
-        maybeSetIntercoolerInfo($(elt));
-        initDestination(elt, attr);
+  function eventFor(attr, elt) {
+    if(attr == "default") {
+      if($(elt).is('button')) {
+        return 'click';
+      } else if($(elt).is('form')) {
+        return 'submit';
+      } else if($(elt).is(':input')) {
+        return 'change';
+      } else {
+        return 'click';
       }
-      $(elt).find('[' + attr + ']').each(function () {
-        maybeSetIntercoolerInfo($(this));
-        initDestination($(this), attr);
+    } else {
+      return attr;
+    }
+  }
+
+  function handleTriggerOn(elt) {
+    if ($(elt).attr('ic-trigger-on')) {
+      if ($(elt).attr('ic-trigger-on') == 'load') {
+        fireICRequest(elt);
+      } else if ($(elt).attr('ic-trigger-on') == 'scrolled-into-view') {
+        initScrollHandler();
+        setTimeout(function () { $(window).trigger('scroll'); }, 100); // Trigger a scroll in case element is already viewable
+      } else {
+        $(elt).on(eventFor($(elt).attr('ic-trigger-on'), $(elt)), function () {
+          fireICRequest($(elt));
+          refreshDependencies($(elt).attr('ic-src'), $(elt));
+        });
+      }
+    }
+  }
+
+  function processTriggerOn(elt) {
+    handleTriggerOn(elt);
+    $(elt).find('[ic-trigger-on]').each(function () {
+      handleTriggerOn($(this));
+    });
+  }
+
+  //============================================================----
+  // Macro support
+  //============================================================----
+
+  function processMacros(elt) {
+    $.each(_MACROS, function (i, macro) {
+      if ($(elt).is('[' + macro + ']')) {
+        processMacro(macro, $(elt));
+      }
+      $(elt).find('[' + macro + ']').each(function () {
+        processMacro(macro, $(this));
       });
     });
   }
+
+  function processMacro(macro, elt) {
+    // action attributes
+    if(macro == 'ic-post-to') {
+      setIfAbsent(elt, 'ic-src', elt.attr('ic-post-to'));
+      setIfAbsent(elt, 'ic-verb', 'POST');
+      setIfAbsent(elt, 'ic-trigger-on', 'default');
+      setIfAbsent(elt, 'ic-deps', 'ignore');
+    }
+    if(macro == 'ic-put-to') {
+      setIfAbsent(elt, 'ic-src', elt.attr('ic-put-to'));
+      setIfAbsent(elt, 'ic-verb', 'PUT');
+      setIfAbsent(elt, 'ic-trigger-on', 'default');
+      setIfAbsent(elt, 'ic-deps', 'ignore');
+    }
+    if(macro == 'ic-get-from') {
+      setIfAbsent(elt, 'ic-src', elt.attr('ic-get-from'));
+      setIfAbsent(elt, 'ic-trigger-on', 'default');
+      setIfAbsent(elt, 'ic-deps', 'ignore');
+    }
+    if(macro == 'ic-delete-from') {
+      setIfAbsent(elt, 'ic-src', elt.attr('ic-get-from'));
+      setIfAbsent(elt, 'ic-verb', 'DELETE');
+      setIfAbsent(elt, 'ic-trigger-on', 'default');
+      setIfAbsent(elt, 'ic-deps', 'ignore');
+    }
+    // non-action attributes
+    if(macro == 'ic-style-src') {
+      var value = elt.attr('ic-style-src').split(":");
+      var styleAttribute = value[0];
+      var url = value[1];
+      setIfAbsent(elt, 'ic-src', url);
+      setIfAbsent(elt, 'ic-target', 'this.style.' + styleAttribute);
+    }
+    if(macro == 'ic-attr-src') {
+      var value = elt.attr('ic-attr-src').split(":");
+      var attribute = value[0];
+      var url = value[1];
+      setIfAbsent(elt, 'ic-src', url);
+      setIfAbsent(elt, 'ic-target', 'this.' + attribute);
+    }
+    if(macro == 'ic-prepend-from') {
+      setIfAbsent(elt, 'ic-src', elt.attr('ic-prepend-from'));
+      setIfAbsent(elt, 'ic-transition', 'prepend');
+    }
+    if(macro == 'ic-append-from') {
+      setIfAbsent(elt, 'ic-src', elt.attr('ic-append-from'));
+      setIfAbsent(elt, 'ic-transition', 'append');
+    }
+  }
+
+  function setIfAbsent(elt, attr, value) {
+    if(elt.attr(attr) == null) {
+      elt.attr(attr, value);
+    }
+  }
+
+  //============================================================----
+  // Utilities
+  //============================================================----
 
   function isScrolledIntoView(elem) {
     var docViewTop = $(window).scrollTop();
@@ -553,54 +704,25 @@ var Intercooler = Intercooler || (function () {
     var elemTop = $(elem).offset().top;
     var elemBottom = elemTop + $(elem).height();
 
-    var inViewport = ((elemBottom >= docViewTop) && (elemTop <= docViewBottom)
+    return ((elemBottom >= docViewTop) && (elemTop <= docViewBottom)
       && (elemBottom <= docViewBottom) && (elemTop >= docViewTop));
-
-    return inViewport;
   }
 
-  function handleLoadOn(elt) {
-    if ($(elt).attr('ic-load-on')) {
-      if($(elt).attr('ic-load-on') == 'load') {
-        updateElement(elt);
-      } else if($(elt).attr('ic-load-on') == 'scrolled-into-view') {
-        if (_scrollHandler == null) {
-          _scrollHandler = function () {
-            $("[ic-load-on='scrolled-into-view']").each(function () {
-              if (isScrolledIntoView($(this)) && $(this).data('ic-scrolled-into-view-loaded') != true) {
-                $(this).data('ic-scrolled-into-view-loaded', true);
-                updateElement($(this));
-              }
-            })
-          };
-          $(window).scroll(_scrollHandler);
-        }
-        setTimeout(function(){$(window).trigger('scroll');}, 100); // Trigger a scroll in case element is already viewable
-      } else {
-        $(elt).on($(elt).attr('ic-load-on'), function(){
-          updateElement(elt);
-        });
-      }
+  function getTransition(elt, target) {
+    var transition = null;
+    if(elt.attr('ic-transition')) {
+      transition = _transitions[elt.attr('ic-transition')]
     }
-  }
-
-  function processLoadOn(elt) {
-    handleLoadOn(elt);
-    $(elt).find('[ic-load-on]').each(function () {
-      handleLoadOn($(this));
-    });
-  }
-
-  function processNodes(elt) {
-    processSources(elt);
-    processPolling(elt);
-    processDestinations(elt);
-    processLoadOn(elt)
-  }
-
-  function isTransition(target, transitionName) {
-    return target.attr('ic-transition') == transitionName ||
-      target.data('ic-tmp-transition') == transitionName;
+    if(target.attr('ic-transition')) {
+      transition = _transitions[elt.attr('ic-transition')]
+    }
+    if(target.data('ic-tmp-transition')) {
+      transition = _transitions[elt.attr('ic-tmp-transition')]
+    }
+    if(transition == null) {
+      transition = _transitions[_defaultTransition];
+    }
+    return transition;
   }
 
   function processICResponse(data, elt) {
@@ -609,75 +731,45 @@ var Intercooler = Intercooler || (function () {
       var target = getTarget(elt);
       var dummy = $("<div></div>").html(data);
       if (fp(dummy.text()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
-        if (isTransition(target, 'none')) {
-          target.html(data);
+        var transition = getTransition(elt, target);
+        transition(target, 'update', data, function () {
           updateIntercoolerMetaData(target);
           processNodes(target);
-        } else {
-          target.fadeOut('fast', function () {
-            target.html(data);
-            updateIntercoolerMetaData(target);
-            processNodes(target);
-            target.fadeIn('fast');
-          });
-        }
+        });
       }
       dummy.remove();
     }
   }
 
-  function updateElement(element) {
-    var elt = element;
+  function getStyleTarget(elt) {
+    if(elt.attr('ic-target') && elt.attr('ic-target').indexOf("this.style.") == 0) {
+      return elt.attr('ic-target').substr(11)
+    } else {
+      return null;
+    }
+  }
+
+  function getAttrTarget(elt) {
+    if(elt.attr('ic-target') && elt.attr('ic-target').indexOf("this.") == 0) {
+      return elt.attr('ic-target').substr(5)
+    } else {
+      return null;
+    }
+  }
+
+  function fireICRequest(elt) {
+    var styleTarget = getStyleTarget(elt);
+    var attrTarget = styleTarget ? null : getAttrTarget(elt);
     if (elt.attr('ic-src')) {
-      handleRemoteRequest(element, "GET", elt.attr('ic-src'), getParametersForElement(elt),
+      handleRemoteRequest(elt, verbFor(elt), elt.attr('ic-src'), getParametersForElement(elt),
         function (data) {
-          processICResponse(data, elt);
-        });
-    } else if (elt.attr('ic-prepend-from')) {
-      handleRemoteRequest(element, "GET", elt.attr('ic-prepend-from'), getParametersForElement(elt),
-        function (data) {
-          var elts = $(data);
-          elts.hide();
-          var target = getTarget(elt);
-          log("target is ");
-          log(target);
-          target.prepend(elts);
-          elts.fadeIn();
-          processNodes(elts);
-          if (target.attr('ic-limit-children')) {
-            var limit = parseInt(elt.attr('ic-limit-children'));
-            if (elt.children().length > limit) {
-              target.children().slice(limit, target.children().length).remove();
-            }
+          if (styleTarget) {
+            elt.style(styleTarget, data);
+          } else if (attrTarget) {
+            elt.attr(styleTarget, data);
+          } else {
+            processICResponse(data, elt);
           }
-        });
-    } else if (elt.attr('ic-append-from')) {
-      handleRemoteRequest(element, "GET", elt.attr('ic-append-from'), getParametersForElement(elt),
-        function (data) {
-          var elts = $(data);
-          elts.hide();
-          var target = getTarget(elt);
-          target.append(elts);
-          elts.fadeIn();
-          processNodes(elts);
-          if (target.attr('ic-limit-children')) {
-            var limit = parseInt(elt.attr('ic-limit-children'));
-            if (target.children().length > limit) {
-              target.children().slice(0, target.children().length - limit).remove();
-            }
-          }
-        });
-    } else if (elt.attr('ic-style-src')) {
-      var styleSrc = elt.attr('ic-style-src').split(":");
-      handleRemoteRequest(element, "GET", styleSrc[1], getParametersForElement(elt),
-        function (data) {
-          elt.css(styleSrc[0], data);
-        });
-    } else if (elt.attr('ic-attr-src')) {
-      var attrSrc = elt.attr('ic-attr-src').split(":");
-      handleRemoteRequest(element, "GET", attrSrc[1], getParametersForElement(elt),
-        function (data) {
-          elt.attr(attrSrc[0], data);
         });
     }
   }
@@ -765,17 +857,15 @@ var Intercooler = Intercooler || (function () {
     }
   };
 
-  /**
-   * Process initial nodes
-   */
+  //============================================================
+  // Bootstrap
+  //============================================================
+
   $(function () {
     processNodes('body');
     _historySupport.onPageLoad();
   });
 
-  /**
-   * Public API
-   */
   return {
 
     /* ===================================================
@@ -783,7 +873,7 @@ var Intercooler = Intercooler || (function () {
      * =================================================== */
 
     refresh: function (elt) {
-      updateElement(elt);
+      fireICRequest(elt);
       return Intercooler;
     },
 
