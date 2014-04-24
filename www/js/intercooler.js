@@ -62,7 +62,7 @@ var Intercooler = Intercooler || (function () {
       }
     },
     'prepend': function (elt, kind, content, onCompletion) {
-      if(kind != 'replace') {
+      if(kind != 'update') {
         throw "'prepend' transition only supports replace"
       }
       var elts = $(content);
@@ -78,7 +78,7 @@ var Intercooler = Intercooler || (function () {
       }
     },
     'append': function (elt, kind, content, onCompletion) {
-      if(kind != 'replace') {
+      if(kind != 'update') {
         throw "'append' transition only supports replace"
       }
       var elts = $(content);
@@ -133,7 +133,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function icSelectorFor(elt) {
-    return "[ic-id='" + elt.attr("ic-id") + "']";
+    return "[ic-id='" + getIntercoolerId(elt) + "']";
   }
 
   function findById(x) {
@@ -633,7 +633,7 @@ var Intercooler = Intercooler || (function () {
       setIfAbsent(elt, 'ic-deps', 'ignore');
     }
     if(macro == 'ic-delete-from') {
-      setIfAbsent(elt, 'ic-src', elt.attr('ic-get-from'));
+      setIfAbsent(elt, 'ic-src', elt.attr('ic-delete-from'));
       setIfAbsent(elt, 'ic-verb', 'DELETE');
       setIfAbsent(elt, 'ic-trigger-on', 'default');
       setIfAbsent(elt, 'ic-deps', 'ignore');
@@ -740,9 +740,9 @@ var Intercooler = Intercooler || (function () {
       handleRemoteRequest(elt, verbFor(elt), elt.attr('ic-src'), getParametersForElement(elt),
         function (data) {
           if (styleTarget) {
-            elt.style(styleTarget, data);
+            elt.css(styleTarget, data);
           } else if (attrTarget) {
-            elt.attr(styleTarget, data);
+            elt.attr(attrTarget, data);
           } else {
             processICResponse(data, elt);
           }

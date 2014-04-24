@@ -29,6 +29,14 @@
   <script type="text/javascript" src="../src/intercooler.js"></script>
   <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.12.0.css">
   <script>
+    $(function(){
+      $('#ic-prepend-from-div2').on('log.ic', function(e, msg){
+        console.log(msg);
+      });
+      $('#ic-prepend-from-btn1').on('log.ic', function(e, msg){
+        console.log(msg);
+      })
+    })
   </script>
 </head>
 <body>
@@ -61,8 +69,8 @@
         <div id="ic-post-to-div1" ic-post-to="/attr-test-1"></div>
         <div id="ic-append-from-div1" ic-append-from="/attr-test-1"></div>
         <div id="ic-prepend-from-div1" ic-prepend-from="/attr-test-1"></div>
-        <div id="ic-style-src-div1" ic-style-src="/attr-test-1"></div>
-        <div id="ic-attr-src-div1" ic-attr-src="/attr-test-1"></div>
+        <div id="ic-style-src-div1" ic-style-src="color:/attr-test-1"></div>
+        <div id="ic-attr-src-div1" ic-attr-src="style:/attr-test-1"></div>
         <script>
           test("IC attributes are set on elements", function () {
             ok($('#ic-src-div1').attr('ic-id') != null, "Has ID");
@@ -211,7 +219,7 @@
                 console.log("Here");
                 return {
                   'headers' : {
-                    'X-ic-remove' : true
+                    'X-IC-Remove' : true
                   },
                   'body': ""
                 }
@@ -306,12 +314,12 @@
     <div class="row">
       <div class="col-md-12">
         <hr/>
-        <ul id="ic-prepend-from-div2" ic-transition="none" ic-prepend-from="/prepend_from1">
+        <ul id="ic-prepend-from-div2" ic-prepend-from="/prepend_from1">
           <li>bar</li>
         </ul>
         <button id="ic-prepend-from-btn1" ic-post-to="/prepend_from1">Clicked</button>
         <script>
-          test("Explicit dependency works", function () {
+          asyncTest("Explicit dependency works 2", function () {
             var text = "Foo";
             Intercooler.addURLHandler({
               "url" : "/prepend_from1",
@@ -319,9 +327,12 @@
                  return "<li>foo</li>";
               }
             });
-            equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g,''), "bar", "Updated");
+            equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g,''), "bar", "Pre-update");
             $("#ic-prepend-from-btn1").click();
-            equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g,''), "foobar", "Updated");
+            setTimeout(function(){
+              equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g,''), "foobar", "Updated");
+              start();
+            }, 100);
           });
         </script>
       </div>
@@ -338,7 +349,7 @@
               "post" : function(){
                  return {
                    "headers" : {
-                     "X-ic-script" : "window.eval_test_var2 = 10;"
+                     "X-IC-Script" : "window.eval_test_var2 = 10;"
                    },
                    body: ""
                  };

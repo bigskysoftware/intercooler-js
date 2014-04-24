@@ -29,6 +29,8 @@ var Intercooler = Intercooler || (function () {
   var _transitions = {
     'none': function (elt, kind, content, onCompletion) {
       if (kind == 'remove') {
+        console.log("deleting...");
+        console.log(elt);
         elt.remove();
       } else if (kind == 'hide') {
         elt.hide();
@@ -172,7 +174,7 @@ var Intercooler = Intercooler || (function () {
   //============================================================
 
   function getTarget(elt) {
-    if(elt.attr('ic-target')) {
+    if(elt.attr('ic-target') && elt.attr('ic-target').indexOf('this.') != 0) {
       return $(elt.attr('ic-target'));
     } else {
       return elt;
@@ -215,12 +217,11 @@ var Intercooler = Intercooler || (function () {
       target.data("ic-tmp-transition", xhr.getResponseHeader("X-IC-Transition"));
     }
     if (xhr.getResponseHeader("X-IC-Remove")) {
-      log(elt, "IC HEADER REMOVE COMMAND", "DEBUG");
       if (elt) {
         var target = getTarget(elt);
-        log(elt, "IC REMOVING: " + target.html(), "DEBUG");
+        log(elt, "IC REMOVE", "DEBUG");
         var transition = getTransition(elt, target);
-        transition(elt, 'remove', null, function(){});
+        transition(target, 'remove', null, function(){});
       }
     }
 
@@ -440,6 +441,7 @@ var Intercooler = Intercooler || (function () {
 
   function maybeSetIntercoolerInfo(elt) {
     var target = getTarget(elt);
+    log(elt, 'Setting IC info', 'DEBUG');
     getIntercoolerId(target);
     maybeSetIntercoolerMetadata(target);
   }
@@ -529,17 +531,24 @@ var Intercooler = Intercooler || (function () {
   //============================================================----
 
   function refreshDependencies(dest, src) {
+    log(src, "Refreshing Dependencies for " + dest, "DEBUG")
     $('[ic-src]').each(function () {
+      var fired = false;
       if(verbFor($(this)) == "GET" && $(this).attr('ic-deps') != 'ignore') {
         if (isDependent(dest, $(this).attr('ic-src'))) {
           if (src == null || $(src)[0] != $(this)[0]) {
             fireICRequest($(this));
+            fired = true;
           }
         } else if (isDependent(dest, $(this).attr('ic-deps')) || $(this).attr('ic-deps') == "*") {
           if (src == null || $(src)[0] != $(this)[0]) {
             fireICRequest($(this));
+            fired = true;
           }
         }
+      }
+      if(!fired) {
+        log($(this), "Does not depend on " + dest, "DEBUG")
       }
     });
   }
@@ -690,10 +699,10 @@ var Intercooler = Intercooler || (function () {
       transition = _transitions[elt.attr('ic-transition')]
     }
     if(target.attr('ic-transition')) {
-      transition = _transitions[elt.attr('ic-transition')]
+      transition = _transitions[target.attr('ic-transition')]
     }
     if(target.data('ic-tmp-transition')) {
-      transition = _transitions[elt.attr('ic-tmp-transition')]
+      transition = _transitions[target.attr('ic-tmp-transition')]
     }
     if(transition == null) {
       transition = _transitions[_defaultTransition];
