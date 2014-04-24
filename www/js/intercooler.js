@@ -14,20 +14,11 @@ var Intercooler = Intercooler || (function () {
   // Vars
   //--------------------------------------------------
 
-  // Logging constants
-  var _DEBUG = 1;
-  var _INFO = 2;
-  var _WARN = 3;
-  var _ERROR = 4;
-
   var _MACROS = ['ic-get-from', 'ic-post-to', 'ic-put-to', 'ic-delete-from',
                  'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
 
   var _remote = $;
   var _urlHandlers = [];
-  var _logger = window.console;
-  var _loggingLevel = null;
-  var _loggingGrep = null;
   var _scrollHandler = null;
 
   var _UUID = 1;
@@ -130,26 +121,11 @@ var Intercooler = Intercooler || (function () {
     return CryptoJS.SHA1(elt).toString();
   }
 
-  function levelPrefix(level) {
-    if(level == _DEBUG) {
-      return "IC DEBUG: ";
-    } else if(level == _INFO) {
-      return "IC INFO: ";
-    } else if(level == _WARN) {
-      return "IC WARN: ";
-    } else if(level == _ERROR) {
-      return "IC ERROR: ";
-    } else {
-      return "IC UNKNOWN: ";
+  function log(elt, msg, level) {
+    if(elt == null) {
+      elt = $('body');
     }
-  }
-
-  function log(msg, level) {
-    var srcLevel = level || _INFO;
-    var targetLevel = _loggingLevel || _ERROR;
-    if (_logger && (srcLevel >= targetLevel) && (_loggingGrep == null || _loggingGrep.test(msg))) {
-      _logger.log(levelPrefix(srcLevel), msg);
-    }
+    elt.trigger("log.ic", msg, level, elt);
   }
 
   function uuid() {
@@ -165,7 +141,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function parseInterval(str) {
-    log("POLL: Parsing interval string " + str, _DEBUG);
+    log(null, "POLL: Parsing interval string " + str, 'DEBUG');
     if (str == "null" || str == "false" || str == "") {
       return null;
     } else if (str.lastIndexOf("ms") == str.length - 2) {
@@ -205,50 +181,50 @@ var Intercooler = Intercooler || (function () {
 
   function processHeaders(elt, xhr, pop) {
 
-    elt.trigger("ic.beforeHeaders", elt, xhr);
+    elt.trigger("beforeHeaders.ic", elt, xhr);
 
     if (xhr.getResponseHeader("X-IC-Refresh")) {
       var pathsToRefresh = xhr.getResponseHeader("X-IC-Refresh").split(",");
-      log("IC HEADER: refreshing " + pathsToRefresh, _DEBUG);
+      log(elt, "IC HEADER: refreshing " + pathsToRefresh, "DEBUG");
       $.each(pathsToRefresh, function (i, str) {
         refreshDependencies(str.replace(/ /g, ""), elt);
       });
     }
     if (xhr.getResponseHeader("X-IC-Script")) {
-      log("IC HEADER: evaling " + xhr.getResponseHeader("X-IC-Script"), _DEBUG);
+      log(elt, "IC HEADER: evaling " + xhr.getResponseHeader("X-IC-Script"), "DEBUG");
       eval(xhr.getResponseHeader("X-IC-Script"));
     }
     if (xhr.getResponseHeader("X-IC-Redirect")) {
-      log("IC HEADER: redirecting to " + xhr.getResponseHeader("X-IC-Redirect"), _DEBUG);
+      log(elt, "IC HEADER: redirecting to " + xhr.getResponseHeader("X-IC-Redirect"), "DEBUG");
       window.location = xhr.getResponseHeader("X-IC-Redirect");
     }
     if (xhr.getResponseHeader("X-IC-CancelPolling") == "true") {
       cancelPolling(elt);
     }
     if (xhr.getResponseHeader("X-IC-Open")) {
-      log("IC HEADER: opening " + xhr.getResponseHeader("X-IC-Open"), _DEBUG);
+      log(elt, "IC HEADER: opening " + xhr.getResponseHeader("X-IC-Open"), "DEBUG");
       window.open(xhr.getResponseHeader("X-IC-Open"));
     }
     if (xhr.getResponseHeader("X-IC-SetLocation") && pop != true) {
-      log("IC HEADER: pushing " + xhr.getResponseHeader("X-IC-SetLocation"), _DEBUG);
+      log(elt, "IC HEADER: pushing " + xhr.getResponseHeader("X-IC-SetLocation"), "DEBUG");
       _historySupport.pushUrl(xhr.getResponseHeader("X-IC-SetLocation"), elt);
     }
     if(xhr.getResponseHeader("X-IC-Transition")) {
-      log("IC HEADER: setting transition to  " + xhr.getResponseHeader("X-IC-Transition"), _DEBUG);
+      log(elt, "IC HEADER: setting transition to  " + xhr.getResponseHeader("X-IC-Transition"), "DEBUG");
       var target = getTarget(elt);
       target.data("ic-tmp-transition", xhr.getResponseHeader("X-IC-Transition"));
     }
     if (xhr.getResponseHeader("X-IC-Remove")) {
-      log("IC HEADER REMOVE COMMAND");
+      log(elt, "IC HEADER REMOVE COMMAND", "DEBUG");
       if (elt) {
         var target = getTarget(elt);
-        log("IC REMOVING: " + target.html(), _DEBUG);
+        log(elt, "IC REMOVING: " + target.html(), "DEBUG");
         var transition = getTransition(elt, target);
         transition(elt, 'remove', null, function(){});
       }
     }
 
-    elt.trigger("ic.afterHeaders", elt, xhr);
+    elt.trigger("afterHeaders.ic", elt, xhr);
 
     return true;
   }
@@ -350,10 +326,10 @@ var Intercooler = Intercooler || (function () {
       data: data,
       dataType: 'text',
       beforeSend : function(xhr, settings){
-        elt.trigger("ic.beforeSend", elt, data, settings, xhr);
+        elt.trigger("beforeSend.ic", elt, data, settings, xhr);
       },
       success: function (data, textStatus, xhr) {
-        elt.trigger("ic.success", elt, data, textStatus, xhr);
+        elt.trigger("success.ic", elt, data, textStatus, xhr);
         var target = getTarget(elt);
         target.data("ic-tmp-transition",  elt.attr('ic-transition')); // copy transition
         if (processHeaders(elt, xhr, pop)) {
@@ -362,11 +338,11 @@ var Intercooler = Intercooler || (function () {
         target.data("ic-tmp-transition", null);
       },
       error: function (xhr, status, str) {
-        elt.trigger("ic.error", elt, status, str, xhr);
-        log("An error occurred: " + str, _ERROR);
+        elt.trigger("error.ic", elt, status, str, xhr);
+        log(elt, "An error occurred: " + str, "ERROR");
       },
       complete : function(xhr, status){
-        elt.trigger("ic.complete", elt, data, status, xhr);
+        elt.trigger("complete.ic", elt, data, status, xhr);
         if (indicator.length > 0) {
           indicatorTransition(indicator, 'hide', null, function () {
             afterRequest(elt);
@@ -458,7 +434,7 @@ var Intercooler = Intercooler || (function () {
     if (elt.attr('ic-include')) {
       str += processIncludes(elt.attr('ic-include'));
     }
-    log("PARAMS: Returning parameters " + str + " for " + elt);
+    log(elt, "PARAMS: Returning parameters " + str + " for " + elt, "DEBUG");
     return str;
   }
 
@@ -515,12 +491,12 @@ var Intercooler = Intercooler || (function () {
       var interval = parseInterval(elt.attr('ic-poll'));
       if(interval != null) {
         var selector = icSelectorFor(elt);
-        log("POLL: Starting poll for element " + selector, _DEBUG);
+        log(elt, "POLL: Starting poll for element " + selector, "DEBUG");
         var timerId = setInterval(function () {
           var target = $(selector);
-          elt.trigger("ic.onPoll", target);
+          elt.trigger("onPoll.ic", target);
           if (target.length == 0) {
-            log("POLL: Clearing poll for element " + selector, _DEBUG);
+            log(elt, "POLL: Clearing poll for element " + selector, "DEBUG");
             clearTimeout(timerId);
           } else {
             fireICRequest(target);
@@ -727,7 +703,7 @@ var Intercooler = Intercooler || (function () {
 
   function processICResponse(data, elt) {
     if (data && /\S/.test(data)) {
-      log("IC RESPONSE: Received: " + data, _DEBUG);
+      log(elt, "IC RESPONSE: Received: " + data, "DEBUG");
       var target = getTarget(elt);
       var dummy = $("<div></div>").html(data);
       if (fp(dummy.text()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
@@ -812,11 +788,11 @@ var Intercooler = Intercooler || (function () {
     },
 
     pushUrl: function (url, elt) {
-      log("IC HISTORY: pushing location " + url, _DEBUG);
+      log(elt, "IC HISTORY: pushing location " + url, "DEBUG");
       var target = getTarget(elt);
       var id = target.attr('id');
       if(id == null) {
-        log("To support history for a given element, you must have a valid id attribute on the element", _ERROR);
+        log(elt, "To support history for a given element, you must have a valid id attribute on the element", "ERROR");
         return;
       }
       _historySupport.initHistory(elt);
@@ -826,7 +802,7 @@ var Intercooler = Intercooler || (function () {
         "restore-from": url,
         "timestamp": new Date().getTime()
       };
-      elt.trigger("ic.pushUrl", target, data);
+      elt.trigger("pushUrl.ic", target, data);
       window.history.pushState(data, "", url);
     },
 
@@ -848,7 +824,7 @@ var Intercooler = Intercooler || (function () {
         params += "&ic-handle-pop=true"
         handleRemoteRequest(elt, "GET", data["restore-from"], params,
           function (data) {
-            elt.trigger("ic.handlePop", elt, data);
+            elt.trigger("handlePop.ic", elt, data);
             processICResponse(data, elt);
           });
         return true;
@@ -891,35 +867,6 @@ var Intercooler = Intercooler || (function () {
     setRemote: function (remote) {
       _remote = remote;
       return Intercooler;
-    },
-
-    /* ===================================================
-     * Logging API
-     * =================================================== */
-    setLogger: function (logger, level, grep) {
-      _logger = logger;
-      if (level) {
-        _loggingLevel = level;
-      }
-      if (grep) {
-        _loggingGrep = grep;
-      }
-      return Intercooler;
-    },
-    log: function (msg, level) {
-      log(msg, level);
-      return Intercooler;
-    },
-    /* LOGGING LEVELS */
-    setLogLevel: function (level) {
-      _loggingLevel = level;
-      return Intercooler;
-    },
-    logLevels: {
-      DEBUG: _DEBUG,
-      INFO: _INFO,
-      WARNING: _WARN,
-      ERROR: _ERROR
     }
   }
 })();
