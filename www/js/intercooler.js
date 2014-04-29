@@ -605,8 +605,9 @@ var Intercooler = Intercooler || (function () {
           refreshDependencies($(elt).attr('ic-src'), $(elt));
           if(preventDefault(elt)){
             e.preventDefault();
+            return false;
           }
-          return false;
+          return true;
         });
       }
     }
