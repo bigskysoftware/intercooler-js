@@ -29,340 +29,421 @@
   <script type="text/javascript" src="../src/intercooler.js"></script>
   <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.12.0.css">
   <script>
-    $(function(){
-      $('#ic-prepend-from-div2').on('log.ic', function(e, msg){
-        console.log(msg);
-      });
-      $('#ic-prepend-from-btn1').on('log.ic', function(e, msg){
-        console.log(msg);
-      })
-    })
+    $(function () {
+      Intercooler.defaultTransition('none');
+    });
   </script>
 </head>
 <body>
 
-<div class="body-wrapper">
-  <div class="container">
-    <h1>IntercoolerJS Test Suite</h1>
+<div class="container">
+  <h1>IntercoolerJS Test Suite</h1>
 
-    <p>Below are all the tests for the IntercoolerJS library. New tests should follow the existing templates</p>
+  <p>Below are all the tests for the IntercoolerJS library. New tests should follow the existing templates</p>
+</div>
+
+<div class="container">
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+</div>
+
+<div class="container">
+
+
+<div class="row">
+  <div class="col-md-12">
+    <h2>Core Tests</h2>
   </div>
+</div>
 
-  <div class="container">
-    <div id="qunit"></div>
-    <div id="qunit-fixture"></div>
+<div class="row">
+  <div class="col-md-12">
+    <hr/>
+    <div id="ic-src-div1" ic-src="/attr-test-1"></div>
+    <div id="ic-post-to-div1" ic-post-to="/attr-test-1"></div>
+    <div id="ic-append-from-div1" ic-append-from="/attr-test-1"></div>
+    <div id="ic-prepend-from-div1" ic-prepend-from="/attr-test-1"></div>
+    <div id="ic-style-src-div1" ic-style-src="color:/attr-test-1"></div>
+    <div id="ic-attr-src-div1" ic-attr-src="style:/attr-test-1"></div>
+    <script>
+      test("IC attributes are set on elements", function () {
+        ok($('#ic-src-div1').attr('ic-id') != null, "Has ID");
+        ok($('#ic-src-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
+        ok($('#ic-src-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+
+        ok($('#ic-post-to-div1').attr('ic-id') != null, "Has ID");
+        ok($('#ic-post-to-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
+        ok($('#ic-post-to-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+
+        ok($('#ic-append-from-div1').attr('ic-id') != null, "Has ID");
+        ok($('#ic-append-from-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
+        ok($('#ic-append-from-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+
+        ok($('#ic-prepend-from-div1').attr('ic-id') != null, "Has ID");
+        ok($('#ic-prepend-from-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
+        ok($('#ic-prepend-from-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+
+        ok($('#ic-style-src-div1').attr('ic-id') != null, "Has ID");
+        ok($('#ic-style-src-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
+        ok($('#ic-style-src-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+
+        ok($('#ic-attr-src-div1').attr('ic-id') != null, "Has ID");
+        ok($('#ic-attr-src-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
+        ok($('#ic-attr-src-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+      });
+    </script>
   </div>
+</div>
 
-  <div class="container">
+<div id="ic-src-div2" ic-src="/basic_update">Foo</div>
+<script>
+  test("Simple update", function () {
+    Intercooler.addURLHandler({
+      "url": "/basic_update",
+      "get": function (url, params) {
+        return '<div id="ic-src-div2" ic-src="/basic_update">Bar</div>'
+      }
+    });
+    equal($('#ic-src-div2').text(), "Foo", "Updated");
+    Intercooler.refresh($("#ic-src-div2"));
+    equal($('#ic-src-div2').text(), "Bar", "Updated");
+  });
+</script>
+
+<div id="ic-src-div3" ic-src="/deps_test1">Foo</div>
+<button id="ic-post-to-btn1" ic-post-to="/deps_test1">Click</button>
+
+<script>
+  test("Dependency update w/ POST", function () {
+    var text = "Foo";
+    Intercooler.addURLHandler({
+      "url": "/deps_test1",
+      "get": function (url, params) {
+        return '<div id="ic-src-div3" ic-src="/deps_test1">' + text + '</div>';
+      },
+      "post": function (url, params) {
+        text = "Bar"
+      }
+    });
+    equal($('#ic-src-div3').text(), "Foo", "Updated");
+    $("#ic-post-to-btn1").click();
+    equal($('#ic-src-div3').text(), "Bar", "Updated");
+  });
+</script>
+
+<div id="ic-src-div6" ic-src="/deps_put_test1">Foo</div>
+<button id="ic-put-to-btn1" ic-put-to="/deps_put_test1">Click</button>
+
+<script>
+  test("Dependency update w/ PUT", function () {
+    var text = "Foo";
+    Intercooler.addURLHandler({
+      "url": "/deps_put_test1",
+      "get": function (url, params) {
+        return '<div id="ic-src-div6" ic-src="/deps_put_test1">' + text + '</div>';
+      },
+      "put": function (url, params) {
+        equal(params['_method'], "PUT");
+        text = "Bar";
+      }
+    });
+    equal($('#ic-src-div6').text(), "Foo", "Updated");
+    $("#ic-put-to-btn1").click();
+    equal($('#ic-src-div6').text(), "Bar", "Updated");
+  });
+</script>
+
+<div id="ic-src-div7" ic-src="/deps_delete_test1">Foo</div>
+<button id="ic-delete-from-btn1" ic-delete-from="/deps_delete_test1">Click</button>
+
+<script>
+  test("Dependency update w/ DELETE", function () {
+    var text = "Foo";
+    Intercooler.addURLHandler({
+      "url": "/deps_delete_test1",
+      "get": function (url, params) {
+        return '<div id="ic-src-div7" ic-src="/deps_delete_test1">' + text + '</div>';
+      },
+      "delete": function (url, params) {
+        equal(params['_method'], "DELETE");
+        text = "Bar";
+      }
+    });
+    equal($('#ic-src-div7').text(), "Foo", "Updated");
+    $("#ic-delete-from-btn1").click();
+    equal($('#ic-src-div7').text(), "Bar", "Updated");
+  });
+</script>
+
+<div id="ic-src-div8">Foo</div>
+<button id="ic-delete-from-btn2" ic-delete-from="/deps_delete_test2" ic-target="#ic-src-div8">Click</button>
+
+<script>
+  test("DELETE with removal", function () {
+    Intercooler.addURLHandler({
+      "url": "/deps_delete_test2",
+      "delete": function (url, params) {
+        console.log("Here");
+        return {
+          'headers': {
+            'X-IC-Remove': true
+          },
+          'body': ""
+        }
+      }
+    });
+    $("#ic-delete-from-btn2").click();
+    equal($('#ic-src-div8').length, 0);
+  });
+</script>
+
+<div id="ic-src-div4" ic-src="/deps_test2">Foo</div>
+<button id="ic-post-to-btn2" ic-post-to="/deps_test2/super">Clicked</button>
+<script>
+  test("Dependency on updated superpath", function () {
+    var text = "Foo";
+    Intercooler.addURLHandler({
+      "url": "/deps_test2",
+      "get": function (url, params) {
+        return '<div id="ic-src-div4" ic-src="/deps_test2">' + text + '</div>';
+      },
+      "post": function (url, params) {
+        text = "Bar"
+      }
+    });
+
+    equal($('#ic-src-div4').text(), "Foo", "Updated");
+    $("#ic-post-to-btn2").click();
+    equal($('#ic-src-div4').text(), "Bar", "Updated");
+  });
+</script>
+
+<div id="ic-src-div5" ic-src="/deps_test3/sub">Foo</div>
+<button id="ic-post-to-btn3" ic-post-to="/deps_test3">Clicked</button>
+<script>
+  test("Dependency on updated subpath", function () {
+    var text = "Foo";
+    Intercooler.addURLHandler({
+      "url": "/deps_test3",
+      "get": function (url, params) {
+        return '<div id="ic-src-div5" ic-src="/deps_test3/sub">' + text + '</div>';
+      },
+      "post": function (url, params) {
+        text = "Bar"
+      }
+    });
+    equal($('#ic-src-div5').text(), "Foo", "Updated");
+    $("#ic-post-to-btn3").click();
+    equal($('#ic-src-div5').text(), "Bar", "Updated");
+  });
+</script>
+
+<div id="ic-deps-div1" ic-src="/deps_test4" ic-deps="/deps_test5">Foo</div>
+<button id="ic-deps-btn1" ic-post-to="/deps_test5">Clicked</button>
+<script>
+  test("Explicit dependency works", function () {
+    var text = "Foo";
+    Intercooler.addURLHandler({
+      "url": "/deps_test4",
+      "get": function (url, params) {
+        return '<div id="ic-deps-div1" ic-src="/deps_test4" ic-deps="/deps_test5">' + text + '</div>';
+      }
+    });
+    Intercooler.addURLHandler({
+      "url": "/deps_test5",
+      "post": function (url, params) {
+        text = "Bar";
+      }
+    });
+    equal($('#ic-deps-div1').text(), "Foo", "Updated");
+    $("#ic-deps-btn1").click();
+    equal($('#ic-deps-div1').text(), "Bar", "Updated");
+  });
+</script>
+
+<ul id="ic-prepend-from-div2" ic-prepend-from="/prepend_from1">
+  <li>bar</li>
+</ul>
+<button id="ic-prepend-from-btn1" ic-post-to="/prepend_from1">Clicked</button>
+<script>
+  test("Explicit dependency works 2", function () {
+    var text = "Foo";
+    Intercooler.addURLHandler({
+      "url": "/prepend_from1",
+      "get": function (url, params) {
+        return "<li>foo</li>";
+      }
+    });
+    equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g, ''), "bar", "Pre-update");
+    $("#ic-prepend-from-btn1").click();
+    equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g, ''), "foobar", "Updated");
+  });
+</script>
+
+<button id="eval-btn" ic-post-to="/frontmatter_eval">Eval</button>
+<script>
+  test("Eval works", function () {
+    Intercooler.addURLHandler({
+      "url": "/frontmatter_eval",
+      "post": function () {
+        return {
+          "headers": {
+            "X-IC-Script": "window.eval_test_var2 = 10;"
+          },
+          body: ""
+        };
+      }
+    });
+    $("#eval-btn").click();
+    equal(window.eval_test_var2, 10);
+  });
+</script>
+
+<form ic-post-to="/form_target">
+  <button id="form-btn">Submit</button>
+</form>
+<script>
+  test("Form submission works", function () {
+    Intercooler.addURLHandler({
+      "url": "/form_target",
+      "post": function () {
+        return {
+          body: "<span id='form-after-submit'></span>"
+        };
+      }
+    });
+    $("#form-btn").click();
+    equal($("#form-after-submit").length, 1);
+  });
+</script>
+
+<div id="fp-test" ic-post-to="/fp_test"><span>Foo</span></div>
+<script>
+  test("Fingerprint is stable between requests", function () {
+    Intercooler.addURLHandler({
+      "url": "/fp_test",
+      "post": function () {
+        return {
+          body: '<span>Foo</span>'
+        };
+      }
+    });
+    var originalFp = $("#fp-test").attr('ic-fingerprint');
+    var t1 = $("#fp-test").html();
+    $("#fp-test").click();
+    var t2 = $("#fp-test").html();
+    var finalFp = $("#fp-test").attr('ic-fingerprint');
+    equal(t1, t2);
+    equal(originalFp, finalFp);
+  });
+</script>
+
+<div id="fp-test-2" ic-post-to="/2fp_test"><span>Foo</span></div>
+<script>
+  test("Fingerprint changes with new content", function () {
+    Intercooler.addURLHandler({
+      "url": "/2fp_test",
+      "post": function () {
+        return {
+          body: '<span>Bar</span>'
+        };
+      }
+    });
+    var originalFp = $("#fp-test-2").attr('ic-fingerprint');
+    var t1 = $("#fp-test-2").html();
+    $("#fp-test-2").click();
+    var t2 = $("#fp-test-2").html();
+    notEqual(t1, t2);
+    var finalFp = $("#fp-test-2").attr('ic-fingerprint');
+    notEqual(originalFp, finalFp);
+  });
+</script>
+
+<div id="refresh-api-test" ic-src="/refresh-api-test">Foo</div>
+<script>
+  test("LeadDyno.refresh() with element works", function () {
+    Intercooler.addURLHandler({
+      "url": "/refresh-api-test",
+      "get": function () {
+        return {
+          body: 'Bar'
+        };
+      }
+    });
+    Intercooler.refresh($('#refresh-api-test'));
+    equal('Bar', $('#refresh-api-test').text());
+  });
+</script>
+
+<div id="refresh-api-test-2" ic-src="/2refresh-api-test">Foo</div>
+<script>
+  test("LeadDyno.refresh() with path works", function () {
+    Intercooler.addURLHandler({
+      "url": "/2refresh-api-test",
+      "get": function () {
+        return {
+          body: 'Bar'
+        };
+      }
+    });
+    Intercooler.refresh('/2refresh-api-test');
+    equal('Bar', $('#refresh-api-test-2').text());
+  });
+</script>
+
+<div id="define-transition-1" ic-src="/define-transition-test" ic-transition="custom">Foo</div>
+<script>
+  test("Custom transitions work", function () {
+    var counter = 0;
+    Intercooler.defineTransition('custom', {
+      newContent : function(parent, content, reverse, after) {
+        counter++;
+        parent.html(content);
+        after();
+      }
+    });
+    Intercooler.addURLHandler({
+      "url": "/define-transition-test",
+      "get": function () {
+        return {
+          body: 'Bar'
+        };
+      }
+    });
+    Intercooler.refresh('/define-transition-test');
+    equal('Bar', $('#define-transition-1').text());
+    equal(1, counter);
+  });
+</script>
+
+<div id="define-transition-2" ic-src="/2define-transition-test">Foo</div>
+<script>
+  test("Default transitions work", function () {
+    var counter = 0;
+    Intercooler.defineTransition('custom', {
+      newContent : function(parent, content, reverse, after) {
+        counter++;
+        parent.html(content);
+        after();
+      }
+    });
+    Intercooler.defaultTransition('custom');
+    Intercooler.addURLHandler({
+      "url": "/2define-transition-test",
+      "get": function () {
+        return {
+          body: 'Bar'
+        };
+      }
+    });
+    Intercooler.refresh('/2define-transition-test');
+    equal('Bar', $('#define-transition-2').text());
+    equal(1, counter);
+    Intercooler.defaultTransition('none');
+  });
+</script>
 
 
-    <div class="row">
-      <div class="col-md-12">
-        <h2>Core Tests</h2>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-        <div id="ic-src-div1" ic-src="/attr-test-1"></div>
-        <div id="ic-post-to-div1" ic-post-to="/attr-test-1"></div>
-        <div id="ic-append-from-div1" ic-append-from="/attr-test-1"></div>
-        <div id="ic-prepend-from-div1" ic-prepend-from="/attr-test-1"></div>
-        <div id="ic-style-src-div1" ic-style-src="color:/attr-test-1"></div>
-        <div id="ic-attr-src-div1" ic-attr-src="style:/attr-test-1"></div>
-        <script>
-          test("IC attributes are set on elements", function () {
-            ok($('#ic-src-div1').attr('ic-id') != null, "Has ID");
-            ok($('#ic-src-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-            ok($('#ic-src-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
-
-            ok($('#ic-post-to-div1').attr('ic-id') != null, "Has ID");
-            ok($('#ic-post-to-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-            ok($('#ic-post-to-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
-
-            ok($('#ic-append-from-div1').attr('ic-id') != null, "Has ID");
-            ok($('#ic-append-from-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-            ok($('#ic-append-from-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
-
-            ok($('#ic-prepend-from-div1').attr('ic-id') != null, "Has ID");
-            ok($('#ic-prepend-from-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-            ok($('#ic-prepend-from-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
-
-            ok($('#ic-style-src-div1').attr('ic-id') != null, "Has ID");
-            ok($('#ic-style-src-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-            ok($('#ic-style-src-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
-
-            ok($('#ic-attr-src-div1').attr('ic-id') != null, "Has ID");
-            ok($('#ic-attr-src-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-            ok($('#ic-attr-src-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-        <div id="ic-src-div2" ic-transition="none" ic-src="/basic_update">Foo</div>
-        <script>
-          test("Simple update", function () {
-            Intercooler.addURLHandler({
-              "url" : "/basic_update",
-              "get": function (url, params) {
-                return '<div id="ic-src-div2" ic-src="/basic_update">Bar</div>'
-              }
-            });
-            equal($('#ic-src-div2').text(), "Foo", "Updated");
-            Intercooler.refresh($("#ic-src-div2"));
-            equal($('#ic-src-div2').text(), "Bar", "Updated");
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-
-        <div id="ic-src-div3" ic-transition="none" ic-src="/deps_test1">Foo</div>
-        <button id="ic-post-to-btn1" ic-post-to="/deps_test1">Click</button>
-
-        <script>
-          test("Dependency update w/ POST", function () {
-            var text = "Foo";
-            Intercooler.addURLHandler({
-              "url" : "/deps_test1",
-              "get": function (url, params) {
-                return '<div id="ic-src-div3" ic-transition="none" ic-src="/deps_test1">' + text + '</div>';
-              },
-              "post": function (url, params) {
-                text = "Bar"
-              }
-            });
-            equal($('#ic-src-div3').text(), "Foo", "Updated");
-            $("#ic-post-to-btn1").click();
-            equal($('#ic-src-div3').text(), "Bar", "Updated");
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-
-        <div id="ic-src-div6" ic-transition="none" ic-src="/deps_put_test1">Foo</div>
-        <button id="ic-put-to-btn1" ic-put-to="/deps_put_test1">Click</button>
-
-        <script>
-          test("Dependency update w/ PUT", function () {
-            var text = "Foo";
-            Intercooler.addURLHandler({
-              "url" : "/deps_put_test1",
-              "get": function (url, params) {
-                return '<div id="ic-src-div6" ic-transition="none" ic-src="/deps_put_test1">' + text + '</div>';
-              },
-              "put": function (url, params) {
-                equal(params['_method'], "PUT");
-                text = "Bar";
-              }
-            });
-            equal($('#ic-src-div6').text(), "Foo", "Updated");
-            $("#ic-put-to-btn1").click();
-            equal($('#ic-src-div6').text(), "Bar", "Updated");
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-
-        <div id="ic-src-div7" ic-transition="none" ic-src="/deps_delete_test1">Foo</div>
-        <button id="ic-delete-from-btn1" ic-delete-from="/deps_delete_test1">Click</button>
-
-        <script>
-          test("Dependency update w/ DELETE", function () {
-            var text = "Foo";
-            Intercooler.addURLHandler({
-              "url" : "/deps_delete_test1",
-              "get": function (url, params) {
-                return '<div id="ic-src-div7" ic-transition="none" ic-src="/deps_delete_test1">' + text + '</div>';
-              },
-              "delete": function (url, params) {
-                equal(params['_method'], "DELETE");
-                text = "Bar";
-              }
-            });
-            equal($('#ic-src-div7').text(), "Foo", "Updated");
-            $("#ic-delete-from-btn1").click();
-            equal($('#ic-src-div7').text(), "Bar", "Updated");
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-
-        <div id="ic-src-div8" ic-transition="none">Foo</div>
-        <button id="ic-delete-from-btn2" ic-delete-from="/deps_delete_test2" ic-target="#ic-src-div8">Click</button>
-
-        <script>
-          test("DELETE with removal", function () {
-            Intercooler.addURLHandler({
-              "url" : "/deps_delete_test2",
-              "delete": function (url, params) {
-                console.log("Here");
-                return {
-                  'headers' : {
-                    'X-IC-Remove' : true
-                  },
-                  'body': ""
-                }
-              }
-            });
-            $("#ic-delete-from-btn2").click();
-            equal($('#ic-src-div8').length, 0);
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-        <div id="ic-src-div4" ic-transition="none" ic-src="/deps_test2">Foo</div>
-        <button id="ic-post-to-btn2" ic-post-to="/deps_test2/super">Clicked</button>
-        <script>
-          test("Dependency on updated superpath", function () {
-            var text = "Foo";
-            Intercooler.addURLHandler({
-              "url" : "/deps_test2",
-              "get": function (url, params) {
-                return '<div id="ic-src-div4" ic-transition="none" ic-src="/deps_test2">' + text + '</div>';
-              },
-              "post" : function(url, params){
-                  text = "Bar"
-              }
-            });
-
-            equal($('#ic-src-div4').text(), "Foo", "Updated");
-            $("#ic-post-to-btn2").click();
-            equal($('#ic-src-div4').text(), "Bar", "Updated");
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-        <div id="ic-src-div5" ic-transition="none" ic-src="/deps_test3/sub">Foo</div>
-        <button id="ic-post-to-btn3" ic-post-to="/deps_test3">Clicked</button>
-        <script>
-          test("Dependency on updated subpath", function () {
-            var text = "Foo";
-            Intercooler.addURLHandler({
-              "url" : "/deps_test3",
-              "get" : function(url, params){
-                 return '<div id="ic-src-div5" ic-transition="none" ic-src="/deps_test3/sub">' + text + '</div>';
-              },
-              "post" : function(url, params){
-                  text = "Bar"
-              }
-            });
-            equal($('#ic-src-div5').text(), "Foo", "Updated");
-            $("#ic-post-to-btn3").click();
-            equal($('#ic-src-div5').text(), "Bar", "Updated");
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-        <div id="ic-deps-div1" ic-transition="none" ic-src="/deps_test4" ic-deps="/deps_test5">Foo</div>
-        <button id="ic-deps-btn1" ic-post-to="/deps_test5">Clicked</button>
-        <script>
-          test("Explicit dependency works", function () {
-            var text = "Foo";
-            Intercooler.addURLHandler({
-              "url" : "/deps_test4",
-              "get" : function(url, params){
-                 return '<div id="ic-deps-div1" ic-transition="none" ic-src="/deps_test4" ic-deps="/deps_test5">' + text + '</div>';
-              }
-            });
-            Intercooler.addURLHandler({
-              "url" : "/deps_test5",
-              "post" : function(url, params){
-                text = "Bar";
-              }
-            });
-            equal($('#ic-deps-div1').text(), "Foo", "Updated");
-            $("#ic-deps-btn1").click();
-            equal($('#ic-deps-div1').text(), "Bar", "Updated");
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-        <ul id="ic-prepend-from-div2" ic-prepend-from="/prepend_from1">
-          <li>bar</li>
-        </ul>
-        <button id="ic-prepend-from-btn1" ic-post-to="/prepend_from1">Clicked</button>
-        <script>
-          asyncTest("Explicit dependency works 2", function () {
-            var text = "Foo";
-            Intercooler.addURLHandler({
-              "url" : "/prepend_from1",
-              "get" : function(url, params){
-                 return "<li>foo</li>";
-              }
-            });
-            equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g,''), "bar", "Pre-update");
-            $("#ic-prepend-from-btn1").click();
-            setTimeout(function(){
-              equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g,''), "foobar", "Updated");
-              start();
-            }, 100);
-          });
-        </script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <hr/>
-        <button id="eval-btn" ic-post-to="/frontmatter_eval">Eval</button>
-        <script>
-          test("Eval works", function () {
-            Intercooler.addURLHandler({
-              "url" : "/frontmatter_eval",
-              "post" : function(){
-                 return {
-                   "headers" : {
-                     "X-IC-Script" : "window.eval_test_var2 = 10;"
-                   },
-                   body: ""
-                 };
-              }
-            });
-            $("#eval-btn").click();
-            equal(window.eval_test_var2, 10);
-          });
-        </script>
-      </div>
-    </div>
-
-  </div>
 </div>
 </body>
 </html>
