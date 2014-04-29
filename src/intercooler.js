@@ -706,7 +706,7 @@ var Intercooler = Intercooler || (function () {
       transition = _transitions[target.attr('ic-transition')]
     }
     if(target.data('ic-tmp-transition')) {
-      transition = _transitions[target.attr('ic-tmp-transition')]
+      transition = _transitions[target.data('ic-tmp-transition')]
     }
     if(transition == null) {
       transition = _transitions[_defaultTransition];

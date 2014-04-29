@@ -47,7 +47,7 @@ var Intercooler = Intercooler || (function () {
       }
     }
     if(def.hide == null){
-      def.show = function(elt) {
+      def.hide = function(elt) {
         elt.hide();
       }
     }
@@ -226,8 +226,11 @@ var Intercooler = Intercooler || (function () {
   }
 
   function handleTestResponse(elt, success, returnVal) {
-    var spinner = findIndicator(elt);
-    spinner.fadeIn('fast');
+    var indicator = findIndicator(elt);
+    var indicatorTransition = getTransition(indicator, indicator);
+    if(indicator.length > 0) {
+      indicatorTransition.show(indicator);
+    }
     var headers = {};
     if(returnVal && returnVal.headers) {
       headers = returnVal.headers;
@@ -246,7 +249,9 @@ var Intercooler = Intercooler || (function () {
       }
     });
     success(body, "", elt);
-    setTimeout(function(){ spinner.fadeOut('fast'); }, 800);
+    if (indicator.length > 0) {
+      indicatorTransition.hide(indicator);
+    }
   }
 
   function beforeRequest(elt) {
@@ -313,7 +318,7 @@ var Intercooler = Intercooler || (function () {
     var indicator = findIndicator(elt);
     var indicatorTransition = getTransition(indicator, indicator);
     if(indicator.length > 0) {
-      indicatorTransition(indicator, 'show', null, function(){});
+      indicatorTransition.show(indicator);
     }
 
     _remote.ajax({
@@ -321,6 +326,9 @@ var Intercooler = Intercooler || (function () {
       url: url,
       data: data,
       dataType: 'text',
+      headers: {
+        Accept: "text/html-partial, */*; q=0.9"
+      },
       beforeSend : function(xhr, settings){
         elt.trigger("beforeSend.ic", elt, data, settings, xhr);
       },
@@ -340,12 +348,9 @@ var Intercooler = Intercooler || (function () {
       complete : function(xhr, status){
         elt.trigger("complete.ic", elt, data, status, xhr);
         if (indicator.length > 0) {
-          indicatorTransition(indicator, 'hide', null, function () {
-            afterRequest(elt);
-          });
-        } else {
-          afterRequest(elt);
+          indicatorTransition.hide(indicator);
         }
+        afterRequest(elt);
       }
     })
   }
@@ -701,7 +706,7 @@ var Intercooler = Intercooler || (function () {
       transition = _transitions[target.attr('ic-transition')]
     }
     if(target.data('ic-tmp-transition')) {
-      transition = _transitions[target.attr('ic-tmp-transition')]
+      transition = _transitions[target.data('ic-tmp-transition')]
     }
     if(transition == null) {
       transition = _transitions[_defaultTransition];
