@@ -588,7 +588,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function preventDefault(elt) {
-    return elt.is('form') || elt.is(':submit');
+    return elt.is('form') || (elt.is(':submit') && elt.closest('form').length == 1);
   }
 
   function handleTriggerOn(elt) {
