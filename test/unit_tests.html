@@ -199,7 +199,6 @@
     Intercooler.addURLHandler({
       "url": "/deps_delete_test2",
       "delete": function (url, params) {
-        console.log("Here");
         return {
           'headers': {
             'X-IC-Remove': true
@@ -494,6 +493,42 @@
   });
 </script>
 
+<strong id="indicator2">loading...</strong>
+<div id="indicator-test-2" ic-post-to="/2indicator" ic-indicator="#indicator2">  Foo</div>
+<script>
+  test("Test indicator as an attribute", function () {
+    Intercooler.addURLHandler({
+      "url": "/2indicator",
+      "post": function () {
+        return {
+          body: ''
+        };
+      }
+    });
+    $("#indicator-test-2").click();
+    equal('none', $('#indicator2').css('display'));
+  });
+</script>
+
+<strong id="indicator3">loading...</strong>
+<div ic-indicator="#indicator3">
+  <div id="indicator-test-3" ic-post-to="/3indicator">  Foo</div>
+</div>
+<script>
+  test("Test indicator as an attribute", function () {
+    Intercooler.addURLHandler({
+      "url": "/3indicator",
+      "post": function () {
+        return {
+          body: ''
+        };
+      }
+    });
+    $("#indicator-test-3").click();
+    equal('none', $('#indicator3').css('display'));
+  });
+</script>
+
 <div id="target-target"></div>
 <div id="target-test" ic-post-to="/target_test" ic-target="#target-target"></div>
 <script>
@@ -579,6 +614,118 @@
     equal('456', $('#append-limit').text().replace(/[ \n]/g,''));
   });
 </script>
+
+<input id="hidden-input" type="hidden" name="hidden" value="foo">
+<div id="include-works" ic-post-to="/include_works" ic-include="#hidden-input"></div>
+<script>
+  test("ic-include works", function () {
+    Intercooler.addURLHandler({
+      "url": "/include_works",
+      "post": function (url, params) {
+        return params['hidden'];
+      }
+    });
+    equal('foo', $("#include-works").click().text());
+  });
+</script>
+
+<input id="trigger-on-works" ic-src="/trigger_test" ic-verb="POST" ic-trigger-on="focus"/>
+<script>
+  test("ic-trigger-on works", function () {
+    Intercooler.addURLHandler({
+      "url": "/trigger_test",
+      "post": function (url, params) {
+        return "foo";
+      }
+    });
+    equal('foo', $("#trigger-on-works").focus().text());
+  });
+</script>
+
+<span id="ic-verb-btn1" ic-src="/verb_test" ic-verb="PUT" ic-trigger-on="click"></span>
+<span id="ic-verb-btn2" ic-src="/verb_test" ic-verb="POST" ic-trigger-on="click"></span>
+<script>
+  test("ic-verb works", function () {
+    Intercooler.addURLHandler({
+      "url": "/verb_test",
+      "post": function (url, params) {
+        return "post";
+      },
+      "put": function (url, params) {
+        return "put";
+      }
+    });
+    equal('put', $("#ic-verb-btn1").click().text());
+    equal('post', $("#ic-verb-btn2").click().text());
+  });
+</script>
+
+<span id="poll-span" ic-src="/poll_test" ic-poll='300ms'></span>
+<script>
+  asyncTest("ic-poll updates content", function () {
+    Intercooler.addURLHandler({
+      "url": "/poll_test",
+      "get": function () {
+        return "updated";
+      }
+    });
+
+    equal("", $("#poll-span").text());
+
+    setTimeout(function () {
+      equal("updated", $("#poll-span").text());
+      start();
+    }, 500);
+
+  });
+</script>
+
+<span id="style-src" ic-style-src="font-style:/style_test" ic-trigger-on="click">Foo</span>
+<script>
+  test("ic-style-src updates style", function () {
+    Intercooler.addURLHandler({
+      "url": "/style_test",
+      "get": function () {
+        return "italic";
+      }
+    });
+    equal("italic", $("#style-src").click().css('font-style'));
+  });
+</script>
+
+
+<span id="attr-src" ic-attr-src="foo:/attr_test" ic-trigger-on="click">Foo</span>
+<script>
+  test("ic-attr-src updates attr", function () {
+    Intercooler.addURLHandler({
+      "url": "/attr_test",
+      "get": function () {
+        return "bar";
+      }
+    });
+    equal("bar", $("#attr-src").click().attr('foo'));
+  });
+</script>
+
+
+<span id="log-test" ic-post-to="/log_test">Foo</span>
+<script>
+  test("Log event happens properly", function () {
+    var logged = false;
+    $('#log-test').on('log.ic', function(e, msg){
+      logged = true;
+    });
+    Intercooler.addURLHandler({
+      "url": "/log_test",
+      "post": function () {
+        return "";
+      }
+    });
+    $("#log-test").click();
+    equal(true, logged);
+  });
+</script>
+
 
 
 </div>
