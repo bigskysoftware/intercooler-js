@@ -443,6 +443,22 @@
   });
 </script>
 
+<div id="indicator-test" ic-post-to="/indicator"><strong id="indicator1" class="ic-indicator">loading...</strong>  Foo</div>
+<script>
+  test("Test indicator as class", function () {
+    Intercooler.addURLHandler({
+      "url": "/indicator",
+      "post": function () {
+        return {
+          body: ''
+        };
+      }
+    });
+    $("#indicator-test").click();
+    equal('none', $('#indicator1').css('display'));
+  });
+</script>
+
 
 </div>
 </body>
