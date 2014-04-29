@@ -85,3 +85,44 @@ code {
 .intercooler-js {
   color: #8EB3D0;
 }
+
+#icon1 {
+  margin-right:24px;
+  display: inline-block;
+}
+
+#icon2 {
+  display: none;
+}
+
+#little-lib {
+  font-size: 14px;
+  position: relative;
+  top: 12px;
+  left: -12px
+}
+
+@media (max-width: 992px) {
+  #icon1 {
+    display: none;
+  }
+
+  #icon2 {
+    height: 60px;
+    margin-right: 10px;
+    display: inline-block;
+  }
+
+  #little-lib {
+    font-size: 14px;
+    position: inherit;
+    display: block;
+    margin-top: 14px;
+  }
+}
+
+@media screen and (min-width: 0px) and (max-width: 992px) {
+  .jumbotron h1, .jumbotron .h1 {
+    font-size: 40px;
+  }
+}
