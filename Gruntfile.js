@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
   // Project configuration.
   grunt.initConfig({
@@ -11,16 +11,32 @@ module.exports = function(grunt) {
         src: 'src/intercooler.js',
         dest: 'www/release/intercooler-<%= pkg.version %>.min.js'
       }
+    },
+    "regex-replace": {
+      "update-test-ref": { //specify a target with any name
+        src: ['www/release/unit-tests-<%= pkg.version %>.html'],
+        actions: [
+          {
+            name: 'lib ref',
+            search: "../src/intercooler.js",
+            replace: './intercooler-<%= pkg.version %>.js',
+            flags: 'g'
+          }
+        ]
+      }
     }
   });
 
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-regex-replace');
 
   grunt.registerTask('release', "Releases a new version of the library", function () {
     grunt.file.copy("src/intercooler.js", 'www/release/intercooler-' + grunt.config.get('pkg').version + '.js');
+    grunt.file.copy("test/unit_tests.html", 'www/release/unit-tests-' + grunt.config.get('pkg').version + '.html');
     grunt.file.copy("src/intercooler.js", 'www/js/intercooler.js');
     grunt.task.run('uglify');
+    grunt.task.run('regex-replace');
   });
 
   // Default task(s).
