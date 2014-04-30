@@ -8,11 +8,11 @@ nav: intro
     <div class="col-md-12">
       <h2>Installation</h2>
 
-      <p>Intercooler depends on JQuery being installed, and can be installed like so:</p>
+      <p>Intercooler depends on jQuery being installed, and can be installed like so:</p>
 
-      <pre>
+      <pre style="width:90%">
   &lt;script src="https://code.jquery.com/jquery-1.10.2.min.js">&lt;/script>
-  &lt;script src="https://s3.amazonaws.com/intercoolerjs.org/release/intercooler-0.0.1.min.js">&lt;/script>
+  &lt;script src="https://s3.amazonaws.com/intercoolerjs.org/release/intercooler-0.3.0.min.js">&lt;/script>
       </pre>
 
       <p>You can grab the latest code from the <a href="download.html">Downloads</a> page.</p>
@@ -20,12 +20,160 @@ nav: intro
     </div>
   </div>
 
+
   <div class="row">
     <div class="col-md-12">
-      <h2>A Simple Example</h2>
+      <h2>Core Intercooler Attributes</h2>
 
-      <p>A good example is usually the best way to introduce something, so let's take a look at
-        a simple div that has an Intercooler binding:</p>
+      <p>Intercooler consists of a set of attributes that can be used to specify where to submit AJAX requests
+      to, when to do so, and how to handle the responses from the server.  There are three core attributes:</p>
+
+      <ul>
+        <li><a href="/attributes/ic-src.html"><code>ic-src</code></a> - <strong>Where</strong> to send and AJAX
+          request to (i.e. the path to submit to)</li>
+        <li><a href="/attributes/ic-verb.html"><code>ic-verb</code></a>- <strong>What</strong>
+          <a href="http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods">HTTP verb</a> to use for
+          the request (e.g. <code>POST</code>)</li>
+        <li><a href="/attributes/ic-trigger-on.html"><code>ic-trigger-on</code></a> - <strong>When</strong> to issue the
+          request (e.g. "click" means "Issue the AJAX request when this element is clicked")</li>
+      </ul>
+
+      <p>Here is an example <code>div</code> with each of these attributes:</p>
+
+      <pre>
+  &lt;div ic-trigger-on="click" ic-verb="POST" ic-src="/example">
+    Click Me!
+  &lt;/div>
+</pre>
+
+      <p>The attributes on this div tell intercooler:</p>
+
+      <blockquote>
+        When this div is clicked, issue a <code>POST</code> to <code>/example</code> and replace the body of the div with
+        the HTML in the response.
+      </blockquote>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2>Secondary Intercooler Attributes</h2>
+
+      <p>There are a few secondary attributes that you will often find useful when you are using intercooler:</p>
+
+      <ul>
+        <li><a href="/attributes/ic-target.html"><code>ic-target</code></a> - A CSS selector specifying <strong>Who</strong>
+          (i.e. which element besides this one) to replace the content of.</li>
+        <li><a href="/attributes/ic-include.html"><code>ic-include</code></a> - A CSS selector specifying
+          <strong>What Other</strong> elements to include (as parameters) with the AJAX request</li>
+        <li><a href="/attributes/ic-indicator.html"><code>ic-indicator</code></a> - What <strong>indicator</strong> element
+          to make visible while the AJAX request is <strong>in flight</strong> (e.g. a spinner)</li>
+        <li><a href="/attributes/ic-transition.html"><code>ic-transition</code></a> - <strong>How</strong> to swap in the
+          new content (e.g. "none" to have no transition easements)</li>
+      </ul>
+
+      <p>Extending the example above, we could have this</p>
+
+      <pre>
+  &lt;div id="targetDiv">Results Div...&lt;/div>
+  &lt;i id="indicator" style="display:none" class="fa fa-spinner fa-spin"></i>
+  &lt;input id="hiddenInput" type="hidden" name="hidden" value="42"/>
+
+  &lt;div ic-trigger-on="click" ic-verb="POST" ic-src="/example" ic-include="#hiddenInput"
+       ic-indicator="#indicator" ic-target="#targetDiv" ic-transition="none">
+    Click Me!
+  &lt;/div>
+</pre>
+
+      <p>This more complicated setup tells intercooler:</p>
+
+      <blockquote>
+        When this div is clicked, issue a <code>POST</code> to <code>/example</code>, including the value of the
+        input with the ID <code>hiddenInput</code>.  While the AJAX request is in flight, show the spinner with the ID
+        <code>indicator</code>.  When the response returns, replace the body of the div with the id <code>targetDiv</code>
+        with no transition easement (e.g. no fading).
+      </blockquote>
+
+      <p>You can see all the intercooler attributes available on the <a href="/attributes/all.html">Attributes Page</a></p>
+
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Macro Attributes</h2>
+
+      <p>A few intercooler attribute are macros that combine other attributes and can be used to simplify code.  Here
+        are a few macro attributes useful for buttons and forms:</p>
+
+      <ul>
+        <li><a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a> - a macro for <code>ic-src</code>, <code>ic-verb="POST"</code> and <code>ic-trigger-on="default"</code></li>
+        <li><a href="/attributes/ic-put-to.html"><code>ic-put-to</code></a> - a macro for <code>ic-src</code>, <code>ic-verb="PUT"</code> and <code>ic-trigger-on="default"</code></li>
+        <li><a href="/attributes/ic-delete-from.html"><code>ic-delete-from</code></a> - a macro for <code>ic-src</code>, <code>ic-verb="DELETE"</code> and <code>ic-trigger-on="default"</code></li>
+      </ul>
+
+      <p>Using the <code>ic-post-to</code> attribute, our first example can be simplified to:</p>
+
+      <pre>
+  &lt;div ic-post-to="/example">
+    Click Me!
+  &lt;/div>
+</pre>
+
+      <p>That's a bit more civilized.</p>
+
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Intercooler Requests Explained</h2>
+
+      <p>Intercooler requests are made up of three phases:</p>
+
+      <ol>
+        <li>The Request Phase</li>
+        <li>The Response Phase</li>
+        <li>The Dependencies Phase</li>
+      </ol>
+
+      <p>Each phase is explained briefly below.</p>
+
+      <h3>The Request Phase</h3>
+
+      <p>The Request Phase is usually triggered by either a user action or a polling event. Intercooler will look
+        at the <code>ic-src</code>, <code>ic-verb</code>, etc. attributes and issue an appropriate AJAX request,
+        showing the request indicator (if any exists).</p>
+
+      <h3>The Response Phase</h3>
+
+      <p>When the server responds, Intercooler will first examine the <a href="/responses.html#http_headers">response
+      headers</a> to see if there are any directives to execute.  Then, if the body of the response is non-empty, it will
+      swap the new content into the targeted element using the specified transition (or the default one if none was
+      specified.)  At this point the request indicator will be re-hidden.</p>
+
+      <h3>The Dependency Phase</h3>
+
+      <p>Finally, if the request was due to human input, intercooler will enter the dependency phase.  It will look for
+        other elements on the page that have an <code>ic-src</code> that <em>depends</em>
+        (<a href="/dependencies.html">as defined here</a>) on the URL that was uses in the Request Phase <strong>AND</strong>
+        that are a <code>GET</code>, and will issue requests for updated content for them.  Dependency propagation
+        terminates here: no further requests will be issued automatically.</p>
+
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Examples</h2>
+
+      <p>Here are some examples of intercooler in action.</p>
+
+
+      <h3>Polling Update</h3>
+
+      <p>This example shows a div that polls a URL for updates.</p>
 
         <pre>
   &lt;div ic-src="/visitors/count_div" ic-poll="2s">
@@ -33,16 +181,8 @@ nav: intro
   &lt;/div>
 </pre>
 
-      <p>This is perhaps the simplest possible binding.  It uses the <code>ic-src</code> attribute to point this div to a
-        URL to refresh from, and the <code>ic-poll</code> attribute to tell Intercooler to poll the server.</p>
-
-      <p>This div will poll the given URL, <code>/visitors/count_div/</code> by issuing an AJAX <code>GET</code>
+      <p>It will poll the given URL, <code>/visitors/count_div/</code> by issuing an AJAX <code>GET</code>
         every two seconds.</p>
-
-      <p>The response that will come back from the server will be an HTML Fragment (it can actually be more, see
-        <a href="responses.html">Requests</a> for more information).  If (and only if) the HTML in the response is different
-        than the existing body of the element, Intercooler will swap in the new content in place of the divs current
-        content.</p>
 
       <p>Here is an example of a returned fragment from <code>GET /visitors/count_div/</code>:</p>
 
@@ -51,10 +191,6 @@ nav: intro
     You have had 103 visitors today
 </pre>
       </div>
-
-      <p>Typically, if you are using a framework like
-      <a href="http://rubyonrails.org/">Rails</a>, your endpoints will render partials, to keep everything
-      nice and <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a></p>
 
       <p>Here is the div in action (be patient, sometimes no new visitors show up so it won't update on every 2 second interval):</p>
 
@@ -76,10 +212,10 @@ nav: intro
         <div ic-src="/visitors/count_div" ic-poll="2s">You have had 42 visitors today</div>
       </div>
 
-      <h3>Handling Events</h3>
+      <h3>A Trigger + Dependencies Example</h3>
 
-      <p>The example above is passive, it sits in the background polling the URL without any user input.  Let's remove
-      that and, instead, make it respond to a button click:</p>
+      <p>The example above is passive: it polls the URL without any user input.  Let's make it respond to a button
+        click instead, and introduce our first dependency example:</p>
 
       <div class="row">
         <pre>
@@ -93,20 +229,13 @@ nav: intro
 </pre>
       </div>
 
-      <p>Here we've removed the <code>ic-poll</code> attribute and introduced a button with a new attribute,
-        <code>ic-post-to</code>.  This tells Intercooler to post to <code>/example/click</code> when the button
-      is clicked.  The server receives the post and increments a server-side counter of the number of times
+      <p>Here we've removed the <code>ic-poll</code> attribute and introduced a button with a , <code>ic-post-to</code>.
+        The server receives the post and increments a server-side counter of the number of times
       you have clicked the button.</p>
 
-        <div style="width:70%;margin:30px auto;" class="alert alert-info"><strong>Note:</strong> In these examples, we are actually mocking out the server, a technique you might find useful
-          when prototyping your UI.</div>
-
-      <p>When the button is clicked, Intercooler does something kind of cool: it detects that the div <em>depends</em>
-        on the URL that the button posted to, and so it automatically does a refresh of the div, issuing a <code>GET</code>
-        and, if the result is different than the elements current body, it swaps the new content in.<p>
-
-      <p>This is how Intercooler encodes UI dependencies: it uses URLs to determine what elements on the current page
-        need refreshing based on events and actions.</p>
+      <p>When the button is clicked, Intercooler it detects that the div <em>depends</em>
+        on the URL that the button posted to, and so it automatically does a refresh, issuing a <code>GET</code>
+        and swapping any new content into the div.<p>
 
       <div class="live-demo">
         <script>
@@ -127,10 +256,10 @@ nav: intro
         <button class="btn btn-primary" ic-post-to="/example/click">Click Me!</button>
       </div>
 
-      <h3>Adding Some Input</h3>
+      <h3>Adding Input</h3>
 
-      <p>Now let's make the example a bit more interactive by, rather than simply tracking clicks, allowing
-        the user to enter an item name that will be uploaded to the server.</p>
+      <p>In this example we will make things a bit more interactive by allowing the user to enter an item name that
+        will be uploaded to the server.</p>
 
       <div class="row">
         <pre>
@@ -146,7 +275,7 @@ nav: intro
 </pre>
       </div>
 
-      <p>We are tarketing a new URL, <code>/name</code>.  Notice that we've added the <code>ic-include</code>
+      <p>We are targeting a new URL, <code>/name</code> and we've added the <code>ic-include</code>
         attribute, which includes the input <code>#a_name</code> name and value in the POST that is
         submitted by the button.</p>
 
@@ -174,12 +303,10 @@ nav: intro
         <button class="btn btn-primary" ic-post-to="/name" ic-include="#a_name">Upload Name</button>
       </div>
 
-      <h3>Switching To A List</h3>
+      <h3>Switching To UL</h3>
 
-      <p>Now lets get a bit more dynamic, and let's switch the div to an HTML list.  We will prepend the added items to
-        it, rather than simply replacing the whole list.  This will make for a smoother UI experience.</p>
-
-      <p>To do this, we will use Intercooler's <code>ic-prepend-from</code> attribute</p>
+      <p>In this example we will switch the target from a div swap to a list prepend, using intercooler's
+        <a href="/attributes/ic-prepend-from.html"><code>ic-prepend-from</code></a> attribute</p>
 
       <div class="row">
         <pre>
@@ -191,9 +318,9 @@ nav: intro
         </pre>
       </div>
 
-      <p>We are tarketing yet another a new URL, <code>/items</code>.  As before, we are passing up the item
+      <p>As before, we are passing up the item
       name via the <code>ic-include</code> attribute, and we are limiting the number of children in the list
-      to a total of 3 with the <code>ic-limit-children</code> attirbute:</p>
+      to a total of 3 with the <code>ic-limit-children</code> attribute:</p>
 
       <div class="live-demo">
         <script>
@@ -221,7 +348,7 @@ nav: intro
 
       <h3>Implementing A Dynamic Progress Bar</h3>
 
-      <p>Finally, lets change gears entirely and rework the example to mimic a job-monitoring UI</p>
+      <p>Finally, lets finish with a relatively complicated example: a job-monitoring UI</p>
 
       <p>To do this, we will use Intercooler's <code>ic-style-src</code> attribute, which allows us to bind
       a style property to a URL.  The UI will first start of with a placeholder div.  When the button is clicked,
@@ -237,7 +364,7 @@ nav: intro
         </pre>
       </div>
 
-      <p>Pretty simple, just a div and a button that are both tied to the same URL.  Remember, this means that
+      <p>Pretty simple: a div and a button that are both tied to the same URL.  Remember, this means that
       the div depends on the button, and it will be refreshed after the button is clicked.</p>
 
       <p>When the button is clicked a (simulated) job is kicked off.  When a request for the div is made, the
@@ -310,155 +437,16 @@ nav: intro
         <div ic-src="/job">Job Not Running...</div>
       </div>
 
-    </div>
-  </div>
 
-  <div class="row">
-    <div class="col-md-12">
+    <h3>On To The Docs...</h3>
 
-      <h2>Intercooler Attributes</h2>
+    <p>That gives you a good overview of intercooler and what you can accomplish.  You can read about all the
+    attributes <a href="/attributes/all.html">here</a>, and the javascript API </p>
 
-      <p>With some examples out of the way, let's get down to how Intercooler really works.</p>
-
-      <p>The core of Intercooler is a set of attributes that enable dynamic behavior on HTML elements.  The
-      attributes can be broken up into various types: source attributes, action attributes, meta attributes, etc.</p>
-
-      <h3>Source Attributes</h3>
-
-      <p>Source attributes are used to tell Intercooler where to pull data from, action attributes tell Intercooler to
-        do something in response to a user action, and everything else falls into meta-attributes.</p>
-
-      <p>Here a few common source attributes:</p>
-
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th style="width:120px">Attribute</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="attributes/ic-src.html">ic-src</a></td>
-            <td>This attribute allows you to bind an element to a given URL. Once it is bound, when a change occurs that
-              Intercooler recognizes as affecting the URL (or given an event such as a poll), Intercooler will issue
-              a <code>GET</code> to the URL and replace the element with the new content, if it is different.
-            </td>
-          </tr>
-          <tr>
-            <td><a href="attributes/ic-style-src.html">ic-style-src</a></td>
-            <td>Like <code>ic-src</code>, this attribute allows you bind to a URL. However, this attribute binds a
-              <strong>style</strong> attribute to a URL. The syntax is "<em>style-attribute</em>:<em>url</em>". For
-              example,
-              to bind the color of an element to "/color/random", you would say
-              <code>ic-style-src="color:/color/random"</code></td>
-          </tr>
-          <tr>
-            <td><a href="attributes/ic-attr-src.html">ic-attr-src</a></td>
-            <td>Like <code>ic-style-src</code>, this attribute allows you bind to a URL. However, this attribute binds
-              an <strong>attribute value</strong> to a URL. The syntax is "<em>attribute</em>:<em>url</em>". For
-              example,
-              to bind the style of an element to "/style/random", you would say
-              <code>ic-attr-src="style:/style/random"</code></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>Action Attributes</h3>
-
-      <p>Action attributes are used to tell Intercooler to perform an AJAX request when an action occurs (typically a
-        click or an input value change).  Action attributes are often used in conjunction with the <code>ic-target</code>
-      attribute to update external elements.</p>
-
-      <p>Here are the most common action attributes:</p>
-
-      <table class="table table-striped table-hover">
-        <thead>
-        <tr>
-          <th style="width:120px">Attribute</th>
-          <th>Description</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td><a href="attributes/ic-post-to.html">ic-post-to</a></td>
-          <td>This attribute allows you to bind the "action" of an element to a given URL. Once it is bound, when an
-            "action" occurs (e.g. clicking a button) Intercooler will issue
-            a <code>POST</code> to the URL and replace the element with the new content, if it is different.
-            Intercooler will detect any other elements that the <code>POST</code> effects and automatically refresh them.
-          </td>
-        </tr>
-        <tr>
-          <td><a href="attributes/ic-put-to.html">ic-put-to</a></td>
-          <td>This attribute allows you to bind the "action" of an element to a given URL. Once it is bound, when an
-            "action" occurs (e.g. clicking a button) Intercooler will issue
-            a <code>PUT</code> to the URL and replace the element with the new content, if it is different.
-            Intercooler will detect any other elements that the <code>PUT</code> effects and automatically refresh them.
-          </td>
-        </tr>
-        <tr>
-          <td><a href="attributes/ic-delete-from.html">ic-delete-from</a></td>
-          <td>This attribute allows you to bind the "action" of an element to a given URL. Once it is bound, when an
-            "action" occurs (e.g. clicking a button) Intercooler will issue
-            a <code>DELETE</code> to the URL and replace the element with the new content, if it is different.
-            Intercooler will detect any other elements that the <code>DELETE</code> effects and automatically refresh them.
-          </td>
-        </tr>
-        </tbody>
-      </table>
-
-      <h3>Meta Attributes</h3>
-
-      <p>Meta attributes allow you to modify the behavior of the source and action attributes.</p>
-
-      <p>Some common meta attributes are:</p>
-
-      <table class="table table-striped table-hover">
-        <thead>
-        <tr>
-          <th style="width:120px">Attribute</th>
-          <th>Description</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td><a href="attributes/ic-poll.html">ic-poll</a></td>
-          <td>This attribute tells Intercooler to poll the source URL for the element it is on in a given interval,
-            expressed as milliseconds or seconds.  (e.g. '500ms' or '2s')</td>
-        </tr>
-        <tr>
-          <td><a href="attributes/ic-deps.html">ic-deps</a></td>
-          <td>This attribute allows you to express additional path dependencies for a given element, beyond the
-            <a href="dependencies.html#implied">implied ones</a>.</td>
-        </tr>
-        </tbody>
-      </table>
-
-      <h3>Attribute Reference</h3>
-
-      <p>You can find a reference for all Intercooler attributes here: <a href="/attributes/all.html">Intercooler
-        Attributes Reference</a></p>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-
-      <h2>Dependencies In Intercooler</h2>
-
-      <p>Intercooler manages dependencies by using the path of the URLs in the various <code>ic-src</code>,
-        <code>ic-deps</code> and action attributes.</p>
-
-      <p>A source path <em>depends</em> on an action path if it is a sub-path of the action path, or if the action path
-      is a sub-path of the source path.</p>
-
-      <p>This allows you to express your UI element dependencies in a natural, hierarchical manner that fits well with
-        many application patterns.</p>
-
-      <p>You can read more about how dependency management works <a href="dependencies.html">here</a>.</p>
-
+    <h3><a href="/tutorials/">Want more examples?  Check out the tutorials &rarr;</a></h3>
 
     </div>
   </div>
+
 
 </div>

@@ -23,18 +23,43 @@ nav: extending
         <tbody>
           <tr>
             <td>
-              <code>Intercooler.setLogger(logger)</code>
+              <code>Intercooler.defineTransition(transition)</code>
             </td>
             <td>
-              Sets a logger for intercooler to use (defaults to <code>window.console</code>
+              Lets you add a new transtion, which should implement the <code>newContent</code>, <code>remove</code>,
+              <code>hide</code> and <code>show</code> methods:
+              <pre>
+  Intercooler.defineTransition('fadeSlow', {
+      newContent : function(parent, newContent, isReverse, after){
+        parent.fadeOut('slow', function(){
+          parent.html(newContent);
+          after();
+          parent.fadeIn('slow');
+        })
+      },
+      remove : function(elt) {
+        elt.fadeOut('slow', function(){ elt.remove(); })
+      },
+      show : function(elt) {
+        elt.fadeIn('slow');
+      },
+      hide : function(elt) {
+        elt.fadeOut('slow');
+      }
+    });
+
+</pre>
             </td>
           </tr>
           <tr>
             <td>
-              <code>Intercooler.setLogLevel(Intercooler.logLevels.DEBUG)</code>
+              <code>Intercooler.defaultTransition(name)</code>
             </td>
             <td>
-              Sets the logging level for Intercooler
+              Lets you set the default transition to use
+              <pre>
+  Intercooler.defaultTransition('none');
+</pre>
             </td>
           </tr>
           <tr>
@@ -55,9 +80,11 @@ nav: extending
           </tr>
           <tr>
             <td>
-              <code>Intercooler.refresh(elt)</code>
+              <code>Intercooler.refresh(eltOrPath)</code>
             </td>
-            <td>Refreshes the given element manually</td>
+            <td>If the argument is an element, it will issue a new AJAX request. If it is a string path, it will issue
+              a request for all dependent elements.
+            </td>
           </tr>
         </tbody>
       </table>
@@ -76,7 +103,16 @@ nav: extending
         <tbody>
           <tr>
             <td>
-              <code>ic.beforeHeaders(elt, xhr)</code>
+              <code>log.ic(evt, msg, level, elt)</code>
+            </td>
+            <td>
+              Event fired when log messages occur internally in intercooler (can be used to debug specific
+              DOM elements.)
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>beforeHeaders.ic(evt, elt, xhr)</code>
             </td>
             <td>
               Triggered before intercooler headers are processed.
@@ -84,7 +120,7 @@ nav: extending
           </tr>
           <tr>
             <td>
-              <code>ic.afterHeaders(elt, xhr)</code>
+              <code>afterHeaders.ic(evt, elt, xhr)</code>
             </td>
             <td>
               Triggered after intercooler headers are processed.
@@ -92,7 +128,7 @@ nav: extending
           </tr>
           <tr>
             <td>
-              <code>ic.beforeSend(elt, data)</code>
+              <code>beforeSend.ic(evt, elt, data)</code>
             </td>
             <td>
               Triggered before sending an intercooler AJAX request to the server.  The second argument to the event is
@@ -101,7 +137,7 @@ nav: extending
           </tr>
           <tr>
             <td>
-              <code>ic.success(elt, data, textStatus, xhr)</code>
+              <code>success.ic(evt, elt, data, textStatus, xhr)</code>
             </td>
             <td>
               Triggered after a successful intercooler request is received
@@ -109,7 +145,7 @@ nav: extending
           </tr>
           <tr>
             <td>
-              <code>ic.error(elt, req, status, str)</code>
+              <code>error.ic(evt, elt, req, status, str)</code>
             </td>
             <td>
               Triggered after an error occurs during an intercooler request
@@ -117,7 +153,7 @@ nav: extending
           </tr>
           <tr>
             <td>
-              <code>ic.complete(elt, data)</code>
+              <code>complete.ic(evt, elt, data)</code>
             </td>
             <td>
               Triggered after an intercooler request completes, regardless of status
@@ -125,7 +161,7 @@ nav: extending
           </tr>
           <tr>
             <td>
-              <code>ic.onPoll(elt)</code>
+              <code>onPoll.ic(evt, elt)</code>
             </td>
             <td>
               Triggered before a poll request is dispatched
@@ -141,9 +177,9 @@ nav: extending
 
       <pre>
         $(function(){
-          $('.btn').on('ic.beforeSend', function(){
+          $('.btn').on('beforeSend.ic', function(){
             $.blockUI();
-          }).on('ic.complete', function(){
+          }).on('complete.ic', function(){
             $.unblockUI();
           });
         })
