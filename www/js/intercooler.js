@@ -839,7 +839,7 @@ var Intercooler = Intercooler || (function () {
         var target = getTarget(elt);
         var id = target.attr('id');
         _historySupport.stateCache["id-to-restore"] = id.toString();
-        window.history.replaceState(_historySupport.stateCache);
+        window.history.replaceState(_historySupport.stateCache, "", _historySupport.stateCache['restore-from']);
         _historySupport.stateCache = null;
       }
     },
