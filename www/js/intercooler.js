@@ -602,7 +602,6 @@ var Intercooler = Intercooler || (function () {
       } else {
         $(elt).on(eventFor($(elt).attr('ic-trigger-on'), $(elt)), function (e) {
           fireICRequest($(elt));
-          refreshDependencies($(elt).attr('ic-src'), $(elt));
           if(preventDefault(elt)){
             e.preventDefault();
             return false;
@@ -765,7 +764,8 @@ var Intercooler = Intercooler || (function () {
     var styleTarget = getStyleTarget(elt);
     var attrTarget = styleTarget ? null : getAttrTarget(elt);
     if (elt.attr('ic-src')) {
-      handleRemoteRequest(elt, verbFor(elt), elt.attr('ic-src'), getParametersForElement(elt),
+      var verb = verbFor(elt);
+      handleRemoteRequest(elt, verb, elt.attr('ic-src'), getParametersForElement(elt),
         function (data) {
           if (styleTarget) {
             elt.css(styleTarget, data);
@@ -773,6 +773,9 @@ var Intercooler = Intercooler || (function () {
             elt.attr(attrTarget, data);
           } else {
             processICResponse(data, elt);
+            if(verb != 'GET') {
+              refreshDependencies(elt.attr('ic-src'), elt);
+            }
           }
         });
     }
