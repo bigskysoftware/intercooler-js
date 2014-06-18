@@ -306,8 +306,10 @@ var Intercooler = Intercooler || (function () {
           handleTestResponse(elt, success, returnVal)
         }
         if (type == "DELETE") {
-          if(handler.delete) {
-            returnVal = handler.delete(url, parseParams(data));
+          // using handler.delete() throws a parse error in IE8
+          // http://tech.pro/tutorial/1238/angularjs-and-ie8-gotcha-http-delete
+          if(handler['delete']) {
+            returnVal = handler['delete'](url, parseParams(data));
           }
           handleTestResponse(elt, success, returnVal)
         }
