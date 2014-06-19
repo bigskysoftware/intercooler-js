@@ -214,6 +214,15 @@ var Intercooler = Intercooler || (function () {
       target = getTarget(elt);
       target.data("ic-tmp-transition", xhr.getResponseHeader("X-IC-Transition"));
     }
+    if(xhr.getResponseHeader("X-IC-Trigger")) {
+      log(elt, "IC HEADER: found trigger " + xhr.getResponseHeader("X-IC-Trigger"), "DEBUG");
+      target = getTarget(elt);
+      var triggerArgs = [];
+      if(xhr.getResponseHeader("X-IC-Trigger-Data")){
+        triggerArgs = $.parseJSON(xhr.getResponseHeader("X-IC-Trigger-Data"))
+      }
+      target.trigger(xhr.getResponseHeader("X-IC-Trigger"), triggerArgs);
+    }
     if (xhr.getResponseHeader("X-IC-Remove")) {
       if (elt) {
         target = getTarget(elt);
@@ -277,6 +286,12 @@ var Intercooler = Intercooler || (function () {
 
   function handleRemoteRequest(elt, type, url, data, success) {
 
+    if($(elt).attr('ic-confirm')) {
+      if(!confirm($(elt).attr('ic-confirm'))) {
+        return;
+      }
+    }
+
     data = replaceOrAddMethod(data, type);
 
     var pop = data.indexOf("&ic-handle-pop=true") >= 0;
@@ -306,8 +321,10 @@ var Intercooler = Intercooler || (function () {
           handleTestResponse(elt, success, returnVal)
         }
         if (type == "DELETE") {
-          if(handler.delete) {
-            returnVal = handler.delete(url, parseParams(data));
+          // using handler.delete() throws a parse error in IE8
+          // http://tech.pro/tutorial/1238/angularjs-and-ie8-gotcha-http-delete
+          if(handler['delete']) {
+            returnVal = handler['delete'](url, parseParams(data));
           }
           handleTestResponse(elt, success, returnVal)
         }
