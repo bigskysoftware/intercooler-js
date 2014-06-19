@@ -1,0 +1,36 @@
+---
+layout: default
+nav: dependencies
+---
+
+<div class="container">
+  <h2>Intercooler 0.4.0 Changes</h2>
+
+  <h4>Change List</h4>
+
+  <ul>
+    <li>Added the <a href="/responses.html#http_headers"><code>X-IC-Trigger</code></a> response header to trigger client
+      side event
+      handlers.
+    </li>
+    <li>Added the <a href="/attributes/ic-confirm.html"><code>ic-confirm</code></a> attribute.</li>
+    <li>Merged a fix for <a href="https://github.com/LeadDyno/intercooler-js/pull/19">an IE8 compatibility issue</a>.
+    </li>
+  </ul>
+
+  <h4>Commentary</h4>
+
+  <p>
+    The big change (small code change, but <strong>big</strong> conceptual change!) is the <code>X-IC-Trigger</code>
+    header, which finally solves a tricky problem I've been wrestling with: How do you communicate server side state
+    changes that have client-side UI ramifications that are outside the usual Intercooler request-and-replace
+    flow?
+  </p>
+
+  <p>This new mechanism allows you to cleanly separate your server side logic and your client-side logic even in
+  cases where the normal flow isn't enough.</p>
+
+  <p>A great example is if you want to hide a modal if and only if a form
+    in the modal saved properly via an intercooler request.</p>
+
+</div>
