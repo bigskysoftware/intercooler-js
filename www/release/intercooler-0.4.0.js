@@ -753,7 +753,9 @@ var Intercooler = Intercooler || (function () {
       if (fingerprint(dummy.html()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
         var transition = getTransition(elt, target);
         transition.newContent(target, newContent, false, function () {
-          processNodes(target);
+          $(target).children().each(function() {
+            processNodes($(this));
+          });
           updateIntercoolerMetaData(target);
         });
       }

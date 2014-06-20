@@ -798,6 +798,49 @@
   });
 </script>
 
+<span id="double_request_test" ic-post-to="/double_req_test">Text</span>
+<script>
+  test("No double-wiring of events after a refresh", function () {
+    var count = 0;
+    Intercooler.addURLHandler({
+      "url": "/double_req_test",
+      "post": function (url, params) {
+        count += 1;
+        return "Text" + count;
+      }
+    });
+    $("#double_request_test").click();
+    equal(1, count);
+    $("#double_request_test").click();
+    equal(2, count);
+  });
+</script>
+
+<span id="child_wiring_test" ic-post-to="/child_wiring_test"></span>
+<script>
+  test("Children are wired in properly", function () {
+    var childPosted = false;
+
+    Intercooler.addURLHandler({
+      "url": "/child_wiring_test",
+      "post": function (url, params) {
+        return "<span id='child_wiring_test2' ic-post-to='/new_child_wiring_test'>Child</span>"
+      }
+    });
+    Intercooler.addURLHandler({
+      "url": "/new_child_wiring_test",
+      "post": function (url, params) {
+        childPosted = true;
+        return "";
+      }
+    });
+
+    $("#child_wiring_test").click();
+    $("#child_wiring_test2").click();
+    equal(true, childPosted);
+  });
+</script>
+
 
 
 </div>
