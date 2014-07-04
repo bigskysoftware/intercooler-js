@@ -23,7 +23,11 @@ var Intercooler = Intercooler || (function () {
 
   var _UUID = 1;
 
-  //============================================================
+  var _isDependentFunction = function (src, dest) {
+      return (src && dest) && (dest.indexOf(src) == 0 || src.indexOf(dest) == 0);
+  };
+
+    //============================================================
   // Base Transition Definitions
   //============================================================
   var _transitions = {};
@@ -576,7 +580,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function isDependent(src, dest) {
-    return (src && dest) && (dest.indexOf(src) == 0 || src.indexOf(dest) == 0);
+    return _isDependentFunction(src, dest);
   }
 
   //============================================================----
@@ -907,7 +911,7 @@ var Intercooler = Intercooler || (function () {
       }
       return Intercooler;
     },
-    
+
     processNodes: function(elt) {
       return processNodes(elt);
     },
@@ -918,6 +922,10 @@ var Intercooler = Intercooler || (function () {
 
     defineTransition: function (name, def) {
       _defineTransition(name, def);
+    },
+
+    isDependentFunction: function (func) {
+        _isDependentFunction = func;
     },
 
     /* ===================================================
