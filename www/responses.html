@@ -45,6 +45,41 @@ nav: responses
         sending down unnecessary updates, caching, etc.</li>
       </ul>
 
+      <h4>Request Headers</h4>
+
+      <p>
+        Intercooler requests include a few request headers:
+      </p>
+
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th style="width:360px">Header</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <code>X-IC-Request</code>
+            </td>
+            <td>
+              Set to <code>true</code>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>X-HTTP-Method-Override</code>
+            </td>
+            <td>
+              Set to the HTTP Method type (e.g. <code>DELETE</code>) for the request, to communicate the actual
+              request type to the server if it cannot be directly supported by the client.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+
       <h4>Additional Parameters</h4>
 
       <p>
