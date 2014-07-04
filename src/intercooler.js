@@ -905,6 +905,10 @@ var Intercooler = Intercooler || (function () {
       }
       return Intercooler;
     },
+    
+    processNodes: function(elt) {
+      return processNodes(elt);
+    },
 
     defaultTransition: function (name) {
       _defaultTransition = name;
