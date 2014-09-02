@@ -515,16 +515,19 @@ var Intercooler = Intercooler || (function () {
       var interval = parseInterval(elt.attr('ic-poll'));
       if(interval != null) {
         var selector = icSelectorFor(elt);
+        var repeats =  parseInt(elt.attr('ic-poll-repeats')) || -1;
+        var currentIteration = 0;
         log(elt, "POLL: Starting poll for element " + selector, "DEBUG");
         var timerId = setInterval(function () {
           var target = $(selector);
           elt.trigger("onPoll.ic", target);
-          if (target.length == 0) {
+          if ((target.length == 0) || (currentIteration == repeats)) {
             log(elt, "POLL: Clearing poll for element " + selector, "DEBUG");
             clearTimeout(timerId);
           } else {
             fireICRequest(target);
           }
+          currentIteration++;
         }, interval);
         elt.data('ic-poll-interval-id', timerId);
       }
@@ -750,9 +753,11 @@ var Intercooler = Intercooler || (function () {
     if (newContent && /\S/.test(newContent)) {
       log(elt, "IC RESPONSE: Received: " + newContent, "DEBUG");
       var target = getTarget(elt);
-      var dummy = $("<div></div>").html(newContent);
+      var dummy = document.createElement('div');
+      dummy.innerHTML = newContent;
+      $(dummy).find('script').remove();
       processMacros(dummy);
-      if (fingerprint(dummy.html()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
+      if (fingerprint($(dummy).html()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
         var transition = getTransition(elt, target);
         transition.newContent(target, newContent, false, function () {
           $(target).children().each(function() {
