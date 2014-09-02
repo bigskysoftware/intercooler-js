@@ -753,9 +753,11 @@ var Intercooler = Intercooler || (function () {
     if (newContent && /\S/.test(newContent)) {
       log(elt, "IC RESPONSE: Received: " + newContent, "DEBUG");
       var target = getTarget(elt);
-      var dummy = $("<div></div>").html(newContent);
+      var dummy = document.createElement('div');
+      dummy.innerHTML = newContent;
+      $(dummy).find('script').remove();
       processMacros(dummy);
-      if (fingerprint(dummy.html()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
+      if (fingerprint($(dummy).html()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
         var transition = getTransition(elt, target);
         transition.newContent(target, newContent, false, function () {
           $(target).children().each(function() {
