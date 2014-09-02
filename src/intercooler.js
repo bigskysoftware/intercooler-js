@@ -515,16 +515,19 @@ var Intercooler = Intercooler || (function () {
       var interval = parseInterval(elt.attr('ic-poll'));
       if(interval != null) {
         var selector = icSelectorFor(elt);
+        var repeats =  parseInt(elt.attr('ic-poll-repeats')) || -1;
+        var currentIteration = 0;
         log(elt, "POLL: Starting poll for element " + selector, "DEBUG");
         var timerId = setInterval(function () {
           var target = $(selector);
           elt.trigger("onPoll.ic", target);
-          if (target.length == 0) {
+          if ((target.length == 0) || (currentIteration == repeats)) {
             log(elt, "POLL: Clearing poll for element " + selector, "DEBUG");
             clearTimeout(timerId);
           } else {
             fireICRequest(target);
           }
+          currentIteration++;
         }, interval);
         elt.data('ic-poll-interval-id', timerId);
       }
