@@ -420,45 +420,61 @@ var Intercooler = Intercooler || (function () {
     return params;
   }
 
-  function processIncludes(str) {
-    var returnString = "";
-    $(str).each(function(){
-      returnString += "&" + $(this).serialize();
+  function serializeObject(obj) {
+    var o = {};
+    var a = obj.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
     });
-    return returnString;
+    return o;
+  }
+
+  function processIncludes(obj) {
+    var returnObj = {};
+    $(obj).each(function(){
+      $.extend(serializeObject($(this)));
+    });
+    return returnObj;
   }
 
   function getParametersForElement(elt) {
     var target = getTarget(elt);
-    var str = "ic-request=true";
+    var params = {"ic-request": "true"};
 
     // if the element is in a form, include the entire form
     if(elt.closest('form').length > 0) {
-      str += "&" + elt.closest('form').serialize();
+      $.extend(params, serializeObject(elt.closest('form')));
     } else { // otherwise include the element
-      str += "&" + elt.serialize();
+      $.extend(params, serializeObject(elt));
     }
 
     if (elt.attr('id')) {
-      str += "&ic-element-id=" + elt.attr('id');
+      params["ic-element-id"] = elt.attr('id');
     }
     if (elt.attr('name')) {
-      str += "&ic-element-name=" + elt.attr('name');
+      params["ic-element-name"] = elt.attr('name');
     }
     if (target.attr('ic-id')) {
-      str += "&ic-id=" + target.attr('ic-id');
+      params["ic-id"] = target.attr('ic-id');
     }
     if (target.attr('ic-last-refresh')) {
-      str += "&ic-last-refresh=" + target.attr('ic-last-refresh');
+      params["ic-last-refresh"] = target.attr('ic-last-refresh');
     }
     if (target.attr('ic-fingerprint')) {
-      str += "&ic-fingerprint=" + target.attr('ic-fingerprint');
+      params["ic-fingerprint"] = target.attr('ic-fingerprint');
     }
     if (elt.attr('ic-include')) {
-      str += processIncludes(elt.attr('ic-include'));
+      $.extend(processIncludes(elt.attr('ic-include')));
     }
-    log(elt, "PARAMS: Returning parameters " + str + " for " + elt, "DEBUG");
-    return str;
+    log(elt, "PARAMS: Returning parameters " + $.param(params) + " for " + elt, "DEBUG");
+    return $.param(params);
   }
 
   function maybeSetIntercoolerInfo(elt) {
@@ -515,16 +531,19 @@ var Intercooler = Intercooler || (function () {
       var interval = parseInterval(elt.attr('ic-poll'));
       if(interval != null) {
         var selector = icSelectorFor(elt);
+        var repeats =  parseInt(elt.attr('ic-poll-repeats')) || -1;
+        var currentIteration = 0;
         log(elt, "POLL: Starting poll for element " + selector, "DEBUG");
         var timerId = setInterval(function () {
           var target = $(selector);
           elt.trigger("onPoll.ic", target);
-          if (target.length == 0) {
+          if ((target.length == 0) || (currentIteration == repeats)) {
             log(elt, "POLL: Clearing poll for element " + selector, "DEBUG");
             clearTimeout(timerId);
           } else {
             fireICRequest(target);
           }
+          currentIteration++;
         }, interval);
         elt.data('ic-poll-interval-id', timerId);
       }
@@ -750,9 +769,11 @@ var Intercooler = Intercooler || (function () {
     if (newContent && /\S/.test(newContent)) {
       log(elt, "IC RESPONSE: Received: " + newContent, "DEBUG");
       var target = getTarget(elt);
-      var dummy = $("<div></div>").html(newContent);
+      var dummy = document.createElement('div');
+      dummy.innerHTML = newContent;
+      $(dummy).find('script').remove();
       processMacros(dummy);
-      if (fingerprint(dummy.html()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
+      if (fingerprint($(dummy).html()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
         var transition = getTransition(elt, target);
         transition.newContent(target, newContent, false, function () {
           $(target).children().each(function() {
