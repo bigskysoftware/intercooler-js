@@ -25,6 +25,9 @@ nav: attributes > ic-src
 
       <p>The value of the attribute should be a valid relative path (e.g. <code>ic-src="/foo/bar"</code>).</p>
 
+      <p>The value of the attribute may also include a <i>fragment identifier</i> (e.g. <code>ic-src="/foo#bar"</code>).
+      In this case, everything on the page except the element whose ID matches the fragment identifier is ignored.</p>
+
       <h3>Dependencies</h3>
 
       <p><code>ic-src</code> implies a dependency on its path, and Intercooler will issue requests for elements

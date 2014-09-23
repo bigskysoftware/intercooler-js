@@ -746,13 +746,17 @@ var Intercooler = Intercooler || (function () {
     return transition;
   }
 
-  function processICResponse(newContent, elt) {
+  function processICResponse(newContent, elt, hash) {
     if (newContent && /\S/.test(newContent)) {
       log(elt, "IC RESPONSE: Received: " + newContent, "DEBUG");
       var target = getTarget(elt);
       var dummy = $("<div></div>").html(newContent);
+      var match = hash && dummy.find(hash);
+      if (match) dummy = match;
       processMacros(dummy);
-      if (fingerprint(dummy.html()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
+      if (match) newContent = dummy.html();
+      var print = fingerprint(match ? newContent : dummy.html());
+      if (print != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
         var transition = getTransition(elt, target);
         transition.newContent(target, newContent, false, function () {
           $(target).children().each(function() {
@@ -781,19 +785,26 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
+  function getURLHash(src) {
+    var a = document.createElement('a');
+    a.href = src;
+    return a.hash;
+  }
+
   function fireICRequest(elt) {
     var styleTarget = getStyleTarget(elt);
     var attrTarget = styleTarget ? null : getAttrTarget(elt);
-    if (elt.attr('ic-src')) {
+    var icSrc = elt.attr('ic-src');
+    if (icSrc) {
       var verb = verbFor(elt);
-      handleRemoteRequest(elt, verb, elt.attr('ic-src'), getParametersForElement(elt),
+      handleRemoteRequest(elt, verb, icSrc, getParametersForElement(elt),
         function (data) {
           if (styleTarget) {
             elt.css(styleTarget, data);
           } else if (attrTarget) {
             elt.attr(attrTarget, data);
           } else {
-            processICResponse(data, elt);
+            processICResponse(data, elt, getURLHash(icSrc));
             if(verb != 'GET') {
               refreshDependencies(elt.attr('ic-src'), elt);
             }
@@ -907,7 +918,7 @@ var Intercooler = Intercooler || (function () {
       }
       return Intercooler;
     },
-    
+
     processNodes: function(elt) {
       return processNodes(elt);
     },
