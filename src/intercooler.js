@@ -22,6 +22,8 @@ var Intercooler = Intercooler || (function () {
   var _scrollHandler = null;
 
   var _UUID = 1;
+  
+  var _sendXHTTPMethodOverride = true;
 
   //============================================================
   // Base Transition Definitions
@@ -280,8 +282,8 @@ var Intercooler = Intercooler || (function () {
     if(regex.test(data)) {
       return data.replace(regex, content)
     } else {
-      return data + "&" + content;
-    }
+	  return data + content;
+	}
   }
 
   function handleRemoteRequest(elt, type, url, data, success) {
@@ -340,18 +342,21 @@ var Intercooler = Intercooler || (function () {
     if(indicator.length > 0) {
       indicatorTransition.show(indicator);
     }
+	
+	var headers = [];
+	headers.push("Accept", "text/html-partial, */*; q=0.9");
+    headers.push("X-IC-Request", true);
+	if (_sendXHTTPMethodOverride) {
+		headers.push("X-HTTP-Method-Override", type);
+    }
 
     _remote.ajax({
       type: type,
       url: url,
       data: data,
       dataType: 'text',
-      headers: {
-        "Accept": "text/html-partial, */*; q=0.9",
-        "X-IC-Request": true,
-        "X-HTTP-Method-Override": type
-      },
-      beforeSend : function(xhr, settings){
+      headers: headers,
+	  beforeSend : function(xhr, settings){
         elt.trigger("beforeSend.ic", elt, data, settings, xhr);
       },
       success: function (data, textStatus, xhr) {
@@ -918,6 +923,10 @@ var Intercooler = Intercooler || (function () {
 
     defineTransition: function (name, def) {
       _defineTransition(name, def);
+    },
+	
+	sendXHTTPMethodOverride: function (flag) {
+      _sendXHTTPMethodOverride = flag;
     },
 
     /* ===================================================
