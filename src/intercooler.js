@@ -361,6 +361,9 @@ var Intercooler = Intercooler || (function () {
         if (processHeaders(elt, xhr, pop)) {
           success(data, textStatus, elt, xhr);
         }
+        if($(elt).attr('ic-success-on')) {
+          window.eval.call(window,'(function (data) {'+ $(elt).attr('ic-success-on') +'})')(data);
+        }
         target.data("ic-tmp-transition", null);
       },
       error: function (xhr, status, str) {
