@@ -756,11 +756,18 @@ var Intercooler = Intercooler || (function () {
     if (newContent && /\S/.test(newContent)) {
       log(elt, "IC RESPONSE: Received: " + newContent, "DEBUG");
       var target = getTarget(elt);
-      var dummy = document.createElement('div');
-      dummy.innerHTML = newContent;
-      $(dummy).find('script').remove();
-      processMacros(dummy);
-      if (fingerprint($(dummy).html()) != target.attr('ic-fingerprint') || target.attr('ic-always-update') == 'true') {
+
+      // always update if the user tells us to or if there is a script (to reevaluate the script)
+      var updateContent = target.attr('ic-always-update') == 'true' || newContent.indexOf("<script>") >= 0;
+      if(updateContent == false) {
+        var dummy = document.createElement('div');
+        dummy.innerHTML = newContent;
+        processMacros(dummy);
+        updateContent = fingerprint($(dummy).html()) != target.attr('ic-fingerprint');
+        dummy.remove();
+      }
+
+      if (updateContent) {
         var transition = getTransition(elt, target);
         transition.newContent(target, newContent, false, function () {
           $(target).children().each(function() {
@@ -769,7 +776,6 @@ var Intercooler = Intercooler || (function () {
           updateIntercoolerMetaData(target);
         });
       }
-      dummy.remove();
     }
   }
 

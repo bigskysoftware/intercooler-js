@@ -841,6 +841,22 @@
   });
 </script>
 
+<span id="double_eval_of_scripts" ic-post-to="/double_eval"></span>
+<script>
+  test("Scripts are evaluated once", function () {
+    Intercooler.addURLHandler({
+      "url": "/double_eval" ,
+      "post": function (url, params) {
+          var tm = "New Content.. <scrip" + "t>window.double_eval = window.double_eval + 1;" + "</s" + "cript>";
+          return  tm
+      }
+    });
+    window.double_eval = 0;
+    $("#double_eval_of_scripts").click();
+    equal(window.double_eval, 1);
+  });
+</script>
+
 
 
 </div>
