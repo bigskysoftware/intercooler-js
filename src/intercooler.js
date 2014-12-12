@@ -353,25 +353,42 @@ var Intercooler = Intercooler || (function () {
       },
       beforeSend : function(xhr, settings){
         elt.trigger("beforeSend.ic", elt, data, settings, xhr);
+        var onBeforeSend = $(elt).closest('[ic-on-beforeSend]').attr('ic-on-beforeSend');
+        if(onBeforeSend) {
+          $.globalEval('(function (data, settings, xhr) {' + onBeforeSend + '})')(data, settings, xhr);
+        }
       },
       success: function (data, textStatus, xhr) {
         elt.trigger("success.ic", elt, data, textStatus, xhr);
+        var onSuccess = $(elt).closest('[ic-on-success]').attr('ic-on-success');
+        if(onSuccess) {
+          if($.globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr) == false) {
+            return;
+          }
+        }
+
         var target = getTarget(elt);
         target.data("ic-tmp-transition",  elt.attr('ic-transition')); // copy transition
         if (processHeaders(elt, xhr, pop)) {
           success(data, textStatus, elt, xhr);
         }
-        if($(elt).attr('ic-success-on')) {
-          window.eval.call(window,'(function (data) {'+ $(elt).attr('ic-success-on') +'})')(data);
-        }
+
         target.data("ic-tmp-transition", null);
       },
       error: function (xhr, status, str) {
         elt.trigger("error.ic", elt, status, str, xhr);
+        var onError = $(elt).closest('[ic-on-error]').attr('ic-on-error');
+        if(onError) {
+          $.globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
+        }
         log(elt, "An error occurred: " + str, "ERROR");
       },
       complete : function(xhr, status){
         elt.trigger("complete.ic", elt, data, status, xhr);
+        var onComplete = $(elt).closest('[ic-on-complete]').attr('ic-on-complete');
+        if(onComplete) {
+          $.globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
+        }
         if (indicator.length > 0) {
           indicatorTransition.hide(indicator);
         }
