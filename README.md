@@ -1,63 +1,55 @@
 # Intercooler.js
 
-## What it is
+## Introduction
 
-Intercooler is a [PVC](http://intercoolerjs.org/why.html) framework that allows
-you to add AJAX to your application with declarative HTML5-style bindings and
-REST-ful URLs, giving web applications a richer UX with a minimum of code.
+Intercooler is a small javascript library that allows you to add AJAX to your web application with
+simple HTML5 attributes.  This makes adding AJAX (almost) as simple as adding an anchor tag.
 
-## What that means
+Here is an example:
 
-It makes AJAX simple, you don't even need to write any JavaScript! Here's an
-example of a basic `POST` request:
-
-    // When this is clicked, a post request is sent to /example
+    // When this button is clicked an AJAX POST request is sent to /example and the response is
+    // swapped in to the body of the button
     <button ic-post-to="/example">
         Click Me!
     </button>
 
-    // When a post request is sent to /example, the response goes here
-    <span ic-src="/example"></span>
+Despite its small size, Intercooler supports quite a bit of functionality. Some examples:
 
-## How to use
+* Specifying the event that causes an AJAX request
+* Custom response headers for meta-actions
+* A well developed event hook system
+* Explicit and implicit dependencies between HTML elements
+* A javascript API
 
-Intercooler depends on JQuery and can be installed like this:
+Full documentation is available on the [main Intercooler website](http://intercoolerjs.org/)
 
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="https://s3.amazonaws.com/intercoolerjs.org/release/intercooler-0.0.1.min.js"></script>
+## Installing
 
-Or you can [download the latest
-version](http://intercoolerjs.org/download.html) and embed it locally.
+Intercooler is just another javascript library can be downloaded or hot-linked [from the downloads page](http://intercoolerjs.org/download.html).
 
-## More examples
+## License
 
-### Polling
+Intercooler is licenced under the MIT License (see LICENSE)
 
-Send a `GET` request to "/visitors/count" every two seconds and update the
-innerHTML to the response:
+## Contributing
 
-    <div ic-src="/visitors/count" ic-poll="2s">
-        There are currently 42 users online.
-    </div>
+To contribute a change to Intercooler please try to follow this workflow:
 
-### Adding input
+* Fork the main intercooler repository
+* Create a new feature branch with a reasonably descriptive name (e.g. fix_http_get_parameter_overriding)
+* Implement your fix, trying not to mix multiple fixes/improvements in the same feature branch
+* Create a pull request for that branch against master in the main repository
+* Add yourself to the "Contributors" section below
 
-This AJAX includes the value of `#password` in it's request.
+This keeps changes from bleeding into one another and makes my life easier.
 
-    Enter a password: <input id="password" name="pass">
+## Contributors
 
-    <button ic-post-to="/hash/sha256" ic-include="#password">
-        Hash password
-    </button>
-
-    <div ic-src="/hash/sha256">
-        Your hashed password will go here
-    </div>
+* carsongross
+* matdrapeau
+* mindreframer
+* juggy
+* niv
+* coffeecodecouch
 
 
-Learn more at [intercoolerjs.org](http://intercoolerjs.org) (there's lots
-more!).
-
-## Versioning
-
-We have adopted [Semantic Versioning](http://semver.org/) for IntercoolerJS as of the 0.2.0 release.
