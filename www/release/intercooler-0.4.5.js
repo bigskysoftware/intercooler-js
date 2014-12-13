@@ -284,6 +284,10 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
+  function globalEval(script) {
+    return window[ "eval" ].call(window, script);
+  }
+
   function handleRemoteRequest(elt, type, url, data, success) {
 
     if($(elt).attr('ic-confirm')) {
@@ -355,14 +359,14 @@ var Intercooler = Intercooler || (function () {
         elt.trigger("beforeSend.ic", elt, data, settings, xhr);
         var onBeforeSend = $(elt).closest('[ic-on-beforeSend]').attr('ic-on-beforeSend');
         if(onBeforeSend) {
-          $.globalEval('(function (data, settings, xhr) {' + onBeforeSend + '})')(data, settings, xhr);
+          globalEval('(function (data, settings, xhr) {' + onBeforeSend + '})')(data, settings, xhr);
         }
       },
       success: function (data, textStatus, xhr) {
         elt.trigger("success.ic", elt, data, textStatus, xhr);
         var onSuccess = $(elt).closest('[ic-on-success]').attr('ic-on-success');
         if(onSuccess) {
-          if($.globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr) == false) {
+          if(globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr) == false) {
             return;
           }
         }
@@ -379,7 +383,7 @@ var Intercooler = Intercooler || (function () {
         elt.trigger("error.ic", elt, status, str, xhr);
         var onError = $(elt).closest('[ic-on-error]').attr('ic-on-error');
         if(onError) {
-          $.globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
+          globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
         }
         log(elt, "An error occurred: " + str, "ERROR");
       },
@@ -387,7 +391,7 @@ var Intercooler = Intercooler || (function () {
         elt.trigger("complete.ic", elt, data, status, xhr);
         var onComplete = $(elt).closest('[ic-on-complete]').attr('ic-on-complete');
         if(onComplete) {
-          $.globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
+          globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
         }
         if (indicator.length > 0) {
           indicatorTransition.hide(indicator);

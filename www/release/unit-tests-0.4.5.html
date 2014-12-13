@@ -857,6 +857,16 @@
   });
 </script>
 
+<span id="ic_on_event_test" ic-on-beforeSend="icOnBeforeSend++" ic-post-to="bad_url"></span>
+<script>
+  //TODO cgross - need to figure out how to test this effectively
+//  test("ic-on-beforeSend is invoked", function () {
+//    window.icOnBeforeSend = 0;
+//    $("#ic_on_event_test").click();
+//    equal(window.icOnBeforeSend, 1);
+//  });
+</script>
+
 
 
 </div>
