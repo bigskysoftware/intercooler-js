@@ -19,7 +19,7 @@ Despite its small size, Intercooler supports quite a bit of functionality. Some 
 * Custom response headers for meta-actions
 * A well developed event hook system
 * Explicit and implicit dependencies between HTML elements
-* A javascript API
+* A javascript API for interoperability with other javascript libraries
 
 Full documentation is available on the [main Intercooler website](http://intercoolerjs.org/)
 
@@ -36,7 +36,7 @@ Intercooler is licenced under the MIT License (see LICENSE)
 To contribute a change to Intercooler please try to follow this workflow:
 
 * Fork the main intercooler repository
-* Create a new feature branch with a reasonably descriptive name (e.g. fix_http_get_parameter_overriding)
+* Create a new feature branch based on the master branch with a reasonably descriptive name (e.g. fix_http_get_parameter_overriding)
 * Implement your fix, trying not to mix multiple fixes/improvements in the same feature branch
 * Create a pull request for that branch against master in the main repository
 * Add yourself to the "Contributors" section below
