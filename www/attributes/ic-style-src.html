@@ -44,12 +44,11 @@ nav: attributes > ic-style-src
         <script>
           (function () {
             var init = new Date().getTime() / 1000;
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/color',
-              'get': function () {
+              response : function () {
                 var seconds = (Math.floor((new Date().getTime() / 1000) - init) * 25) % 256;
-
-                return "rgb(" + seconds + ",0,0)";
+                this.responseText = "rgb(" + seconds + ",0,0)";
               }
             });
           })();

@@ -31,17 +31,16 @@ nav: attributes > ic-limit-children
       <div class="live-demo">
         <script>
           (function () {
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/list_src',
-              'get': function () {
+              'response': function () {
                 function randIp() {
                   function getOctet() {
                     return Math.round(Math.random()*255);
                   }
-                  //generate the ipaddress
-                  return getOctet() + '.' + getOctet() + '.' + getOctet() + '.' + getOctet();
+1                  return getOctet() + '.' + getOctet() + '.' + getOctet() + '.' + getOctet();
                 }
-                return "<li>Being looked at by " + randIp() + "</li>";
+                this.responseText = "<li>Being looked at by " + randIp() + "</li>";
               }
             });
           })();

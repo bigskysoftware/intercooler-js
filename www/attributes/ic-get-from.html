@@ -47,10 +47,10 @@ nav: attributes > ic-get-from
         <script>
           (function () {
             var init = Math.floor(new Date().getTime() / 1000);
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/target_url',
-              'get': function () {
-                return '<span ic-src="/target_url">Thanks for clicking!</span>'
+              'response': function () {
+                this.responseText = '<span ic-src="/target_url">Thanks for clicking!</span>'
               }
             });
           })();

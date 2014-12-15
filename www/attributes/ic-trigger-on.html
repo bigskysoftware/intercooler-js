@@ -48,11 +48,9 @@ nav: attributes > ic-trigger-on
         <script>
           (function () {
             var clicks = 0;
-            Intercooler.addURLHandler({
-              'url': '/get_it',
-              'get': function () {
-                return  "Loaded!!!";
-              }
+            $.mockjax({
+              url: '/get_it',
+              responseText: "Loaded!!!"
             });
           })();
         </script>

@@ -39,14 +39,9 @@ nav: attributes > ic-indicator
 
       <div class="live-demo">
         <script>
-          (function () {
-            Intercooler.addURLHandler({
-              'url': '/target_url',
-              'post': function() {
-                return "";
-              }
-            });
-          })();
+          $.mockjax({
+            'url': '/target_url'
+          });
         </script>
 
         <button class="btn btn-lg btn-primary" ic-post-to="/target_url" ic-indicator="#indicator">

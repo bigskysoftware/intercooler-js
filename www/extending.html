@@ -64,22 +64,6 @@ nav: extending
           </tr>
           <tr>
             <td>
-              <code>Intercooler.addURLHandler(handler)</code>
-            </td>
-            <td>
-              Lets you add a client side mock URL handler for testing/prototyping:
-              <pre>
-  Intercooler.addURLHandler({
-    'url': '/update',
-    'get' : function() {
-      return 'Here's some content!"
-    },
-  });
-</pre>
-            </td>
-          </tr>
-          <tr>
-            <td>
               <code>Intercooler.refresh(eltOrPath)</code>
             </td>
             <td>If the argument is an element, it will issue a new AJAX request. If it is a string path, it will issue

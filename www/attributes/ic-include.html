@@ -39,17 +39,19 @@ nav: attributes > ic-include
         <script>
           (function () {
             var name = '';
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/update',
-              'get' : function() {
-                if(name == "") {
-                  return 'Please Enter A Valid Name...'
+              'response' : function(settings) {
+                if(settings.type == "GET") {
+                  if(name == "") {
+                    this.responseText = 'Please Enter A Valid Name...'
+                  } else {
+                    this.responseText = 'Great Name: ' + name
+                  }
                 } else {
-                  return 'Great Name: ' + name
+                  var params = parseParams(settings.data);
+                  name = params['name'];
                 }
-              },
-              'post': function (url, params) {
-                name = params['name'];
               }
             });
           })();

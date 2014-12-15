@@ -44,11 +44,11 @@ nav: attributes > ic-src
         <script>
           (function () {
             var init = Math.floor(new Date().getTime() / 1000);
-            Intercooler.addURLHandler({
-              'url': '/seconds',
-              'get': function () {
+            $.mockjax({
+              url: '/seconds',
+              response: function (settings) {
                 var seconds = Math.floor((new Date().getTime() / 1000) - init);
-                return 'You have been on this page for ' + seconds + ' seconds...'
+                this.responseText = 'You have been on this page for ' + seconds + ' seconds...'
               }
             });
           })();

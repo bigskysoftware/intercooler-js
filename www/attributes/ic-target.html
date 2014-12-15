@@ -39,11 +39,11 @@ nav: attributes > ic-target
         <script>
           (function () {
             var clicks = 0;
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/update',
-              'post': function () {
+              'response': function () {
                 clicks++;
-                return clicks + ' Clicks';
+                this.responseText = clicks + ' Clicks';
               }
             });
           })();
@@ -70,16 +70,17 @@ nav: attributes > ic-target
       <div class="live-demo">
         <script>
           (function () {
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/verify_email',
-              'post': function (url, params) {
+              'response': function (settings) {
+                var params = parseParams(settings.data);
                 if(/\S+@\S+\.\S+/.test(params['email'])) {
-                  return '<div class="form-group has-success">' +
+                  this.responseText = '<div class="form-group has-success">' +
                     '<label class="control-label">Valid Email!</label>' +
                     '<input type="text" class="form-control" name="email" ic-post-to="/verify_email" value="' + params['email'] + '" ic-target="#emailDiv">' +
                     '</div>'
                 } else {
-                  return '<div class="form-group has-error">' +
+                  this.responseText = '<div class="form-group has-error">' +
                     '<label class="control-label">Please Enter A Valid Email!</label>' +
                     '<input type="text" class="form-control" name="email" ic-post-to="/verify_email" value="' + params['email'] + '" ic-target="#emailDiv">' +
                     '</div>'

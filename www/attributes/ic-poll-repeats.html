@@ -28,7 +28,7 @@ nav: attributes > ic-poll-repeats
       <p>Here is a simple example of a poll repeat:</p>
 
       <pre>
-  &lt;div ic-src="/seconds" ic-poll="2s" ic-poll-repeats="2">You have been on this page for 0 seconds...&lt;/div>
+  &lt;div ic-src="/seconds" ic-poll="2s" ic-poll-repeats="5">You have been on this page for 0 seconds...&lt;/div>
       </pre>
 
 
@@ -36,11 +36,11 @@ nav: attributes > ic-poll-repeats
         <script>
           (function () {
             var init = Math.floor(new Date().getTime() / 1000);
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/seconds',
-              'get': function () {
+              'response': function () {
                 var seconds = Math.floor((new Date().getTime() / 1000) - init);
-                return 'You have been on this page for ' + seconds + ' seconds...'
+                this.responseText = 'You have been on this page for ' + seconds + ' seconds...'
               }
             });
           })();

@@ -43,19 +43,19 @@ nav: attributes > ic-attr-src
         <script>
           (function () {
             var i = 0;
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/style',
-              'get': function () {
+              response: function () {
                 i+= 1;
                 i = i % 4;
                 if(i == 0) {
-                  return "";
+                  this.responseText =  "";
                 } else if(i == 1){
-                  return "font-weight:bold";
+                  this.responseText =  "font-weight:bold";
                 } else if(i == 2) {
-                  return "font-weight:bold;font-style:italic;";
+                  this.responseText =  "font-weight:bold;font-style:italic;";
                 } else {
-                  return "font-style:italic;";
+                  this.responseText =  "font-style:italic;";
                 }
               }
             });

@@ -198,13 +198,13 @@ nav: intro
         <script>
           (function () {
             var count = 42;
-            Intercooler.addURLHandler({
-              'url': '/visitors/count_div',
-              'get': function () {
+            $.mockjax({
+              url: '/visitors/count_div',
+              response: function () {
                 if(Math.random() > .5) {
                   count += Math.floor(Math.random() * 6);
                 }
-                return 'You have had ' + count + ' visitors today'
+                this.responseText = 'You have had ' + count + ' visitors today';
               }
             });
           })();
@@ -241,13 +241,14 @@ nav: intro
         <script>
           (function () {
             var clicks = 0;
-            Intercooler.addURLHandler({
-              'url': '/example/click',
-              'get': function () {
-                return 'You have clicked the button ' + clicks + ' times'
-              },
-              'post': function(){
-                clicks++;
+            $.mockjax({
+              url: '/example/click',
+              response: function (settings) {
+                if(settings.type == "GET") {
+                  this.responseText = 'You have clicked the button ' + clicks + ' times';
+                } else {
+                  clicks++;
+                }
               }
             });
           })();
@@ -283,17 +284,19 @@ nav: intro
         <script>
           (function () {
             var name = "";
-            Intercooler.addURLHandler({
-              'url': '/name',
-              'get': function () {
-                if(name == "") {
-                  return 'No name entered'
+            $.mockjax({
+              url: '/name',
+              response: function (settings) {
+                if(settings.type == "GET") {
+                  if(name == "") {
+                    this.responseText = 'No name entered';
+                  } else {
+                    this.responseText = 'You entered the name: ' + name + '';
+                  }
                 } else {
-                  return 'You entered the name: ' + name + ''
+                  var params = parseParams(settings.data)
+                  name = params['name'];
                 }
-              },
-              'post': function (url, params) {
-                name = params['name'];
               }
             });
           })();
@@ -326,15 +329,17 @@ nav: intro
         <script>
           (function () {
             var items = [];
-            Intercooler.addURLHandler({
-              'url': '/items',
-              'get': function () {
-                var str = items.map(function(str) { return "<li>" + str + "</li>"}).join("\n")
-                items = [];
-                return str;
-              },
-              'post': function (url, params) {
-                items.push(params['item_name']);
+            $.mockjax({
+              url: '/items',
+              response: function (settings) {
+                if(settings.type == "GET") {
+                  var str = items.map(function(str) { return "<li>" + str + "</li>"}).join("\n")
+                  items = [];
+                  this.responseText =  str;
+                } else {
+                  var params = parseParams(settings.data);
+                  items.push(params['item_name']);
+                }
               }
             });
           })();
@@ -400,37 +405,40 @@ nav: intro
         <script>
           (function () {
             var process = null;
-            Intercooler.addURLHandler({
-              'url': '/job',
-              'get': function (url) {
-                if(url == "/job/percent_complete") {
-                  if(process != null && process < 100) {
-                    process += Math.min(100, Math.floor(33 * Math.random()));
-                    return process + "%";
-                  } else {
-                    process = null;
-                    return {
-                      'headers' : {
-                        "X-IC-Refresh" : "/job"
-                      },
-                      "body" :  "100%"
-                    };
-                  }
-                } else {
+
+            // simulate job endpoint
+            $.mockjax({
+              url: '/job',
+              response: function (settings) {
+                if(settings.type == "GET") {
                   if(process != null) {
-                    return 'Job Running:' +
+                    this.responseText = 'Job Running:' +
                       '  <div class="progress progress-striped active">' +
                       '   <div class="progress-bar" ic-style-src="width:/job/percent_complete" ic-poll="1s" style="width:0%"></div>' +
                       '  </div>'
                   } else {
-                    return 'Job Complete!'
+                    this.responseText = 'Job Complete!'
                   }
+                } else {
+                  process = 0;
                 }
-              },
-              'post': function (url, params) {
-                process = 0;
               }
             });
+
+            // simulate percent complete endpoint
+            $.mockjax({
+              url: '/job/percent_complete',
+              response: function () {
+                if (process != null && process < 100) {
+                  process += Math.min(100, Math.floor(33 * Math.random()));
+                  this.responseText = process + "%";
+                } else {
+                  process = null;
+                  this.headers = {
+                    "X-IC-Refresh": "/job"
+                  };
+                }
+              }});
           })();
         </script>
         <button class="btn btn-primary" ic-post-to="/job">Start Job</button>

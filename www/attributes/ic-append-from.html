@@ -48,9 +48,9 @@ nav: attributes > ic-append-from
       <div class="live-demo">
         <script>
           (function () {
-            Intercooler.addURLHandler({
-              'url': '/list_src',
-              'get': function () {
+            $.mockjax({
+              url: '/list_src',
+              response: function () {
                 function randIp() {
                   function getOctet() {
                       return Math.round(Math.random()*255);
@@ -58,7 +58,7 @@ nav: attributes > ic-append-from
                   //generate the ipaddress
                   return getOctet() + '.' + getOctet() + '.' + getOctet() + '.' + getOctet();
                 }
-                return "<li>Being looked at by " + randIp() + "</li>";
+                this.responseText = "<li>Being looked at by " + randIp() + "</li>";
               }
             });
           })();

@@ -42,23 +42,23 @@ nav: attributes > ic-deps
             var clicks = 0;
             var init = Math.floor(new Date().getTime() / 1000);
 
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/src',
-              'get': function () {
-                return clicks + ' Clicks'
+              'response': function () {
+                this.responseText = clicks + ' Clicks';
               }
             });
 
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/path/1',
-              'post': function () {
+              'response': function () {
                 clicks++;
               }
             });
 
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/path/2',
-              'post': function () {
+              'response': function () {
                 clicks++;
               }
             });

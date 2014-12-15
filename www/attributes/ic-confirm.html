@@ -19,7 +19,8 @@ nav: attributes > ic-confirm
 
       <h3>Syntax</h3>
 
-      <p>The value of the <code>ic-verb</code> attribute should be a string asking the user to confirm the given action.</p>
+      <p>The value of the <code>ic-verb</code> attribute should be a string asking the user to confirm the given action.
+      </p>
 
       <h3>Dependencies</h3>
 
@@ -34,18 +35,13 @@ nav: attributes > ic-confirm
 
       <div class="live-demo">
         <script>
-          (function () {
-            Intercooler.addURLHandler({
-              'url': '/target_url',
-              'post': function() {
-                return "Confirmed!!";
-              }
-            });
-          })();
+          $.mockjax({
+            'url': '/target_url',
+            responseText: "Confirmed!!"
+          });
         </script>
         <button class="btn btn-lg btn-primary" ic-post-to="/target_url" ic-confirm="Are you sure?">Click Me!</button>
       </div>
-
 
     </div>
   </div>

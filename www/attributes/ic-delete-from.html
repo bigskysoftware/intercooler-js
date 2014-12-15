@@ -40,16 +40,10 @@ nav: attributes > ic-delete-from
       <div class="live-demo">
         <script>
           (function () {
-            var init = Math.floor(new Date().getTime() / 1000);
-            Intercooler.addURLHandler({
+            $.mockjax({
               'url': '/delete_me',
-              'delete': function() {
-                return {
-                  "headers" : {
-                    "X-IC-Remove" : true
-                  },
-                  "body" : ""
-                };
+              "headers": {
+                "X-IC-Remove": true
               }
             });
           })();
