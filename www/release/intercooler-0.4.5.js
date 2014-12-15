@@ -18,7 +18,6 @@ var Intercooler = Intercooler || (function () {
                  'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
 
   var _remote = $;
-  var _urlHandlers = [];
   var _scrollHandler = null;
 
   var _UUID = 1;
@@ -237,34 +236,6 @@ var Intercooler = Intercooler || (function () {
     return true;
   }
 
-  function handleTestResponse(elt, success, returnVal) {
-    var indicator = findIndicator(elt);
-    var indicatorTransition = getTransition(indicator, indicator);
-    if(indicator.length > 0) {
-      indicatorTransition.show(indicator);
-    }
-    var headers = {};
-    if(returnVal && returnVal.headers) {
-      headers = returnVal.headers;
-    }
-    var body = "";
-    if (returnVal) {
-      if(typeof returnVal == 'string' || returnVal instanceof String) {
-        body = returnVal;
-      } else if(typeof returnVal.body == 'string' || returnVal.body instanceof String) {
-        body = returnVal.body;
-      }
-    }
-    processHeaders(elt, {
-      getResponseHeader: function (key) {
-        return headers[key];
-      }
-    });
-    success(body, "", elt);
-    if (indicator.length > 0) {
-      indicatorTransition.hide(indicator);
-    }
-  }
 
   function beforeRequest(elt) {
     elt.addClass('disabled');
@@ -299,42 +270,6 @@ var Intercooler = Intercooler || (function () {
     data = replaceOrAddMethod(data, type);
 
     var pop = data.indexOf("&ic-handle-pop=true") >= 0;
-
-    //TODO cgross - abstract this into the handler, so we don't duplicate all the code
-    for (var i = 0, l = _urlHandlers.length; i < l; i++) {
-      var handler = _urlHandlers[i];
-      var returnVal = null;
-      if(handler.url == null || new RegExp(handler.url.replace(/\*/g, ".*").replace(/\//g, "\\/")).test(url)) {
-        if (type == "GET" && handler.get) {
-          if(handler.get) {
-            returnVal = handler.get(url, parseParams(data));
-          }
-          handleTestResponse(elt, success, returnVal)
-        }
-        if (type == "POST") {
-          if(handler.post) {
-            returnVal = handler.post(url, parseParams(data));
-          }
-          handleTestResponse(elt, success, returnVal)
-        }
-        if (type == "PUT") {
-          if(handler.put) {
-            //noinspection JSCheckFunctionSignatures
-            returnVal = handler.put(url, parseParams(data));
-          }
-          handleTestResponse(elt, success, returnVal)
-        }
-        if (type == "DELETE") {
-          // using handler.delete() throws a parse error in IE8
-          // http://tech.pro/tutorial/1238/angularjs-and-ie8-gotcha-http-delete
-          if(handler['delete']) {
-            returnVal = handler['delete'](url, parseParams(data));
-          }
-          handleTestResponse(elt, success, returnVal)
-        }
-        return;
-      }
-    }
 
     beforeRequest(elt);
 
@@ -415,33 +350,6 @@ var Intercooler = Intercooler || (function () {
       }
     }
     return child;
-  }
-
-  // Taken from https://gist.github.com/kares/956897
-  function parseParams(str) {
-    var re = /([^&=]+)=?([^&]*)/g;
-    var decode = function (str) {
-      return decodeURIComponent(str.replace(/\+/g, ' '));
-    };
-    var params = {}, e;
-    if (str) {
-      if (str.substr(0, 1) == '?') {
-        str = str.substr(1);
-      }
-      while (e = re.exec(str)) {
-        var k = decode(e[1]);
-        var v = decode(e[2]);
-        if (params[k] !== undefined) {
-          if (!$.isArray(params[k])) {
-            params[k] = [params[k]];
-          }
-          params[k].push(v);
-        } else {
-          params[k] = v;
-        }
-      }
-    }
-    return params;
   }
 
   function processIncludes(str) {
@@ -958,12 +866,8 @@ var Intercooler = Intercooler || (function () {
     /* ===================================================
      * Mock Testing API
      * =================================================== */
-    addURLHandler: function (handler) {
-      if (!handler.url) {
-        throw "Handlers must include a URL pattern"
-      }
-      _urlHandlers.push(handler);
-      return Intercooler;
+    addURLHandler: function () {
+      throw "This method is no longer supported.  Please use the jQuery mockjax plugin instead: https://github.com/jakerella/jquery-mockjax";
     },
 
     setRemote: function (remote) {
