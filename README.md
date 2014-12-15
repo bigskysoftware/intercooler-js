@@ -38,6 +38,7 @@ To contribute a change to Intercooler please try to follow this workflow:
 * Fork the main intercooler repository
 * Create a new feature branch based on the master branch with a reasonably descriptive name (e.g. fix_http_get_parameter_overriding)
 * Implement your fix, trying not to mix multiple fixes/improvements in the same feature branch
+* Add a test to <code>/test/unit_tests.html</code>.  (It's pretty easy!)
 * Create a pull request for that branch against master in the main repository
 * Add yourself to the "Contributors" section below
 
