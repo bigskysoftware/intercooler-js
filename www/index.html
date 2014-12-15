@@ -21,30 +21,6 @@ layout: default
   </div>
 </div>
 
-  <script>
-    var clicks = 0;
-    Intercooler.setRemote({
-      get: function (url, callback) {
-        if (url == "/btn/1/clicks") {
-          if(clicks > 3) {
-            callback('<span ic-src="/btn/1/clicks">OK, OK.  You can stop clicking.</span>');
-          } else {
-            callback('<span ic-src="/btn/1/clicks">You have clicked the button ' + clicks + ' times...</span>');
-          }
-        }
-      },
-      post : function(url, data, callback) {
-        if (url == "/btn/1/clicks") {
-          clicks++;
-          callback("");
-        }
-      }
-    });
-
-  </script>
-
-
-
 <div class="container">
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
@@ -52,14 +28,13 @@ layout: default
         <i class="fa fa-exclamation-circle fa-lg"></i> Intercooler v0.4.5 has been <a href="/download.html">released</a>!  Join <a href="https://groups.google.com/forum/#!forum/intercooler-js">our newsgroup</a> to stay up to date.
       </div>
 	        <pre>
-  &lt;-- This button posts to the /example/click
-         URL when it is clicked -->
+  &lt;-- This button posts to /example/click when it is clicked -->
   &lt;button ic-post-to="/example/click">
     Click Me!
   &lt;/button>
 
-  &lt;-- This span is bound to a URL that returns an updated
-      version of the span when the button is clicked -->
+  &lt;-- This span depends on the button above,
+         and is refreshed after it is clicked -->
   &lt;span ic-src="/example/click">
      You have not yet clicked the button
   &lt;/span>
@@ -68,22 +43,23 @@ layout: default
 
       <div class="live-demo text-center">
         <script>
-          (function () {
+          (function(){
             var clicks = 0;
-            Intercooler.addURLHandler({
-              'url': '/example/click',
-              'get': function () {
-                if(clicks > 2) {
-                  return 'Alright, Alright.  Stop clicking and learn about <a href="/why.html">why you should use intercooler</a>...'
+            $.mockjax({
+              url : "/example/click",
+              response: function (settings) {
+                if(settings.type == "GET") {
+                  if(clicks > 2) {
+                    this.responseText = "OK, OK.  Why don't you stop clicking and head over to the <a href='/intro.html'>introduction</a>.";
+                  } else {
+                    this.responseText = 'You have clicked the button ' + clicks + ' times...';
+                  }
                 } else {
-                  return 'You have clicked the button ' + clicks + ' times'
+                  clicks++;
                 }
-              },
-              'post': function(){
-                clicks++;
               }
             });
-          })();
+          })()
         </script>
         <button class="btn btn-primary" ic-post-to="/example/click">Click Me!</button>&nbsp;
         <span ic-src="/example/click">You have not yet clicked the button</span>
