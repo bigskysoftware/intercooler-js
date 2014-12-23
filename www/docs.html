@@ -15,7 +15,7 @@ nav: docs
           <li><a href="#core_attributes">Core Attributes</a></li>
           <li><a href="#triggers">Triggering Requests</a></li>
           <li><a href="#targeting">Targeting Other Elements</a></li>
-          <li><a href="#inputs">Input Values</a></li>
+          <li><a href="#inputs">Forms & Input Values</a></li>
           <li><a href="#polling">Polling</a></li>
           <li><a href="#progress">Progress Indicators</a></li>
           <li><a href="#transitions">Element Transitions</a></li>
@@ -68,7 +68,7 @@ nav: docs
           <li>The response replaces the contents of the element, rather than the entire page</li>
         </ul>
 
-        <p>And there you have the core of intercooler.  Simple, but you will be surprised how much you can so
+        <p>And there you have the core of intercooler.  It's a simple idea, but you will be surprised how much you can do
           with it.</p>
 
         <p>Here is a working version of this example:</p>
@@ -198,12 +198,98 @@ nav: docs
 
       <section>
         <a class="anchor" id="inputs"></a>
-        <h2>Including Input Values</h2>
+        <h2>Forms & Input Values</h2>
+
+        <p>Including form data is very simple in intercooler.  By default, any element causing an intercooler request
+        will include the serialized version of the nearest parent form.  So if the element is a form or is nested within
+        a form the entire form will be serialized and sent up with the request.</p>
+
+        <p>Intercooler includes some additional parameters in the request to help you understand which element invoked
+        the request, see <a href="#requests">Anatomy of an Intercooler Request</a> below for more information.</p>
+
+        <h3>Including Other Elements</h3>
+
+        <p>Sometimes you may want to include the values of inputs in a different part of the DOM.  To do this, intercooler
+        supports an attribute, <code>ic-include</code>, in which you can specify a JQuery selector to indicate what other
+        elements to serialize in the request.</p>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/form_demo',
+              response: function(settings){
+                var params = parseParams(settings.data);
+                this.responseText = "You entered the email '" + params['email'] + "'.<br/>All parameters: " + settings.data;
+              }
+            })
+          </script>
+          <form ic-post-to="/form_demo" ic-target="#form-target">
+            <input type="hidden" name="hidden" value="hidden value"/>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Email address</label>
+              <input name="email" type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Password</label>
+              <input name="password" type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox"> Check me out
+              </label>
+            </div>
+            <button id="form-button-1" type="submit" class="btn btn-default">Submit</button>
+          </form>
+          <span id="form-target">Submit the form above...</span>
+        </div>
+
       </section>
 
       <section>
         <a class="anchor" id="polling"></a>
         <h2>Polling</h2>
+
+        <p>A common pattern in web development is to have a page poll a URL for updates.  Until the day comes when
+        push technologies are available widely, this technique is the best way to dynamically update a UI without a
+        specific client-side event happening.</p>
+
+        <p>Intercooler supports an attribute, <code>ic-poll</code>, which tells an element to poll whatever URL is
+        associated with it on a given interval. This attribute can be of the form "10s" or "100ms", where "s" indicates
+        seconds and "ms" indicates milliseconds.</p>
+
+        <p>Below is an example:</p>
+
+        <pre>
+          &lt;span ic-poll="2s" ic-src="/poll_example">
+            This span will poll the server every two seconds...
+          &lt;/span>
+        </pre>
+
+        <div class="live-demo">
+          <script>
+            (function(){
+              var count = 0;
+              $.mockjax({
+                url: '/poll_example',
+                response: function() {
+                  count++;
+                  this.responseText = 'This span has polled ' + count + " times...";
+                }
+              })
+            })()
+          </script>
+          <span ic-poll="2s" ic-src="/poll_example">This span will poll the server every two seconds...</span>
+        </div>
+
+        <h3>Configuring Polling Behavior</h3>
+
+        <p>Intercooler supports a few ways to modify polling behavior.  The first is the <code>ic-poll-repeats</code>
+        attribute, which you can use to limit the number of times a intercooler will poll for a given element.</p>
+
+        <p>A second way is to use the <code>X-IC-CancelPolling</code> response header, which will cancel polling of an
+        element.  See the <a href="#responses">Anatomy of an Intercooler Response</a> section for more details on
+        intercooler response headers.</p>
+
       </section>
 
       <section>
@@ -228,7 +314,8 @@ nav: docs
         <h4>Special Parameters</h4>
 
         <p>
-          Intercooler requests include a few standard parameters in every AJAX request:
+          In addition to the form serialization discussed above, intercooler requests include a few additional parameters
+          in every AJAX request:
         </p>
 
         <table class="table table-striped table-hover">
@@ -262,16 +349,44 @@ nav: docs
               <code>ic-last-refresh</code>
             </td>
             <td>
-              This is a timestamp of the last time the target element was refreshed.
-              This can be used to calculate time-sensitive UI updates (e.g. appending to a list of messages.)            </td>
+            This is a timestamp of the last time the target element was refreshed.
+            This can be used to calculate time-sensitive UI updates (e.g. appending to a list of messages.)            </td>
+            </td>
           </tr>
           <tr>
             <td>
               <code>ic-fingerprint</code>
             </td>
             <td>
-              The SHA256 fingerprint of the current content.  This can be used to avoid
-              sending down unnecessary updates, caching, etc.
+            The SHA256 fingerprint of the current content.  This can be used to avoid
+            sending down unnecessary updates, caching, etc.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>ic-element-id</code>
+            </td>
+            <td>
+            The HTML id of the element that caused the request.  This helps you differentiate between different buttons
+            that may hit the same URL, for example.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>ic-element-name</code>
+            </td>
+            <td>
+              The HTML name of the element that caused the request.  This helps you differentiate between different buttons
+            that may hit the same URL, for example.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>ic-id</code>
+            </td>
+            <td>
+            The internal intercooler ID of the element that caused the request.
+            </td>
           </tr>
           </tbody>
         </table>
@@ -470,7 +585,7 @@ nav: docs
             });
           })();
         </script>
-        <div ic-src="/visitors/count_div" ic-poll="2s">You have had 42 visitors today</div>
+        <div ic-src="/visitors/count_div">You have had 42 visitors today</div>
       </div>
 
       <h3>A Trigger + Dependencies Example</h3>
