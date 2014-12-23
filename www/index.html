@@ -13,7 +13,7 @@ layout: default
         </h1>
 
         <p>
-          Add AJAX to your web application using simple, declarative HTML attributes.
+          AJAX with simple HTML attributes
         </p>
 
       </div>
@@ -28,41 +28,30 @@ layout: default
         <i class="fa fa-exclamation-circle fa-lg"></i> Intercooler v0.4.5 has been <a href="/download.html">released</a>!  Join <a href="https://groups.google.com/forum/#!forum/intercooler-js">our newsgroup</a> to stay up to date.
       </div>
 	        <pre>
-  &lt;-- This button posts to /example/click when it is clicked -->
-  &lt;button ic-post-to="/example/click">
+  &lt;-- This button posts to '/click' when it is clicked -->
+  &lt;button ic-post-to="/click">
     Click Me!
   &lt;/button>
-
-  &lt;-- This span depends on the button above,
-         and is refreshed after it is clicked -->
-  &lt;span ic-src="/example/click">
-     You have not yet clicked the button
-  &lt;/span>
 		      </pre>
 
-
-      <div class="live-demo text-center">
+      <div class="index-demo live-demo text-center">
         <script>
           (function(){
             var clicks = 0;
             $.mockjax({
-              url : "/example/click",
+              url : "/click",
               response: function (settings) {
-                if(settings.type == "GET") {
-                  if(clicks > 2) {
-                    this.responseText = "OK, OK.  Why don't you stop clicking and head over to the <a href='/intro.html'>introduction</a>.";
-                  } else {
-                    this.responseText = 'You have clicked the button ' + clicks + ' times...';
-                  }
+                clicks++;
+                if (clicks > 4) {
+                  this.responseText = "OK, OK.  That's Enough!  :)";
                 } else {
-                  clicks++;
+                  this.responseText = 'You clicked me ' + clicks + ' times...';
                 }
               }
             });
           })()
         </script>
-        <button class="btn btn-primary" ic-post-to="/example/click">Click Me!</button>&nbsp;
-        <span ic-src="/example/click">You have not yet clicked the button</span>
+        <button class="btn btn-primary" ic-post-to="/click">Click Me!</button>
       </div>
 
       <hr/>
@@ -75,62 +64,26 @@ layout: default
   <div class="row">
 
     <div class="col-md-4">
-      <h2>Declarative</h2>
+      <h2>Simple</h2>
 
-      <p>With Intercooler you can use easy to understand, declarative attributes to bind your HTML elements to
-        AJAX end points.</p>
+      <p>Use familiar, declarative attributes to add AJAX to your application.</p>
 
-      <p>Intercooler is a pragmatic library, however, so you can drop into javascript when it's necessary.</p>
     </div>
 
     <div class="col-md-4">
       <h2>Incremental</h2>
 
-      <p>You can use Intercooler for as much or as little of your application as you like.</p>
+      <p>Use Intercooler for as much or as little of your application as you would like.</p>
 
-      <p>No need to wholesale adopt a new framework to start adding AJAX functionality to your application!</p>
     </div>
 
     <div class="col-md-4">
-      <h2>Plays Well With Others</h2>
+      <h2>Unobtrusive</h2>
 
-      <p>Intercooler is a little library built to play well with other web technologies, like AngularJS, EmberJS and Turbolinks.</p>
-
-      <p>Use the right tool for the particular job: Intercooler won't get in the way.</p>
+      <p>Intercooler is a little library that plays well with the web.  Even with Angular or Ember.</p>
 
     </div>
 
-  </div>
-</div>
-
-<div class="container">
-  <div class="row">
-    <div class="col-md-4">
-      <h2>Dependency Detection</h2>
-
-      <p>Intercooler uses pattern matching in your URLs to detect and refresh dependencies between HTML
-        elements. Typically it will do the right thing without much work on your part. And, if you need
-        to add or ignore dependencies, Intercooler allows you to do that as well.</p>
-    </div>
-
-    <div class="col-md-4">
-
-      <h2>Framework Agnostic</h2>
-
-      <p>Although it was inspired by <a href="http://guides.rubyonrails.org/layouts_and_rendering.html#using-partials">Partials</a>
-        in <a href="http://rubyonrails.org/">Rails</a>, IntercoolerJS works equally well with any back end platform.</p>
-
-      <p>IntercoolerJS works great with any HTML/CSS framework, but was designed with <a href="http://getbootstrap.com/">Bootstrap</a>
-      in mind, making it easy to create dynamic UIs using the standard, simple Bootstrap techniques.</p>
-    </div>
-
-
-    <div class="col-md-4">
-      <h2>Open</h2>
-
-      <p>IntercoolerJS was designed to be open and extensible so, when push comes to shove, you can customise
-      pretty much any part of the it you need to.</p>
-    </div>
   </div>
 </div>
 
