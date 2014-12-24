@@ -693,7 +693,9 @@ var Intercooler = Intercooler || (function () {
         dummy.innerHTML = newContent;
         processMacros(dummy);
         updateContent = fingerprint($(dummy).html()) != target.attr('ic-fingerprint');
-        dummy.remove();
+        if(dummy.remove) { //mobile fix
+          dummy.remove();
+        }
       }
 
       if (updateContent) {
