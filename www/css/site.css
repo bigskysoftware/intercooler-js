@@ -163,6 +163,20 @@ section table {
     list-style: none;
 }
 
+.demo-nav {
+  width: 290px;
+  margin: 20px auto;
+}
+.demo-nav li {
+  margin: 8px;
+}
+
+#src-pre {
+  width: 100%;
+  max-width: 100%;
+  margin: 16px;
+}
+
 @media (max-width: 992px) {
   #icon1 {
     display: none;
