@@ -13,13 +13,10 @@ var Intercooler = Intercooler || (function () {
   //--------------------------------------------------
   // Vars
   //--------------------------------------------------
-
   var _MACROS = ['ic-get-from', 'ic-post-to', 'ic-put-to', 'ic-delete-from',
                  'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
-
   var _remote = $;
   var _scrollHandler = null;
-
   var _UUID = 1;
 
   //============================================================
@@ -720,7 +717,7 @@ var Intercooler = Intercooler || (function () {
 
       if (updateContent) {
         var transition = getTransition(elt, target);
-        var isReplaceParent = elt.attr('ic-replace-target') == "true";
+        var isReplaceParent = closestAttrValue(elt, 'ic-replace-target') == "true";
         transition.newContent(target, newContent, false, isReplaceParent, function (replacement) {
           if(replacement) {
             processNodes(replacement);
@@ -738,16 +735,18 @@ var Intercooler = Intercooler || (function () {
   }
 
   function getStyleTarget(elt) {
-    if(elt.attr('ic-target') && elt.attr('ic-target').indexOf("this.style.") == 0) {
-      return elt.attr('ic-target').substr(11)
+    var val = closestAttrValue(elt, 'ic-target');
+    if(val && val.indexOf("this.style.") == 0) {
+      return val.substr(11)
     } else {
       return null;
     }
   }
 
   function getAttrTarget(elt) {
-    if(elt.attr('ic-target') && elt.attr('ic-target').indexOf("this.") == 0) {
-      return elt.attr('ic-target').substr(5)
+    var val = closestAttrValue(elt, 'ic-target');
+    if(val && val.indexOf("this.") == 0) {
+      return val.substr(5)
     } else {
       return null;
     }
@@ -786,11 +785,8 @@ var Intercooler = Intercooler || (function () {
 
     /* functions */
     getRestorationURL: function (elt) {
-      if (elt.attr('ic-restore-from')) {
-        return elt.attr('ic-restore-from');
-      } else {
-        return window.location.pathname + window.location.search + window.location.hash;
-      }
+      var attr = closestAttrValue(elt, 'ic-restore-from');
+      return attr || window.location.pathname + window.location.search + window.location.hash;
     },
 
     onPageLoad: function () {

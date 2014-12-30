@@ -412,6 +412,40 @@
     });
 </script>
 
+<form ic-post-to="/form_target2">
+  <input id="form_target2_btn" type="submit" ic-post-to="somewhere" value="Submit" />
+</form>
+<script>
+  intercoolerTest("Form submission with submit button works",
+    function (assert) {
+      $.mockjax({
+        url: "/form_target2",
+        responseText : "<span id='form-after-submit2'></span>"
+      });
+      $("#form_target2_btn").click();
+    },
+    function (assert) {
+      assert.equal($("#form-after-submit2").length, 1);
+    });
+</script>
+
+<form id="form_target3_form" ic-post-to="/form_target3">
+</form>
+<script>
+  intercoolerTest("Form submission works on direct form submission",
+    function (assert) {
+      $.mockjax({
+        url: "/form_target3",
+        responseText : "<span id='form-after-submit3'></span>"
+      });
+      $("#form_target3_form").submit();
+    },
+    function (assert) {
+      assert.equal($("#form-after-submit3").length, 1);
+    });
+</script>
+
+
 <div id="fp-test" ic-post-to="/fp_test"><span>Foo</span></div>
 <script>
   (function(){
