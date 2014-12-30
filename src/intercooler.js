@@ -178,7 +178,11 @@ var Intercooler = Intercooler || (function () {
   function getTarget(elt) {
     var targetValue = closestAttrValue(elt, 'ic-target');
     if(targetValue && targetValue.indexOf('this.') != 0) {
-      return $(targetValue);
+      if(targetValue.indexOf('closest ') == 0) {
+        return elt.closest(targetValue.substr(8));
+      } else {
+        return $(targetValue);
+      }
     } else {
       return elt;
     }

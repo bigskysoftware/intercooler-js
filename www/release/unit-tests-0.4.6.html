@@ -983,6 +983,25 @@
 </script>
 
 
+<div>
+  <span id="closest-test"></span>
+  <span id="closest-test-btn" ic-post-to="/closest_target_test" ic-target="closest div"></span>
+</div>
+<script>
+  intercoolerTest("ic-target with a closest expression works", function (assert) {
+      $.mockjax({
+        url: "/closest_target_test",
+        responseText: "<span>asdf</span>"
+      });
+      assert.equal($("#closest-test").length, 1);
+      $("#closest-test-btn").click();
+    },
+    function (assert) {
+      assert.equal($("#closest-test").length, 0);
+    });
+</script>
+
+
 </div>
 </body>
 </html>
