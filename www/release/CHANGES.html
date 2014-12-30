@@ -5,12 +5,38 @@ nav: dependencies
 
 <div class="container">
 
-  <h2>Intercooler 0.4.0 Changes</h2>
+  <a class="anchor" id="0_4_6"></a>
+  <h3>Intercooler 0.4.6 - ???</h3>
+  <ul>
+    <li>
+      Added <code>ic-replace-target</code> attribute, allowing full replacement of target elements
+      for situations like replacing a table row.
+    </li>
+  </ul>
 
-  <p>Intercooler.js v0.4.0 was released on June 19th, 2014</p>
+  <a class="anchor" id="0_4_5"></a>
+  <h3>Intercooler 0.4.5 - December 12th, 2014</h3>
+  <ul>
+    <li>
+      Added <code>ic-on-beforeSend</code>, <code>ic-on-success</code>, <code>ic-on-error</code> and
+      <code>ic-on-complete</code>
+      attributes.
+    </li>
+    <li>
+      Always swap content containing a <code>script</code> element, so things are properly reevaluated.
+    </li>
+  </ul>
 
-  <h4>Change List</h4>
+  <a class="anchor" id="0_4_1"></a>
+  <h3>Intercooler 0.4.1 - July 4th, 2014</h3>
+  <ul>
+    <li>Exposed <code>LeadDyno.processElements()</code> in the Javascript API</li>
+    <li>Begin sending the  <code>X-HTTP-Method-Override</code> header up in intercooler requests</li>
+    <li>Begin sending the  <code>X-IC-Request</code> header up in intercooler requests</li>
+  </ul>
 
+  <a class="anchor" id="0_4_0"></a>
+  <h3>Intercooler 0.4.0 - June 19th, 2014</h3>
   <ul>
     <li>Added the <a href="/responses.html#http_headers"><code>X-IC-Trigger</code></a> response header to trigger client
       side event
@@ -20,8 +46,7 @@ nav: dependencies
     <li>Merged a fix for <a href="https://github.com/LeadDyno/intercooler-js/pull/19">an IE8 compatibility issue</a>.
     </li>
   </ul>
-
-  <h4>Comments</h4>
+  <h4>Comments on 0.4.0 Release</h4>
 
   <p>
     The big enhancement in this release (small code change, but <strong>big</strong> functionality boost!) is the <code>X-IC-Trigger</code>
@@ -40,5 +65,4 @@ nav: dependencies
   <p>You can download the latest <code>intercooler.js</code> from <a href="/download.html">the Downloads page</a>.</p>
 
   <p>Enjoy!</p>
-
 </div>
