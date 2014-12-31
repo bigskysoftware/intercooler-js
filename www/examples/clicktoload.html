@@ -73,10 +73,10 @@ nav: tutorial
     <tr>
       <td>Agent Smith</td><td>void9@null.org</td><td>3C8D2157F4B854F</td>
     </tr>
-    <tr id="replaceMe">
+    <tr>
       <td colspan="3">
         <center> <!-- lol -->
-          <button class="btn btn-default" ic-post-to='/contacts/?page=2' ic-target='#replaceMe' ic-replace-target="true">
+          <button class="btn btn-default" ic-post-to='/contacts/?page=2' ic-target='closest tr' ic-replace-target="true">
             Load More Agents... <i class="fa fa-spinner fa-spin ic-indicator" style="display:none"></i>
           </button>
         </center>
@@ -122,7 +122,7 @@ nav: tutorial
       return '<tr id="replaceMe"> \
                 <td colspan="3"> \
                   <center> \
-                   <button class="btn btn-default"   ic-post-to="/contacts/?page=' + (page + 1) + '" ic-target="#replaceMe" ic-replace-target="true">\
+                   <button class="btn btn-default"   ic-post-to="/contacts/?page=' + (page + 1) + '" ic-target="closest tr" ic-replace-target="true">\
                      Load More Agents... <i class="fa fa-spinner fa-spin ic-indicator" style="display:none"></i> \
                    </button> \
                    </center>\

@@ -28,11 +28,13 @@ nav: tutorial
 
   <h3>Search Contacts</h3>
 
-  <input class="input" type="text" name="search" placeholder="Search Users..."
+  <input class="form-control" type="text" name="search" placeholder="Begin Typing To Search Users..."
          ic-post-to="/search" ic-trigger-on="keypress" ic-trigger-delay="300ms"
          ic-target="#contact-table" ic-indicator="#indicator"/>
 
-  <i id="indicator" class="fa fa-spinner fa-spin" style="display:none"></i>
+  <div id="indicator" style="display:none">
+    <i class="fa fa-spinner fa-spin"></i> Searching...
+  </div>
 
   <table class="table">
     <thead>
