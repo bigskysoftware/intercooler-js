@@ -580,8 +580,18 @@ var Intercooler = Intercooler || (function () {
         initScrollHandler();
         setTimeout(function () { $(window).trigger('scroll'); }, 100); // Trigger a scroll in case element is already viewable
       } else {
-        $(elt).on(eventFor($(elt).attr('ic-trigger-on'), $(elt)), function (e) {
-          fireICRequest($(elt));
+        var triggerOn = $(elt).attr('ic-trigger-on').split(" ");
+        $(elt).on(eventFor(triggerOn[0], $(elt)), function (e) {
+          if(triggerOn[1] == 'changed') {
+            var currentVal = $(elt).val();
+            var previousVal = $(elt).data('ic-previous-val');
+            $(elt).data('ic-previous-val', currentVal);
+            if( currentVal != previousVal ) {
+              fireICRequest($(elt));
+            }
+          } else {
+            fireICRequest($(elt));
+          }
           if(preventDefault(elt)){
             e.preventDefault();
             return false;

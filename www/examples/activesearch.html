@@ -29,7 +29,7 @@ nav: tutorial
   <h3>Search Contacts</h3>
 
   <input class="form-control" type="text" name="search" placeholder="Begin Typing To Search Users..."
-         ic-post-to="/search" ic-trigger-on="keypress" ic-trigger-delay="300ms"
+         ic-post-to="/search" ic-trigger-on="keyup changed" ic-trigger-delay="500ms"
          ic-target="#contact-table" ic-indicator="#indicator"/>
 
   <div id="indicator" style="display:none">

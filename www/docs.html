@@ -176,6 +176,59 @@ nav: docs
     <a ic-post-to="/mouse_entered" ic-trigger-on="mouseenter">Mouse Over Me!</a>
   </div>
 
+  <p>If you wish to trigger an intercooler request only when an event has occurred <em>and</em> the value of an element
+  has changed, you can use the <code>changed</code> modifier as well:</p>
+
+  <pre>
+    &lt;input type="text" name="text" ic-post-to="/text_changed" ic-trigger-on="keyup changed"
+               ic-target="#text-div" placeholder="Enter Some Text"/>
+    &lt;div id="text-div">&lt;/div>
+  </pre>
+  <div class="live-demo">
+    <script>
+      $.mockjax({
+        url: '/text_changed',
+        response: function(settings) {
+          var params = parseParams(settings.data);
+          this.responseText = params['text'];
+        }
+      })
+    </script>
+    <input type="text" name="text" ic-post-to="/text_changed" ic-trigger-on="keyup changed"
+           ic-target="#text-div" placeholder="Enter Some Text"/>
+    <div id="text-div"></div>
+  </div>
+
+  <p>
+    Finally, you can add a delay to the request by using the <a href="/attributes/ic-trigger-delay.html"><code>ic-trigger-delay</code></a>
+    attribute:
+  </p>
+
+
+  <pre>
+    &lt;input type="text" name="text" ic-post-to="/trigger_delay" ic-trigger-on="keyup changed"
+               ic-target="#text-div" ic-trigger-delay="500ms" placeholder="Enter Some Text"/>
+    &lt;div id="text-div2">&lt;/div>
+  </pre>
+  <div class="live-demo">
+    <script>
+      $.mockjax({
+        url: '/trigger_delay',
+        response: function(settings) {
+          var params = parseParams(settings.data);
+          this.responseText = params['text'];
+        }
+      })
+    </script>
+    <input type="text" name="text" ic-post-to="/text_changed" ic-trigger-on="keyup changed"
+           ic-target="#text-div2" ic-trigger-delay="500ms" placeholder="Enter Some Text"/>
+    <div id="text-div2"></div>
+  </div>
+
+  <p>This attribute allows you to wait until a given interval of time has passed before issuing the request.  If the event
+  occurs again, the timer will reset and begin waiting again.  This is useful, for example, if you want to issue a request
+  when a user pauses in a text input.</p>
+
   <h3>Special Events</h3>
 
   <p>
