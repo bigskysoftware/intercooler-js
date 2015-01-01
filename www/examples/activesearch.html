@@ -26,15 +26,17 @@ nav: tutorial
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="demo">
 
-  <h3>Search Contacts</h3>
+  <h3>
+    Search Contacts
+    <span id="indicator" style="display:none">
+      <i class="fa fa-spinner fa-spin"></i> Searching...
+    </span>
+  </h3>
 
   <input class="form-control" type="text" name="search" placeholder="Begin Typing To Search Users..."
          ic-post-to="/search" ic-trigger-on="keyup changed" ic-trigger-delay="500ms"
          ic-target="#contact-table" ic-indicator="#indicator"/>
 
-  <div id="indicator" style="display:none">
-    <i class="fa fa-spinner fa-spin"></i> Searching...
-  </div>
 
   <table class="table">
     <thead>
