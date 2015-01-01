@@ -1,8 +1,0 @@
-* General
-** Handle Forms as Action Items
-** Handle non-input's as action items (click)
-** Allow overriding action event (e.g. ic-action='mouse-up')
-** Support request progress indicator (e.g. disable button)
-** Allow pluggable transitions
-** API work
-*** Allow all request types directly through Intercooler object
