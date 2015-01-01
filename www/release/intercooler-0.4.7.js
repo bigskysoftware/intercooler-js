@@ -249,10 +249,16 @@ var Intercooler = Intercooler || (function () {
 
   function beforeRequest(elt) {
     elt.addClass('disabled');
+    elt.data('ic-request-in-flight', true);
   }
 
   function afterRequest(elt) {
-    elt.removeClass('disabled')
+    elt.removeClass('disabled');
+    elt.data('ic-request-in-flight', false);
+    if(elt.data('ic-next-request')) {
+      elt.data('ic-next-request')();
+      elt.data('ic-next-request', null);
+    }
   }
 
   function replaceOrAddMethod(data, actualMethod) {
@@ -280,18 +286,11 @@ var Intercooler = Intercooler || (function () {
 
   function handleRemoteRequest(elt, type, url, data, success) {
 
-    var confirmText = closestAttrValue(elt, 'ic-confirm');
-    if(confirmText) {
-      if(!confirm(confirmText)) {
-        return;
-      }
-    }
+    beforeRequest(elt);
 
     data = replaceOrAddMethod(data, type);
 
     var pop = data.indexOf("&ic-handle-pop=true") >= 0;
-
-    beforeRequest(elt);
 
     // Spinner support
     var indicator = findIndicator(elt);
@@ -380,7 +379,7 @@ var Intercooler = Intercooler || (function () {
     return returnString;
   }
 
-  function getParametersForElement(elt) {
+  function getParametersForElement(elt, triggerOrigin) {
     var target = getTarget(elt);
     var str = "ic-request=true";
 
@@ -399,6 +398,12 @@ var Intercooler = Intercooler || (function () {
     }
     if (target.attr('ic-id')) {
       str += "&ic-id=" + target.attr('ic-id');
+    }
+    if (triggerOrigin && triggerOrigin.attr('id')) {
+      str += "&ic-trigger-id=" + triggerOrigin.attr('id');
+    }
+    if (triggerOrigin && triggerOrigin.attr('name')) {
+      str += "&ic-trigger-name=" + triggerOrigin.attr('name');
     }
     if (target.attr('ic-last-refresh')) {
       str += "&ic-last-refresh=" + target.attr('ic-last-refresh');
@@ -757,16 +762,35 @@ var Intercooler = Intercooler || (function () {
   }
 
   function fireICRequest(elt) {
-    var styleTarget = getStyleTarget(elt);
-    var attrTarget = styleTarget ? null : getAttrTarget(elt);
-    var icEventId = uuid();
-    elt.data('ic-event-id', icEventId);
-    if (elt.attr('ic-src')) {
 
+    var triggerOrigin = elt;
+    if(!elt.is('[ic-src]')) {
+      elt = elt.closest('[ic-src]');
+    }
+
+    var confirmText = closestAttrValue(elt, 'ic-confirm');
+    if(confirmText) {
+      if(!confirm(confirmText)) {
+        return;
+      }
+    }
+
+    if(elt.length > 0) {
+      var icEventId = uuid();
+      elt.data('ic-event-id', icEventId);
       var invokeRequest = function () {
-        var verb = verbFor(elt);
+
+        // if an existing request is in flight for this element, push this request as the next to be executed
+        if(elt.data('ic-request-in-flight') == true) {
+          elt.data('ic-next-request', invokeRequest);
+          return;
+        }
+
         if (elt.data('ic-event-id') == icEventId) {
-          handleRemoteRequest(elt, verb, elt.attr('ic-src'), getParametersForElement(elt),
+          var styleTarget = getStyleTarget(elt);
+          var attrTarget = styleTarget ? null : getAttrTarget(elt);
+          var verb = verbFor(elt);
+          handleRemoteRequest(elt, verb, elt.attr('ic-src'), getParametersForElement(elt, triggerOrigin),
             function (data) {
               if (styleTarget) {
                 elt.css(styleTarget, data);
@@ -858,7 +882,7 @@ var Intercooler = Intercooler || (function () {
       var data = event.state;
       if (data && data['ic-setlocation']) {
         var elt = findById(data["id-to-restore"]);
-        var params = getParametersForElement(elt);
+        var params = getParametersForElement(elt, null);
         params += "&ic-handle-pop=true";
         handleRemoteRequest(elt, "GET", data["restore-from"], params,
           function (data) {

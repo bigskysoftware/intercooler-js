@@ -659,11 +659,16 @@
           this.responseText = '<li>' + i + '</li>';
         }
       });
-      $("#prepend-btn").click().click().click().click().click().click();
+      $("#prepend-btn").click();
+      setTimeout(function(){ $("#prepend-btn").click(); }, 100);
+      setTimeout(function(){ $("#prepend-btn").click(); }, 200);
+      setTimeout(function(){ $("#prepend-btn").click(); }, 300);
+      setTimeout(function(){ $("#prepend-btn").click(); }, 400);
+      setTimeout(function(){ $("#prepend-btn").click(); }, 500);
     },
     function (assert) {
       assert.equal('654', $('#prepend-limit').text().replace(/[ \n]/g, ''));
-    });
+    }, 600);
 </script>
 
 <ul id="append-limit" ic-limit-children="3">
@@ -680,11 +685,16 @@
           this.responseText = '<li>' + i + '</li>';
         }
       });
-      $("#append-btn").click().click().click().click().click().click();
+      $("#append-btn").click();
+      setTimeout(function(){ $("#append-btn").click(); }, 100);
+      setTimeout(function(){ $("#append-btn").click(); }, 200);
+      setTimeout(function(){ $("#append-btn").click(); }, 300);
+      setTimeout(function(){ $("#append-btn").click(); }, 400);
+      setTimeout(function(){ $("#append-btn").click(); }, 500);
     },
     function (assert) {
       assert.equal('456', $('#append-limit').text().replace(/[ \n]/g, ''));
-    });
+    }, 600);
 </script>
 
 <input id="hidden-input" type="hidden" name="hidden" value="foo">
@@ -1074,6 +1084,73 @@
   });
 </script>
 
+<div>
+  <span id="double-click-span" ic-post-to="/double_click">0</span>
+</div>
+<script>
+  intercoolerTest("trigger during request on element is caught and deferred", function (assert) {
+      var calls = 0;
+      $.mockjax({
+        url: "/double_click",
+        response: function() {
+          calls++;
+          this.responseText = "" + calls;
+        }
+      });
+      assert.equal($("#double-click-span").text(), "0");
+      $("#double-click-span").click().click();
+      assert.equal($("#double-click-span").text(), "0");
+    },
+    function (assert) {
+      assert.equal($("#double-click-span").text(), "2");
+    });
+</script>
+
+<div>
+  <span id="triple-click-span" ic-post-to="/triple_click">0</span>
+</div>
+<script>
+  intercoolerTest("only one deferred trigger is fired", function (assert) {
+      var calls = 0;
+      $.mockjax({
+        url: "/triple_click",
+        response: function() {
+          calls++;
+          this.responseText = "" + calls;
+        }
+      });
+      assert.equal($("#triple-click-span").text(), "0");
+      $("#triple-click-span").click().click().click();
+      assert.equal($("#triple-click-span").text(), "0");
+    },
+    function (assert) {
+      assert.equal($("#triple-click-span").text(), "2");
+    });
+</script>
+
+<div>
+  <form ic-post-to="/child_trigger">
+    <input id="child-trigger-input" name="child-trigger-input" type="text" ic-trigger-on="keyup"/>
+  </form>
+</div>
+<script>
+  intercoolerTest("Child trigger works", function (assert) {
+      $.mockjax({
+        url: "/child_trigger",
+        response: function(settings) {
+          var params = parseParams(settings.data);
+          assert.equal(params['ic-trigger-id'], "child-trigger-input");
+          assert.equal(params['ic-trigger-name'], "child-trigger-input");
+          this.responseText = "<!-- nothing -->";
+        }
+      });
+      assert.equal($("#child-trigger-input").length, 1);
+      $("#child-trigger-input").keyup();
+    },
+    function (assert) {
+      assert.equal($("#child-trigger-input").length, 0);
+    });
+</script>
 
 </div>
 </body>
