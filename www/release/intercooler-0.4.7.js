@@ -192,6 +192,7 @@ var Intercooler = Intercooler || (function () {
   function processHeaders(elt, xhr, pop) {
 
     elt.trigger("beforeHeaders.ic", elt, xhr);
+    log(elt, "Processing Headers: " + xhr.getAllResponseHeaders(), "DEBUG");
     var target = null;
     if (xhr.getResponseHeader("X-IC-Refresh")) {
       var pathsToRefresh = xhr.getResponseHeader("X-IC-Refresh").split(",");
@@ -312,6 +313,7 @@ var Intercooler = Intercooler || (function () {
       },
       beforeSend : function(xhr, settings){
         elt.trigger("beforeSend.ic", elt, data, settings, xhr);
+        log(elt, "Before AJAX call", "DEBUG");
         var onBeforeSend = closestAttrValue(elt, 'ic-on-beforeSend');
         if(onBeforeSend) {
           globalEval('(function (data, settings, xhr) {' + onBeforeSend + '})')(data, settings, xhr);
@@ -319,6 +321,7 @@ var Intercooler = Intercooler || (function () {
       },
       success: function (data, textStatus, xhr) {
         elt.trigger("success.ic", elt, data, textStatus, xhr);
+        log(elt, "Successful AJAX call", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
         if(onSuccess) {
           if(globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr) == false) {
@@ -344,6 +347,7 @@ var Intercooler = Intercooler || (function () {
       },
       complete : function(xhr, status){
         elt.trigger("complete.ic", elt, data, status, xhr);
+        log(elt, "Completed AJAX call", "DEBUG");
         var onComplete = closestAttrValue(elt, 'ic-on-complete');
         if(onComplete) {
           globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
@@ -425,8 +429,9 @@ var Intercooler = Intercooler || (function () {
     log(elt, 'Setting IC info', 'DEBUG');
     getIntercoolerId(target);
     maybeSetIntercoolerMetadata(target);
-    if(_debugPanel) {
-      debugSourceElt(elt);
+    if(elt.data('elementAdded.ic') != true){
+      elt.data('elementAdded.ic', true);
+      elt.trigger("elementAdded.ic");
     }
   }
 
@@ -456,8 +461,8 @@ var Intercooler = Intercooler || (function () {
     processMacros(elt);
     processSources(elt);
     processPolling(elt);
-    processTriggerOn(elt)
-    maybeCleanDebugInfo();
+    processTriggerOn(elt);
+    $(elt).trigger('nodesProcessed.ic');
   }
 
   function processSources(elt) {
@@ -724,7 +729,7 @@ var Intercooler = Intercooler || (function () {
 
   function processICResponse(newContent, elt) {
     if (newContent && /\S/.test(newContent)) {
-      log(elt, "IC RESPONSE: Received: " + newContent, "DEBUG");
+      log(elt, "Response Content: \n" + newContent, "DEBUG");
       var target = getTarget(elt);
 
       // always update if the user tells us to or if there is a script (to reevaluate the script)
@@ -923,6 +928,23 @@ var Intercooler = Intercooler || (function () {
     if(elt.attr('ic-target')) {
       dp.append($("<div><strong>Target: </strong></div>").append(linkForElt(getTarget(elt))));
     }
+    if(elt.attr('ic-deps')) {
+      dp.append($("<div><strong>Dependencies: </strong></div>").append(elt.attr('ic-deps')));
+    }
+    if(verbFor(elt) != "GET") {
+      var depsList = $("<div><strong>Dependant Elements:</strong><ul style='list-style-position: inside;font-size:12px;'></ul></div>")
+        .appendTo(dp).find("ul");
+      $('[ic-src]').each(function () {
+        if(verbFor($(this)) == "GET" && $(this).attr('ic-deps') != 'ignore') {
+          if ((isDependent(elt.attr('ic-src'), $(this).attr('ic-src'))) ||
+              (isDependent(elt.attr('ic-src'), $(this).attr('ic-deps')) || $(this).attr('ic-deps') == "*")) {
+            if (elt == null || elt[0] != $(this)[0]) {
+              $("<li style='font-size:12px'></li>").append(linkForElt($(this))).appendTo(depsList);
+            }
+          }
+        }
+      });
+    }
     return dp;
   }
 
@@ -972,18 +994,13 @@ var Intercooler = Intercooler || (function () {
   }
 
   function maybeCleanDebugInfo() {
-    if(_debugPanel) {
-      $('#ic-debug-Elements-list').find('a').each(function(){
-        console.log($(this));
-        console.log($(this).data('ic-debug-elt'));
-        console.log($.contains( document.body, $(this).data('ic-debug-elt')[0]));
-        if($(this).data('ic-debug-elt') && $.contains( document.body, $(this).data('ic-debug-elt')[0])) {
-          // you live
-        } else {
-          $(this).remove();
-        }
-      });
-    }
+    $('#ic-debug-Elements-list').find('a').each(function(){
+      if($(this).data('ic-debug-elt') && $.contains( document.body, $(this).data('ic-debug-elt')[0])) {
+        // you live
+      } else {
+        $(this).remove();
+      }
+    });
   }
 
   //============================================================
@@ -1050,17 +1067,16 @@ var Intercooler = Intercooler || (function () {
           } else if($(this).data('ic-debug-elt')) {
             var that = $(this);
             var newElt = that.data('ic-debug-elt');
-            $('html, body').animate({ scrollTop: newElt.offset().top - 75 }, 300);
-            setTimeout(function(){
-              if(lastElt) {
-                lastElt.css({'border': ''});
-              }
-              lastElt = newElt;
-              newElt.css({'border' : "2px solid red"});
-              if(that.parent().attr('id') == 'ic-debug-Elements-list') {
-                $('#ic-debug-Elements-detail').html(generateDetailPanel(newElt));
-              }
-            }, 300);
+            var delay = Math.min(newElt.offset().top - 75, 300);
+            $('html, body').animate({ scrollTop: newElt.offset().top - 75 }, delay);
+            if(lastElt) {
+              lastElt.css({'border': ''});
+            }
+            lastElt = newElt;
+            newElt.css({'border' : "2px solid red"});
+            if(that.parent().attr('id') == 'ic-debug-Elements-list') {
+              $('#ic-debug-Elements-detail').html(generateDetailPanel(newElt));
+            }
           }
         });
 
@@ -1073,9 +1089,11 @@ var Intercooler = Intercooler || (function () {
             .appendTo($("#ic-debug-Logs"))
             .prepend(linkForElt($(e.target)))
             .prepend(level + " [");
-        });
-
-        $(window).resize(function () {
+        }).on('elementAdded.ic', function(e) {
+          debugSourceElt($(e.target));
+        }).on('nodesProcessed.ic', function() {
+          maybeCleanDebugInfo();
+        }).on('resize', function () {
           _debugPanel.css(
             {
               top: ($(window).height() - (_debugPanel.data('ic-minimized') == true ? 29 : 400)) + "px",
