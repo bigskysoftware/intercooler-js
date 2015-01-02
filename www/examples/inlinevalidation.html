@@ -87,9 +87,10 @@ nav: tutorial
     function emailInputTemplate(val, errorMsg) {
       return '<div id="email-div" class="form-group has-' + (errorMsg ? 'error' : 'success') + ' has-feedback"> \
                <label class="control-label">Email Address</label> \
-               <input class="form-control" name="email" \
-                      ic-post-to="/contact/email" ic-transition="none" ic-target="#email-div" value="' + val + '"> \
-              </div>' + (errorMsg ? '<span class="help-block text-error">' + errorMsg + '</span>' : "");
+               <input class="form-control" name="email" ic-replace-target="true" \
+                      ic-post-to="/contact/email" ic-transition="none" ic-target="#email-div" value="' + val + '">' +
+               (errorMsg ? '<span class="help-block text-error">' + errorMsg + '</span>' : "") +
+             '</div>';
     }
 
   </script>

@@ -1021,11 +1021,28 @@ nav: docs
 
   <h2>Debugging Intercooler</h2>
 
-  <p>Intercooler is debuggable the same way you would debug most javascript libraries.</p>
+  <p>Intercooler comes with an integrated debugger.  You can launch the debugger by either invoking the
+    <code>Intercooler.debug()</code> method or by passing a <code>true</code> value in for the
+  <code>ic-launch-debugger</code> parameter to a page.</p>
 
-  <p>I personally like the Chrome developer tools, including network tracing.</p>
+  <p>The debugger consists of three tabs: "Elements", "Logs" and "Errors".</p>
 
-  <p>You can capture the intercooler log event if you want to see the low level events that are driving intercooler:</p>
+  <p>"Elements" has a clickable list of active elements on the page.  When you click on one of the items in
+  the list, it will be highlighted on the page, and intercooler-related details will be shown about it.</p>
+
+  <p>"Logs" has the intercooler log stream, including clickable links to the elements that caused each
+    message.</p>
+
+  <p>"Errors" will show any errors that intercooler detects (e.g. bad targets on an element).</p>
+
+  <p>You can launch the debugger on this page by clicking this button:</p>
+
+  <p>
+    <button class="btn btn-default" onclick="Intercooler.debug()">Launch The Debugger</button>
+  </p>
+
+
+  <p>If you would like, you can capture the intercooler log event if you want to see the low level events that are driving intercooler:</p>
 
   <pre>
         $(function(){
