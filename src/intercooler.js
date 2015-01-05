@@ -962,7 +962,6 @@ var Intercooler = Intercooler || (function () {
       var debugPanel = $(window).data('ic-debug-panel');
       if(debugPanel == null) {
         (function() {
-
           function generateDetailPanel(elt) {
             var dp = $("<div><div><strong>Details</strong></div>" +
               "<div><strong>URL: </strong>" + elt.attr('ic-src') + "</div>" +
@@ -1049,6 +1048,7 @@ var Intercooler = Intercooler || (function () {
           }
 
           debugPanel = generateDebugPanel().appendTo($('body'));
+          $(window).data('ic-debug-panel', debugPanel);
           var lastElt;
           $('#ic-debug-panel').on('click', 'a', function(){
             if($(this).text() == "Hide") {
