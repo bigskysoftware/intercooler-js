@@ -18,7 +18,6 @@ var Intercooler = Intercooler || (function () {
   var _remote = $;
   var _scrollHandler = null;
   var _UUID = 1;
-  var _debugPanel = null;
 
   //============================================================
   // Base Transition Definitions
@@ -301,6 +300,9 @@ var Intercooler = Intercooler || (function () {
       indicatorTransition.show(indicator);
     }
 
+    var requestId = uuid();
+    var requestStart = new Date();
+
     _remote.ajax({
       type: type,
       url: url,
@@ -313,7 +315,7 @@ var Intercooler = Intercooler || (function () {
       },
       beforeSend : function(xhr, settings){
         elt.trigger("beforeSend.ic", elt, data, settings, xhr);
-        log(elt, "before AJAX call", "DEBUG");
+        log(elt, "before AJAX request " + requestId + ": " + type + " to " + url, "DEBUG");
         var onBeforeSend = closestAttrValue(elt, 'ic-on-beforeSend');
         if(onBeforeSend) {
           globalEval('(function (data, settings, xhr) {' + onBeforeSend + '})')(data, settings, xhr);
@@ -321,7 +323,7 @@ var Intercooler = Intercooler || (function () {
       },
       success: function (data, textStatus, xhr) {
         elt.trigger("success.ic", elt, data, textStatus, xhr);
-        log(elt, "successful AJAX call", "DEBUG");
+        log(elt, "AJAX request " + requestId + " was successful.", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
         if(onSuccess) {
           if(globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr) == false) {
@@ -331,8 +333,12 @@ var Intercooler = Intercooler || (function () {
 
         var target = getTarget(elt);
         target.data("ic-tmp-transition",  closestAttrValue(elt, 'ic-transition')); // copy transition
+        var beforeHeaders = new Date();
         if (processHeaders(elt, xhr, pop)) {
+          log(elt, "Processed headers for request " + requestId + " in " + (new Date() - beforeHeaders) + "ms", "DEBUG");
+          var beforeSuccess = new Date();
           success(data, textStatus, elt, xhr);
+          log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeHeaders) + "ms", "DEBUG");
         }
 
         target.data("ic-tmp-transition", null);
@@ -343,11 +349,11 @@ var Intercooler = Intercooler || (function () {
         if(onError) {
           globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
         }
-        log(elt, "AJAX error: " + str, "ERROR");
+        log(elt, "AJAX request " + requestId + " experienced an error: " + str, "ERROR");
       },
       complete : function(xhr, status){
+        log(elt, "AJAX request " + requestId + " completed in " + (new Date() - requestStart) + "ms", "DEBUG");
         elt.trigger("complete.ic", elt, data, status, xhr);
-        log(elt, "completed AJAX call", "DEBUG");
         var onComplete = closestAttrValue(elt, 'ic-on-complete');
         if(onComplete) {
           globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
@@ -915,94 +921,6 @@ var Intercooler = Intercooler || (function () {
   };
 
   //============================================================
-  // Debug Support
-  //============================================================
-  function generateDetailPanel(elt) {
-    var dp = $("<div><div><strong>Details</strong></div>" +
-      "<div><strong>URL: </strong>" + elt.attr('ic-src') + "</div>" +
-      "<div><strong>Verb: </strong>" + verbFor(elt) + "</div>" +
-      (elt.attr('ic-trigger-on') ? "<div><strong>Trigger: </strong>" + elt.attr('ic-trigger-on') + "</div>" : "") +
-      "</div>"
-    );
-    if(elt.attr('ic-target')) {
-      dp.append($("<div><strong>Target: </strong></div>").append(linkForElt(getTarget(elt))));
-    }
-    if(elt.attr('ic-deps')) {
-      dp.append($("<div><strong>Dependencies: </strong></div>").append(elt.attr('ic-deps')));
-    }
-    if(verbFor(elt) != "GET") {
-      var depsList = $("<div><strong>Dependant Elements:</strong><ul style='list-style-position: inside;font-size:12px;'></ul></div>")
-        .appendTo(dp).find("ul");
-      $('[ic-src]').each(function () {
-        if(verbFor($(this)) == "GET" && $(this).attr('ic-deps') != 'ignore') {
-          if ((isDependent(elt.attr('ic-src'), $(this).attr('ic-src'))) ||
-              (isDependent(elt.attr('ic-src'), $(this).attr('ic-deps')) || $(this).attr('ic-deps') == "*")) {
-            if (elt == null || elt[0] != $(this)[0]) {
-              $("<li style='font-size:12px'></li>").append(linkForElt($(this))).appendTo(depsList);
-            }
-          }
-        }
-      });
-    }
-    return dp;
-  }
-
-  function linkForElt(that) {
-    if(that && that.length > 0) {
-      return $("<a style='border-bottom: 1px solid #d3d3d3'>&lt;" +
-        that.prop("tagName").toLowerCase() +
-        "&gt;" + (that.attr('ic-src') ? " - " + that.attr('ic-src') : "") +
-        "</a>").data('ic-debug-elt', that);
-    } else {
-      return $("<span>no element</span>")
-    }
-  }
-
-  function generateDebugPanel() {
-    return $("<div id='ic-debug-panel' style='font-size: 14px;font-family: Arial;border-radius: 4px 4px 0 0; background:white;width:800px;height:400px;position:fixed;border: 1px solid gray;'>" +
-      "  <div style='border-radius: 4px 4px 0 0;padding:4px;width:100%;border-bottom: 1px solid gray;background: #f5f5f5'><strong>intercooler.js debugging console</strong>" +
-      "    <span style='float:right'><a>Hide</a> | <a>[x]</a></span>" +
-      "  </div>" +
-      "  <div style='padding:4px;width:100%;border-bottom: 1px solid gray;'>" +
-      "    <a style='font-weight: bold'>Elements</a> | <a>Logs</a> | <a>Errors</a>" +
-      "  </div>" +
-      "  <div>" +
-      "    <div id='ic-debug-Elements'>" +
-      "      <div id='ic-debug-Elements-list' style='width:200px;float: left;height: 342px;overflow-y: scroll;'>" +
-      "      </div>" +
-      "      <div id='ic-debug-Elements-detail'>" +
-      "      </div>" +
-      "    </div>" +
-      "    <div id='ic-debug-Logs' style='display:none;overflow-y: scroll;height: 342px'>" +
-      "    </div>" +
-      "    <div id='ic-debug-Errors' style='display:none;overflow-y: scroll;height: 342px'>" +
-      "    </div>" +
-      "  </div>" +
-      "</div>");
-  }
-
-  function debugSourceElt(elt) {
-    var eltLink = linkForElt(elt);
-    eltLink.clone(true).css({'display' : 'block'}).appendTo($("#ic-debug-Elements-list"));
-    if(elt.attr('ic-target') && getTarget(elt).length == 0) {
-      $("<div> - bad target selector:" + elt.attr('ic-target') + "</div>").prepend(eltLink.clone(true)).appendTo($("#ic-debug-Errors"));
-    }
-    if(elt.attr('ic-indicator') && $(elt.attr('ic-indicator')).length == 0) {
-      $("<div> - bad indicator selector:" + elt.attr('ic-indicator') + "</div>").prepend(eltLink.clone(true)).appendTo($("#ic-debug-Errors"));
-    }
-  }
-
-  function maybeCleanDebugInfo() {
-    $('#ic-debug-Elements-list').find('a').each(function(){
-      if($(this).data('ic-debug-elt') && $.contains( document.body, $(this).data('ic-debug-elt')[0])) {
-        // you live
-      } else {
-        $(this).remove();
-      }
-    });
-  }
-
-  //============================================================
   // Bootstrap
   //============================================================
 
@@ -1041,67 +959,156 @@ var Intercooler = Intercooler || (function () {
     },
 
     debug: function() {
-      if(_debugPanel == null) {
-        _debugPanel = generateDebugPanel().appendTo($('body'));
-        var lastElt;
-        $('#ic-debug-panel').on('click', 'a', function(){
-          if($(this).text() == "Hide") {
-            $("#ic-debug-panel").data('ic-minimized', true);
-            $(this).text("Show");
-            $(window).resize();
-          } else if ($(this).text() == "Show") {
-            $("#ic-debug-panel").data('ic-minimized', false);
-            $(this).text("Hide");
-            $(window).resize();
-          } else if ($(this).text() == "[x]") {
-            if(lastElt) {
-              lastElt.css({'border': ''});
+      var debugPanel = $(window).data('ic-debug-panel');
+      if(debugPanel == null) {
+        (function() {
+
+          function generateDetailPanel(elt) {
+            var dp = $("<div><div><strong>Details</strong></div>" +
+              "<div><strong>URL: </strong>" + elt.attr('ic-src') + "</div>" +
+              "<div><strong>Verb: </strong>" + verbFor(elt) + "</div>" +
+              (elt.attr('ic-trigger-on') ? "<div><strong>Trigger: </strong>" + elt.attr('ic-trigger-on') + "</div>" : "") +
+              "</div>"
+            );
+            if(elt.attr('ic-target')) {
+              dp.append($("<div><strong>Target: </strong></div>").append(linkForElt(getTarget(elt))));
             }
-            _debugPanel.hide();
-          } else if (["Elements", "Logs", "Errors"].indexOf($(this).text()) >= 0) {
-            $(this).parent().find('a').css({"font-weight":"normal"});
-            $(this).css({"font-weight":"bold"});
-            $("#ic-debug-" + $(this).text()).parent().children().hide();
-            $("#ic-debug-" + $(this).text()).show();
-          } else if($(this).data('ic-debug-elt')) {
-            var that = $(this);
-            var newElt = that.data('ic-debug-elt');
-            var delay = Math.min(newElt.offset().top - 75, 300);
-            $('html, body').animate({ scrollTop: newElt.offset().top - 75 }, delay);
-            if(lastElt) {
-              lastElt.css({'border': ''});
+            if(elt.attr('ic-deps')) {
+              dp.append($("<div><strong>Dependencies: </strong></div>").append(elt.attr('ic-deps')));
             }
-            lastElt = newElt;
-            newElt.css({'border' : "2px solid red"});
-            if(that.parent().attr('id') == 'ic-debug-Elements-list') {
-              $('#ic-debug-Elements-detail').html(generateDetailPanel(newElt));
+            if(verbFor(elt) != "GET") {
+              var depsList = $("<div><strong>Dependant Elements:</strong><ul style='list-style-position: inside;font-size:12px;'></ul></div>")
+                .appendTo(dp).find("ul");
+              $('[ic-src]').each(function () {
+                if(verbFor($(this)) == "GET" && $(this).attr('ic-deps') != 'ignore') {
+                  if ((isDependent(elt.attr('ic-src'), $(this).attr('ic-src'))) ||
+                    (isDependent(elt.attr('ic-src'), $(this).attr('ic-deps')) || $(this).attr('ic-deps') == "*")) {
+                    if (elt == null || elt[0] != $(this)[0]) {
+                      $("<li style='font-size:12px'></li>").append(linkForElt($(this))).appendTo(depsList);
+                    }
+                  }
+                }
+              });
+            }
+            return dp;
+          }
+
+          function linkForElt(that) {
+            if(that && that.length > 0) {
+              return $("<a style='border-bottom: 1px solid #d3d3d3'>&lt;" +
+                that.prop("tagName").toLowerCase() +
+                "&gt;" + (that.attr('ic-src') ? " - " + that.attr('ic-src') : "") +
+                "</a>").data('ic-debug-elt', that);
+            } else {
+              return $("<span>no element</span>")
             }
           }
-        });
 
-        $('[ic-src]').each(function(){
-          debugSourceElt($(this));
-        });
+          function generateDebugPanel() {
+            return $("<div id='ic-debug-panel' style='font-size: 14px;font-family: Arial;border-radius: 4px 4px 0 0; background:white;width:800px;height:400px;position:fixed;border: 1px solid gray;'>" +
+              "  <div style='border-radius: 4px 4px 0 0;padding:4px;width:100%;border-bottom: 1px solid gray;background: #f5f5f5'><strong>intercooler.js debugging console</strong>" +
+              "    <span style='float:right'><a>Hide</a> | <a>[x]</a></span>" +
+              "  </div>" +
+              "  <div style='padding:4px;width:100%;border-bottom: 1px solid gray;'>" +
+              "    <a style='font-weight: bold'>Elements</a> | <a>Logs</a> | <a>Errors</a>" +
+              "  </div>" +
+              "  <div>" +
+              "    <div id='ic-debug-Elements'>" +
+              "      <div id='ic-debug-Elements-list' style='width:200px;float: left;height: 342px;overflow-y: scroll;'>" +
+              "      </div>" +
+              "      <div id='ic-debug-Elements-detail'>" +
+              "      </div>" +
+              "    </div>" +
+              "    <div id='ic-debug-Logs' style='display:none;overflow-y: scroll;height: 342px'>" +
+              "    </div>" +
+              "    <div id='ic-debug-Errors' style='display:none;overflow-y: scroll;height: 342px'>" +
+              "    </div>" +
+              "  </div>" +
+              "</div>");
+          }
 
-        $(window).on('log.ic', function(e, msg, level) {
-          $("<div style='border-bottom: 1px solid #d3d3d3'>] - " + msg.replace(/</g, '&lt;') + "</div>")
-            .appendTo($("#ic-debug-Logs"))
-            .prepend(linkForElt($(e.target)))
-            .prepend(level + " [");
-        }).on('elementAdded.ic', function(e) {
-          debugSourceElt($(e.target));
-        }).on('nodesProcessed.ic', function() {
-          maybeCleanDebugInfo();
-        }).on('resize', function () {
-          _debugPanel.css(
-            {
-              top: ($(window).height() - (_debugPanel.data('ic-minimized') == true ? 29 : 400)) + "px",
-              left: ($(window).width() - 820) + "px"
+          function debugSourceElt(elt) {
+            var eltLink = linkForElt(elt);
+            eltLink.clone(true).css({'display' : 'block'}).appendTo($("#ic-debug-Elements-list"));
+            if(elt.attr('ic-target') && getTarget(elt).length == 0) {
+              $("<div> - bad target selector:" + elt.attr('ic-target') + "</div>").prepend(eltLink.clone(true)).appendTo($("#ic-debug-Errors"));
             }
-          )
-        });
+            if(elt.attr('ic-indicator') && $(elt.attr('ic-indicator')).length == 0) {
+              $("<div> - bad indicator selector:" + elt.attr('ic-indicator') + "</div>").prepend(eltLink.clone(true)).appendTo($("#ic-debug-Errors"));
+            }
+          }
+
+          function maybeCleanDebugInfo() {
+            $('#ic-debug-Elements-list').find('a').each(function(){
+              if($(this).data('ic-debug-elt') && $.contains( document.body, $(this).data('ic-debug-elt')[0])) {
+                // you live
+              } else {
+                $(this).remove();
+              }
+            });
+          }
+
+          debugPanel = generateDebugPanel().appendTo($('body'));
+          var lastElt;
+          $('#ic-debug-panel').on('click', 'a', function(){
+            if($(this).text() == "Hide") {
+              $("#ic-debug-panel").data('ic-minimized', true);
+              $(this).text("Show");
+              $(window).resize();
+            } else if ($(this).text() == "Show") {
+              $("#ic-debug-panel").data('ic-minimized', false);
+              $(this).text("Hide");
+              $(window).resize();
+            } else if ($(this).text() == "[x]") {
+              if(lastElt) {
+                lastElt.css({'border': ''});
+              }
+              debugPanel.hide();
+            } else if (["Elements", "Logs", "Errors"].indexOf($(this).text()) >= 0) {
+              $(this).parent().find('a').css({"font-weight":"normal"});
+              $(this).css({"font-weight":"bold"});
+              $("#ic-debug-" + $(this).text()).parent().children().hide();
+              $("#ic-debug-" + $(this).text()).show();
+            } else if($(this).data('ic-debug-elt')) {
+              var that = $(this);
+              var newElt = that.data('ic-debug-elt');
+              var delay = Math.min(newElt.offset().top - 75, 300);
+              $('html, body').animate({ scrollTop: newElt.offset().top - 75 }, delay);
+              if(lastElt) {
+                lastElt.css({'border': ''});
+              }
+              lastElt = newElt;
+              newElt.css({'border' : "2px solid red"});
+              if(that.parent().attr('id') == 'ic-debug-Elements-list') {
+                $('#ic-debug-Elements-detail').html(generateDetailPanel(newElt));
+              }
+            }
+          });
+
+          $('[ic-src]').each(function(){
+            debugSourceElt($(this));
+          });
+
+          $(window).on('log.ic', function(e, msg, level) {
+            $("<div style='border-bottom: 1px solid #d3d3d3'>] - " + msg.replace(/</g, '&lt;') + "</div>")
+              .appendTo($("#ic-debug-Logs"))
+              .prepend(linkForElt($(e.target)))
+              .prepend(level + " [");
+          }).on('elementAdded.ic', function(e) {
+              debugSourceElt($(e.target));
+            }).on('nodesProcessed.ic', function() {
+              maybeCleanDebugInfo();
+            }).on('resize', function () {
+              debugPanel.css(
+                {
+                  top: ($(window).height() - (debugPanel.data('ic-minimized') == true ? 29 : 400)) + "px",
+                  left: ($(window).width() - 820) + "px"
+                }
+              )
+            });
+        })();
       } else {
-        _debugPanel.show();
+        debugPanel.show();
       }
       $(window).resize();
     },
