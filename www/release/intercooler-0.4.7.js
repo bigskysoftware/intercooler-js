@@ -353,6 +353,7 @@ var Intercooler = Intercooler || (function () {
       },
       complete : function(xhr, status){
         log(elt, "AJAX request " + requestId + " completed in " + (new Date() - requestStart) + "ms", "DEBUG");
+        afterRequest(elt);
         elt.trigger("complete.ic", elt, data, status, xhr);
         var onComplete = closestAttrValue(elt, 'ic-on-complete');
         if(onComplete) {
@@ -361,7 +362,6 @@ var Intercooler = Intercooler || (function () {
         if (indicator.length > 0) {
           indicatorTransition.hide(indicator);
         }
-        afterRequest(elt);
       }
     })
   }
