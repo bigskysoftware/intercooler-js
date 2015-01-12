@@ -1,4 +1,4 @@
-# Intercooler.js
+<h1><img src="http://intercoolerjs.org/images/Intercooler_CMYK_noType_64.png" height="32px"> intercooler<span style="color: #26628E;">.</span><span style="color: #8EB3D0;">js</span></h1>
 
 ## Introduction
 
@@ -15,11 +15,11 @@ Here is an example:
 
 Despite its small size, Intercooler supports quite a bit of functionality. Some examples:
 
-* Specifying the event that causes an AJAX request
-* Custom response headers for meta-actions
-* A well developed event hook system
-* Explicit and implicit dependencies between HTML elements
-* A javascript API for interoperability with other javascript libraries
+* Specifying the UI event that causes an AJAX request
+* A pluggable event hook system
+* Custom HTTP response headers for meta-actions
+* A dependency mechanism between HTML elements
+* A visual debugger
 
 Full documentation is available on the [main Intercooler website](http://intercoolerjs.org/)
 
@@ -29,7 +29,7 @@ Intercooler is just another javascript library can be downloaded or hot-linked [
 
 ## License
 
-Intercooler is licenced under the MIT License (see LICENSE)
+Intercooler is licenced under the MIT License (see the [LICENSE](https://raw.githubusercontent.com/LeadDyno/intercooler-js/master/LICENSE))
 
 ## Contributing
 
@@ -52,5 +52,3 @@ This keeps changes from bleeding into one another and makes my life easier.
 * juggy
 * niv
 * coffeecodecouch
-
-
