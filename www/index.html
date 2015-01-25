@@ -13,7 +13,7 @@ layout: default
         </h1>
 
         <p>
-          AJAX using simple HTML attributes
+          Making AJAX as simple as anchor tags
         </p>
 
       </div>
@@ -45,15 +45,15 @@ layout: default
                 if (clicks == 5) {
                   this.headers = {'X-IC-Redirect' : "/docs.html"};
                 } if (clicks == 4) {
-                  this.responseText = "OK, enough clicking...  Check out the docs?";
+                  this.responseText = "<span>OK, enough clicking...  Check out the docs?</span>";
                 } else {
-                  this.responseText = 'You clicked me ' + clicks + ' times...';
+                  this.responseText = '<span>You clicked me ' + clicks + ' times...</span>';
                 }
               }
             });
           })()
         </script>
-        <button class="btn btn-primary" ic-post-to="/click">Click Me!</button>
+        <button class="btn btn-primary" ic-post-to="/click"><span>Click Me!</span></button>
       </div>
 
       <hr/>

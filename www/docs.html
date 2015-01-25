@@ -504,7 +504,7 @@ nav: docs
 
   <p>Currently the valid transitions are <code>"fadeFast"</code> and <code>"none"</code></p>
 
-  <p>Note that in a future intercooler release we will likely move to pure CSS transitions.</p>
+  <p>In a future intercooler release we may move to pure CSS transitions.</p>
 
 </section>
 
@@ -767,12 +767,12 @@ nav: docs
 
   <div class="live-demo">
     <script>
-      $(window).on('myEvent', function () {
-        alert("myEvent was invoked by a response header!"); //wire in an event handler
+      $(window).on('myEvent', function (elt, arg) {
+        alert("myEvent was invoked by a response header with arg: " + arg + "!"); //wire in an event handler
       });
       $.mockjax({
         url: '/trigger_demo',
-        headers: {"X-IC-Trigger": 'myEvent'}
+        headers: {"X-IC-Trigger": 'myEvent', "X-IC-Trigger-Ags": 'foo'}
       });
     </script>
     <button class="btn btn-default" ic-post-to="/trigger_demo">

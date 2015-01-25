@@ -56,15 +56,21 @@ var Intercooler = Intercooler || (function () {
   _defineTransition('none', {});
   _defineTransition('fadeFast', {
     newContent : function(parent, newContent, isReverse, replaceParent, after){
-      parent.fadeOut('fast', function(){
-        if(replaceParent) {
-          after($(newContent).replaceAll(parent));
-        } else {
+      if(replaceParent) {
+        parent.fadeOut('fast', function () {
+          var newContentElts = $(newContent).hide();
+          after(newContentElts.replaceAll(parent));
+          newContentElts.fadeIn('fast');
+        });
+      } else {
+        var fadeTarget = (parent.children().length == parent.contents().length) ? parent.children() : parent;
+        fadeTarget.fadeOut('fast', function () {
           parent.html(newContent);
+          fadeTarget.hide();
           after();
-        }
-        parent.fadeIn('fast');
-      })
+          fadeTarget.fadeIn('fast');
+        });
+      }
     },
     remove : function(elt) {
       elt.fadeOut('fast', function(){ elt.remove(); })
