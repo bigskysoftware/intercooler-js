@@ -27,7 +27,7 @@ nav: tutorial
         <div role="tabpanel" class="tab-pane active" id="demo">
 
   <div id="content" ic-transition="none">
-    <ul class="nav nav-tabs" ic-target="#content" ic-push-location="true">
+    <ul class="nav nav-tabs" ic-target="#content" ic-push-url="true">
       <li class="active"><a ic-get-from="/examples/history/tab1">Tab1</a></li>
       <li><a ic-get-from="/examples/history/tab2">Tab2</a></li>
       <li><a ic-get-from="/examples/history/tab3">Tab3</a></li>
@@ -36,13 +36,6 @@ nav: tutorial
   </div>
 
   <script>
-
-    // Update history when a successful ic request happens within the div
-    $(function(){
-      $('#content').on('after.success.ic', 'a', function(){
-        Intercooler.updateHistory("#content");
-      })
-    });
 
     //========================================================================
     // Mock Server-Side HTTP End Point
@@ -78,7 +71,7 @@ nav: tutorial
     function tabUITemplate(tab) {
       return '\
    <div id="content" ic-transition="none">\
-        <ul class="nav nav-tabs" ic-target="#content" ic-push-location="true">\
+        <ul class="nav nav-tabs" ic-target="#content" ic-push-url="true">\
         <li ' + (tab == 1 ? 'class="active"' : '') + '><a ic-get-from="/examples/history/tab1">Tab1</a></li>\
         <li ' + (tab == 2 ? 'class="active"' : '') + '><a ic-get-from="/examples/history/tab2">Tab2</a></li>\
         <li ' + (tab == 3 ? 'class="active"' : '') + '><a ic-get-from="/examples/history/tab3">Tab3</a></li>\

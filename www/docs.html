@@ -21,6 +21,7 @@ nav: docs
     <li><a href="#polling">Polling</a></li>
     <li><a href="#progress">Progress Indicators</a></li>
     <li><a href="#transitions">Element Transitions</a></li>
+    <li><a href="#history">History</a></li>
     <li><a href="#requests">Anatomy of an Intercooler Request</a></li>
     <li><a href="#responses">Anatomy of an Intercooler Response</a></li>
     <li><a href="#dependencies">Dependencies In Intercooler</a></li>
@@ -509,6 +510,46 @@ nav: docs
 </section>
 
 <section>
+  <a class="anchor" id="history"></a>
+
+  <h2>History Support <i>BETA</i></h2>
+
+  <p>Intercooler provides simple history support for AJAX calls.  This functionality is currently experimental, but
+  is usable and unlikely to change dramatically going forward.</p>
+
+  <p>If you want an intercooler call to push its target URL into the location bar and create a history element,
+  simply add the <code><a href="/attributes/ic-push-url.html">ic-push-url</a></code> attribute to the
+  element and ensure that the target of the element has a stable HTML id.</p>
+
+  <p>Here is an example:</p>
+
+  <pre>
+    &lt;a id="hist-link" ic-post-to="/history_demo" ic-push-url="true">Click Me!&lt;/a>
+  </pre>
+
+  <div class="live-demo">
+    <script>
+      $.mockjax({
+        url: '/history_demo',
+        responseText: "Check out the location, then click the back button!"
+      });
+    </script>
+    <a  id="hist-link" ic-post-to="/history_demo" ic-push-url="true">Click Me!</a>
+  </div>
+
+  <p>Sometimes whether or not you want to update the location of the page will be dependent on the result of the
+  intercooler request.  In that case, rather than using the <code>ic-push-url</code> attribute, you can use the
+  <code>X-IC-PushLocation</code> header, outlined below</p>
+
+  <p><strong>Note:</strong> This is one area where intercooler leverages some relatively recent web technologies that
+  may not be present on older browsers.  Namely, it uses <a href="http://www.w3schools.com/html/html5_webstorage.asp">Web Storage</a>
+  and the <a href="http://www.w3schools.com/JS/js_json.asp">JSON</a> object, both of which are not available in various
+  older browsers.  If you wish to maintain maximum compatibility with your intercooler website, you should not use
+  the history support.</p>
+
+</section>
+
+<section>
   <a class="anchor" id="requests"></a>
 
   <h2>Anatomy Of An Intercooler Request</h2>
@@ -740,10 +781,10 @@ nav: docs
     </tr>
     <tr>
       <td>
-        <code>X-IC-SetLocation</code> (Experimental)
+        <code>X-IC-PushLocation</code>
       </td>
       <td>
-        Pushes a new location (still in development)
+        Sets a new location for the page and saves the history of the element being replaced.
       </td>
     </tr>
     <tr>

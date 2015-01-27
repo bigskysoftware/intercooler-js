@@ -199,11 +199,11 @@ var Intercooler = Intercooler || (function () {
   }
 
   function handleHistory(elt, xhr, originalHtml) {
-    if (xhr.getResponseHeader("X-IC-SetLocation")) {
-      log(elt, "X-IC-SetLocation: pushing " + xhr.getResponseHeader("X-IC-SetLocation"), "DEBUG");
+    if (xhr.getResponseHeader("X-IC-PushLocation")) {
+      log(elt, "X-IC-PushLocation: pushing " + xhr.getResponseHeader("X-IC-PushLocation"), "DEBUG");
       _historySupport.pushUrl(xhr.getResponseHeader("X-IC-SetLocation"), elt, originalHtml);
     } else {
-      if(closestAttrValue(elt, 'ic-push-location') == "true") {
+      if(closestAttrValue(elt, 'ic-push-url') == "true") {
         _historySupport.pushUrl(elt.attr('ic-src'), elt, originalHtml);
       }
     }
@@ -865,12 +865,14 @@ var Intercooler = Intercooler || (function () {
 
   var _historySupport = {
 
+    currentRestorationId : null,
+
     /* functions */
     genId: function() {
       return "ic-hist-elt-" + Math.random().toString();
     },
 
-    saveRestorationData : function(id, html){
+    newRestorationData : function(id, html){
       var histSupport = JSON.parse(localStorage.getItem('ic-history-support'));
       if (histSupport == null) {
         histSupport = {};
@@ -909,6 +911,17 @@ var Intercooler = Intercooler || (function () {
       return restorationData;
     },
 
+    updateHistoryData : function(id, html){
+      var restorationData = JSON.parse(localStorage.getItem(id));
+      if (restorationData == null) {
+        log($('body'), "Could not find restoration data with id " + id, "ERROR");
+        return
+      }
+      restorationData.content = html;
+      //save the new element and history support data
+      localStorage.setItem(restorationData.id, JSON.stringify(restorationData));
+    },
+
     onPageLoad: function () {
       if (window.onpopstate == null || window.onpopstate['ic-on-pop-state-handler'] != true) {
         var currentOnPopState = window.onpopstate;
@@ -933,11 +946,16 @@ var Intercooler = Intercooler || (function () {
         return;
       }
 
-      var originalData = _historySupport.saveRestorationData(id, originalHtml);
-      window.history.replaceState({"ic-id" : originalData.id});
+      if(_historySupport.currentRestorationId != null) {
+        _historySupport.updateHistoryData(_historySupport.currentRestorationId, originalHtml);
+      } else {
+        var originalData = _historySupport.newRestorationData(id, originalHtml);
+        window.history.replaceState({"ic-id" : originalData.id});
+      }
 
-      var restorationData = _historySupport.saveRestorationData(id, target.html());
+      var restorationData = _historySupport.newRestorationData(id, target.html());
       window.history.pushState({'ic-id': restorationData.id}, "", url);
+      _historySupport.currentRestorationId = restorationData.id;
       elt.trigger("pushUrl.ic", target, restorationData);
     },
 
@@ -946,7 +964,11 @@ var Intercooler = Intercooler || (function () {
       if (data && data['ic-id']) {
         var historyData = JSON.parse(localStorage.getItem(data['ic-id']));
         var elt = findById(historyData["elementId"]);
+        if(_historySupport.currentRestorationId != null) {
+          _historySupport.updateHistoryData(_historySupport.currentRestorationId, elt.html());
+        }
         processICResponse(historyData["content"], elt);
+        _historySupport.currentRestorationId = historyData.id;
         return true;
       }
       return false;
@@ -980,7 +1002,7 @@ var Intercooler = Intercooler || (function () {
     },
 
     updateHistory: function(id) {
-      var restoData = _historySupport.saveRestorationData($(id).attr('id'), $(id).html());
+      var restoData = _historySupport.newRestorationData($(id).attr('id'), $(id).html());
       window.history.replaceState({"ic-id" : restoData.id});
     },
 
@@ -1072,6 +1094,9 @@ var Intercooler = Intercooler || (function () {
             }
             if(elt.attr('ic-indicator') && $(elt.attr('ic-indicator')).length == 0) {
               $("<div> - bad indicator selector:" + elt.attr('ic-indicator') + "</div>").prepend(eltLink.clone(true)).appendTo($("#ic-debug-Errors"));
+            }
+            if(elt.attr('ic-push-url') && getTarget($(elt)).attr('id') == null) {
+              $("<div> - ic-push-url requires target to have id</div>").prepend(eltLink.clone(true)).appendTo($("#ic-debug-Errors"));
             }
           }
 

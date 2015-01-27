@@ -1169,6 +1169,33 @@
     });
 </script>
 
+<a id="history-test" ic-post-to="/hist_test1" ic-push-url="true">History Test</a>
+<script>
+  QUnit.test("Basic history support works", function (assert) {
+
+    var done = assert.async();
+
+    $.mockjax({
+      url: "/hist_test1",
+      responseText: "History Link Clicked"
+    });
+    $("#history-test").click();
+
+    setTimeout(function(){
+      assert.equal($("#history-test").text(), "History Link Clicked");
+      assert.equal(window.location.pathname, "/hist_test1");
+      window.history.back();
+    }, 100);
+
+    setTimeout(function () {
+      assert.equal($("#history-test").text(), "History Test");
+      assert.notEqual(window.location.pathname, "/hist_test1");
+      done();
+    }, 200);
+
+  });
+</script>
+
 </div>
 </body>
 </html>
