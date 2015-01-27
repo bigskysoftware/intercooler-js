@@ -178,6 +178,10 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
+  function currentUrl() {
+    return window.location.pathname + window.location.search + window.location.hash;
+  }
+
   //============================================================
   // Request/Parameter/Include Processing
   //============================================================
@@ -432,6 +436,7 @@ var Intercooler = Intercooler || (function () {
     if (includeAttr) {
       str += processIncludes(includeAttr);
     }
+    str += "&ic-current-url=" + encodeURIComponent(currentUrl());
     log(elt, "request parameters " + str, "DEBUG");
     return str;
   }
@@ -859,7 +864,7 @@ var Intercooler = Intercooler || (function () {
     /* functions */
     getRestorationURL: function (elt) {
       var attr = closestAttrValue(elt, 'ic-restore-from');
-      return attr || window.location.pathname + window.location.search + window.location.hash;
+      return attr || currentUrl();
     },
 
     onPageLoad: function () {
