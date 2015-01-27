@@ -1152,6 +1152,23 @@
     });
 </script>
 
+<a id="test-url-is-present" ic-post-to="/test_url_is_present"></a>
+<script>
+  intercoolerTest("Current URL is present", function (assert) {
+      $.mockjax({
+        url: "/test_url_is_present",
+        response: function(settings) {
+          var params = parseParams(settings.data);
+          assert.ok(params['ic-current-url'] != null);
+        }
+      });
+      $("#test-url-is-present").click();
+    },
+    function (assert) {
+      // nothing
+    });
+</script>
+
 </div>
 </body>
 </html>

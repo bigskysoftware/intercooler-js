@@ -1,0 +1,97 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>History Support</h1>
+
+      <p>This example demonstrates history support in intercooler.</p>
+
+      <p>As you click between the tabs, the URL and history will be updated correctly, allowing back button
+      support</p>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+  <div id="content" ic-transition="none">
+    <ul class="nav nav-tabs" ic-target="#content" ic-push-location="true">
+      <li class="active"><a ic-get-from="/examples/history/tab1">Tab1</a></li>
+      <li><a ic-get-from="/examples/history/tab2">Tab2</a></li>
+      <li><a ic-get-from="/examples/history/tab3">Tab3</a></li>
+    </ul>
+    <h1>Tab 1</h1><a ic-post-to="/click_me">Click Me!</a>
+  </div>
+
+  <script>
+
+    //========================================================================
+    // Mock Server-Side HTTP End Point
+    //========================================================================
+    $.mockjax({
+      url: "/examples/history/tab1",
+      response: function (settings) {
+        this.responseText = tabUITemplate(1);
+      }
+    });
+    $.mockjax({
+      url: "/examples/history/tab2",
+      response: function (settings) {
+        this.responseText = tabUITemplate(2);
+      }
+    });
+    $.mockjax({
+      url: "/examples/history/tab3",
+      response: function (settings) {
+        this.responseText = tabUITemplate(3);
+      }
+    });
+    $.mockjax({
+      url: "/click_me",
+      response: function (settings) {
+        this.responseText = "You clicked me!";
+      }
+    });
+
+    //========================================================================
+    // Mock Server-Side Templates
+    //========================================================================
+    function tabUITemplate(tab) {
+      return '\
+   <div id="content" ic-transition="none">\
+        <ul class="nav nav-tabs" ic-target="#content" ic-push-location="true">\
+        <li ' + (tab == 1 ? 'class="active"' : '') + '><a ic-get-from="/examples/history/tab1">Tab1</a></li>\
+        <li ' + (tab == 2 ? 'class="active"' : '') + '><a ic-get-from="/examples/history/tab2">Tab2</a></li>\
+        <li ' + (tab == 3 ? 'class="active"' : '') + '><a ic-get-from="/examples/history/tab3">Tab3</a></li>\
+        </ul>\
+        <h1>Tab ' + tab + '</h1><a ic-post-to="/click_me">Click Me!</a> \
+      </div>\
+      '
+    }
+
+  </script>
+  </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

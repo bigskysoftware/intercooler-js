@@ -178,6 +178,10 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
+  function currentUrl() {
+    return window.location.pathname + window.location.search + window.location.hash;
+  }
+
   //============================================================
   // Request/Parameter/Include Processing
   //============================================================
@@ -194,7 +198,18 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
-  function processHeaders(elt, xhr, pop) {
+  function handleHistory(elt, xhr, originalHtml) {
+    if (xhr.getResponseHeader("X-IC-SetLocation")) {
+      log(elt, "X-IC-SetLocation: pushing " + xhr.getResponseHeader("X-IC-SetLocation"), "DEBUG");
+      _historySupport.pushUrl(xhr.getResponseHeader("X-IC-SetLocation"), elt, originalHtml);
+    } else {
+      if(closestAttrValue(elt, 'ic-push-location') == "true") {
+        _historySupport.pushUrl(elt.attr('ic-src'), elt, originalHtml);
+      }
+    }
+  }
+
+  function processHeaders(elt, xhr) {
 
     elt.trigger("beforeHeaders.ic", elt, xhr);
     log(elt, "response headers: " + xhr.getAllResponseHeaders(), "DEBUG");
@@ -220,10 +235,6 @@ var Intercooler = Intercooler || (function () {
     if (xhr.getResponseHeader("X-IC-Open")) {
       log(elt, "X-IC-Open: opening " + xhr.getResponseHeader("X-IC-Open"), "DEBUG");
       window.open(xhr.getResponseHeader("X-IC-Open"));
-    }
-    if (xhr.getResponseHeader("X-IC-SetLocation") && pop != true) {
-      log(elt, "X-IC-SetLocation: pushing " + xhr.getResponseHeader("X-IC-SetLocation"), "DEBUG");
-      _historySupport.pushUrl(xhr.getResponseHeader("X-IC-SetLocation"), elt);
     }
     if(xhr.getResponseHeader("X-IC-Transition")) {
       log(elt, "X-IC-Transition: setting transition to  " + xhr.getResponseHeader("X-IC-Transition"), "DEBUG");
@@ -297,8 +308,6 @@ var Intercooler = Intercooler || (function () {
 
     data = replaceOrAddMethod(data, type);
 
-    var pop = data.indexOf("&ic-handle-pop=true") >= 0;
-
     // Spinner support
     var indicator = findIndicator(elt);
     var indicatorTransition = getTransition(indicator, indicator);
@@ -340,11 +349,13 @@ var Intercooler = Intercooler || (function () {
         var target = getTarget(elt);
         target.data("ic-tmp-transition",  closestAttrValue(elt, 'ic-transition')); // copy transition
         var beforeHeaders = new Date();
-        if (processHeaders(elt, xhr, pop)) {
+        if (processHeaders(elt, xhr)) {
           log(elt, "Processed headers for request " + requestId + " in " + (new Date() - beforeHeaders) + "ms", "DEBUG");
           var beforeSuccess = new Date();
+          var originalHtml = target.html();
           success(data, textStatus, elt, xhr);
-          log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeHeaders) + "ms", "DEBUG");
+          handleHistory(elt, xhr, originalHtml);
+          log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
         }
 
         target.data("ic-tmp-transition", null);
@@ -432,6 +443,7 @@ var Intercooler = Intercooler || (function () {
     if (includeAttr) {
       str += processIncludes(includeAttr);
     }
+    str += "&ic-current-url=" + encodeURIComponent(currentUrl());
     log(elt, "request parameters " + str, "DEBUG");
     return str;
   }
@@ -852,21 +864,51 @@ var Intercooler = Intercooler || (function () {
 
   var _historySupport = {
 
-    /* vars */
-    stateCache: null,
-    popping: false,
-
     /* functions */
-    getRestorationURL: function (elt) {
-      var attr = closestAttrValue(elt, 'ic-restore-from');
-      return attr || window.location.pathname + window.location.search + window.location.hash;
+    genId: function() {
+      return "ic-hist-elt-" + Math.random().toString();
+    },
+
+    saveRestorationData : function(id, html){
+      var histSupport = JSON.parse(localStorage.getItem('ic-history-support'));
+      if (histSupport == null) {
+        histSupport = {};
+      }
+      var restorationData = {
+        "id": _historySupport.genId(),
+        "elementId": id,
+        "content": html,
+        "timestamp": new Date().getTime(),
+        "previous": histSupport.last
+      };
+      // if there is no first, store this new element as first
+      if (histSupport.first == null) {
+        histSupport.first = restorationData.id;
+      }
+      // update last to point to the new element next
+      if (histSupport.last) {
+        var last = JSON.parse(localStorage.getItem(histSupport.last));
+        last['next'] = restorationData.id;
+        localStorage.setItem(histSupport.last, JSON.stringify(last));
+      }
+      // limit history to 100 items
+      if (histSupport.count == null) {
+        histSupport.count = 1;
+      } else {
+        histSupport.count++;
+      }
+      if (histSupport.count > 200) { // 200 entries works out to about 100 total history elements
+        var first = JSON.parse(localStorage.getItem(histSupport.first));
+        histSupport.first = first.next;
+        localStorage.removeItem(first.id);
+      }
+      //save the new element and history support data
+      localStorage.setItem(restorationData.id, JSON.stringify(restorationData));
+      localStorage.setItem('ic-history-support', JSON.stringify(histSupport));
+      return restorationData;
     },
 
     onPageLoad: function () {
-      _historySupport.stateCache = {"ic-setlocation": true,
-        "restore-from": window.location.pathname + window.location.search + window.location.hash,
-        "timestamp": new Date().getTime()
-      };
       if (window.onpopstate == null || window.onpopstate['ic-on-pop-state-handler'] != true) {
         var currentOnPopState = window.onpopstate;
         window.onpopstate = function(event) {
@@ -880,46 +922,29 @@ var Intercooler = Intercooler || (function () {
       }
     },
 
-    pushUrl: function (url, elt) {
+    pushUrl: function (url, elt, originalHtml) {
       log(elt, "pushing location into history: " + url, "DEBUG");
+
       var target = getTarget(elt);
       var id = target.attr('id');
       if(id == null) {
         log(elt, "To support history for a given element, you must have a valid id attribute on the element", "ERROR");
         return;
       }
-      _historySupport.initHistory(elt);
-      var data = {
-        "ic-setlocation": true,
-        "id-to-restore": id.toString(),
-        "restore-from": url,
-        "timestamp": new Date().getTime()
-      };
-      elt.trigger("pushUrl.ic", target, data);
-      window.history.pushState(data, "", url);
-    },
 
-    initHistory: function (elt) {
-      if(_historySupport.stateCache) {
-        var target = getTarget(elt);
-        var id = target.attr('id');
-        _historySupport.stateCache["id-to-restore"] = id.toString();
-        window.history.replaceState(_historySupport.stateCache, "", _historySupport.stateCache['restore-from']);
-        _historySupport.stateCache = null;
-      }
+      var originalData = _historySupport.saveRestorationData(id, originalHtml);
+      window.history.replaceState({"ic-id" : originalData.id});
+      var restorationData = _historySupport.saveRestorationData(id, target.html());
+      window.history.pushState({'ic-id': restorationData.id}, "", url);
+      elt.trigger("pushUrl.ic", target, restorationData);
     },
 
     handlePop: function (event) {
       var data = event.state;
-      if (data && data['ic-setlocation']) {
-        var elt = findById(data["id-to-restore"]);
-        var params = getParametersForElement(elt, null);
-        params += "&ic-handle-pop=true";
-        handleRemoteRequest(elt, "GET", data["restore-from"], params,
-          function (data) {
-            elt.trigger("handlePop.ic", elt, data);
-            processICResponse(data, elt);
-          });
+      if (data && data['ic-id']) {
+        var historyData = JSON.parse(localStorage.getItem(data['ic-id']));
+        var elt = findById(historyData["elementId"]);
+        processICResponse(historyData["content"], elt);
         return true;
       }
       return false;
