@@ -99,7 +99,7 @@ nav: docs
 
       <pre style="width:90%">
   &lt;script src="https://code.jquery.com/jquery-1.10.2.min.js">&lt;/script>
-  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-0.4.7.min.js">&lt;/script>
+  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-0.4.8.min.js">&lt;/script>
       </pre>
 
   <p>You can always grab the latest code from the <a href="download.html">Downloads</a> page.</p>
@@ -539,7 +539,7 @@ nav: docs
 
   <p>Sometimes whether or not you want to update the location of the page will be dependent on the result of the
   intercooler request.  In that case, rather than using the <code>ic-push-url</code> attribute, you can use the
-  <code>X-IC-PushLocation</code> header, outlined below in the <a href="#responses">Intercooler Response</a> section. </p>
+  <code>X-IC-PushURL</code> header, outlined below in the <a href="#responses">Intercooler Response</a> section. </p>
 
   <p><strong>Note:</strong> This is one area where intercooler leverages some relatively recent web technologies that
   may not be present on older browsers.  Namely, it uses <a href="http://www.w3schools.com/html/html5_webstorage.asp">Web Storage</a>
@@ -635,6 +635,14 @@ nav: docs
       </td>
       <td>
         The internal intercooler ID of the element that caused the request.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ic-current-url</code>
+      </td>
+      <td>
+        The current URL of the page.
       </td>
     </tr>
     </tbody>
@@ -781,7 +789,7 @@ nav: docs
     </tr>
     <tr>
       <td>
-        <code>X-IC-PushLocation</code>
+        <code>X-IC-PushURL</code>
       </td>
       <td>
         Sets a new location for the page and saves the history of the element being replaced.

@@ -5,6 +5,22 @@ nav: dependencies
 
 <div class="container">
 
+  <a class="anchor" id="0_4_8"></a>
+  <h3>Intercooler 0.4.8 - January 27th, 2015</h3>
+  <ul>
+    <li>
+      Reworked history support, with the <code>ic-push-url</code> attribute.  Renamed the <code>X-IC-SetLocation</code>
+      response header to <code>X-IC-PushURL</code> to be consistent with the new attribute.
+    </li>
+    <li>
+      Include the current URL on all intercooler requests in the <code>ic-current-url</code> parameter.
+    </li>
+    <li>
+      For elements with no text children, apply the fadeFast transition to children only, rather than the parent.  This
+      makes buttons look better if their content is wrapped in a span.
+    </li>
+  </ul>
+
   <a class="anchor" id="0_4_7"></a>
   <h3>Intercooler 0.4.7 - January 5th, 2015</h3>
   <ul>
