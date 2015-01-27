@@ -950,7 +950,7 @@ var Intercooler = Intercooler || (function () {
         _historySupport.updateHistoryData(_historySupport.currentRestorationId, originalHtml);
       } else {
         var originalData = _historySupport.newRestorationData(id, originalHtml);
-        window.history.replaceState({"ic-id" : originalData.id});
+        window.history.replaceState({"ic-id" : originalData.id}, "", "");
       }
 
       var restorationData = _historySupport.newRestorationData(id, target.html());
@@ -1003,7 +1003,7 @@ var Intercooler = Intercooler || (function () {
 
     updateHistory: function(id) {
       var restoData = _historySupport.newRestorationData($(id).attr('id'), $(id).html());
-      window.history.replaceState({"ic-id" : restoData.id});
+      window.history.replaceState({"ic-id" : restoData.id}, "", "");
     },
 
     processNodes: function(elt) {
