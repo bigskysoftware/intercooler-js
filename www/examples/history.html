@@ -37,6 +37,13 @@ nav: tutorial
 
   <script>
 
+    // Update history when a successful ic request happens within the div
+    $(function(){
+      $('#content').on('after.success.ic', 'a', function(){
+        Intercooler.updateHistory("#content");
+      })
+    });
+
     //========================================================================
     // Mock Server-Side HTTP End Point
     //========================================================================

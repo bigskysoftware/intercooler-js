@@ -358,6 +358,7 @@ var Intercooler = Intercooler || (function () {
           log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
         }
 
+        elt.trigger("after.success.ic", elt, data, textStatus, xhr);
         target.data("ic-tmp-transition", null);
       },
       error: function (xhr, status, str) {
@@ -934,6 +935,7 @@ var Intercooler = Intercooler || (function () {
 
       var originalData = _historySupport.saveRestorationData(id, originalHtml);
       window.history.replaceState({"ic-id" : originalData.id});
+
       var restorationData = _historySupport.saveRestorationData(id, target.html());
       window.history.pushState({'ic-id': restorationData.id}, "", url);
       elt.trigger("pushUrl.ic", target, restorationData);
@@ -975,6 +977,11 @@ var Intercooler = Intercooler || (function () {
         fireICRequest(val);
       }
       return Intercooler;
+    },
+
+    updateHistory: function(id) {
+      var restoData = _historySupport.saveRestorationData($(id).attr('id'), $(id).html());
+      window.history.replaceState({"ic-id" : restoData.id});
     },
 
     processNodes: function(elt) {
