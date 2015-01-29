@@ -28,7 +28,8 @@ nav: tutorial
 
 
     <div ic-src="/job/status">
-      <button class="btn btn-primary" ic-post-to="/job" ic-target="closest div">Start Job</button>
+      <!-- This post to /job causes the outer div to refresh due to intercooler's dependencies system -->
+      <button class="btn btn-primary" ic-post-to="/job">Start Job</button>
     </div>
 
     <script>
