@@ -63,7 +63,7 @@ var Intercooler = Intercooler || (function () {
           newContentElts.fadeIn('fast');
         });
       } else {
-        var fadeTarget = (parent.children().length == parent.contents().length) ? parent.children() : parent;
+        var fadeTarget = (parent.children().length == parent.contents().length & parent.contents().length > 0) ? parent.children() : parent;
         fadeTarget.fadeOut('fast', function () {
           parent.html(newContent);
           fadeTarget.hide();

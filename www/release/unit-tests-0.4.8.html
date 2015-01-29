@@ -1196,6 +1196,26 @@
   });
 </script>
 
+<a id="empty-target-test" ic-post-to="/empty_target" ic-target="#empty-target" ic-transition="fadeFast">Empty Target</a>
+<div id="empty-target"></div>
+<script>
+  QUnit.test("Fast fade works with empty target", function (assert) {
+
+    var done = assert.async();
+
+    $.mockjax({
+      url: "/empty_target",
+      responseText: "foo"
+    });
+    $("#empty-target-test").click();
+
+    setTimeout(function(){
+      assert.equal($("#empty-target").text(), "foo");
+      done();
+    }, 300);
+  });
+</script>
+
 </div>
 </body>
 </html>
