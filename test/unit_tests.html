@@ -1216,6 +1216,25 @@
   });
 </script>
 
+<a id="get-from-with-target-test" ic-get-from="/get_from_w_target" ic-target="#get-from-with-target">Get From</a>
+<div id="get-from-with-target"></div>
+<script>
+  QUnit.test("Get from with target works", function (assert) {
+    var done = assert.async();
+
+    $.mockjax({
+      url: "/get_from_w_target",
+      responseText: "foo"
+    });
+    $("#get-from-with-target-test").click();
+
+    setTimeout(function(){
+      assert.equal($("#get-from-with-target").text(), "foo");
+      done();
+    }, 300);
+  });
+</script>
+
 </div>
 </body>
 </html>
