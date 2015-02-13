@@ -1,4 +1,3 @@
-'use strict';
 ////////////////////////////////////
 
 /**
@@ -9,6 +8,7 @@
  *
  */
 var Intercooler = Intercooler || (function () {
+  'use strict'; // inside function for better merging
 
   //--------------------------------------------------
   // Vars
