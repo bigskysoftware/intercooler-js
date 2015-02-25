@@ -211,7 +211,7 @@ var Intercooler = Intercooler || (function () {
 
   function processHeaders(elt, xhr) {
 
-    elt.trigger("beforeHeaders.ic", elt, xhr);
+    elt.trigger("beforeHeaders.ic", [elt, xhr]);
     log(elt, "response headers: " + xhr.getAllResponseHeaders(), "DEBUG");
     var target = null;
     if (xhr.getResponseHeader("X-IC-Refresh")) {
@@ -259,7 +259,7 @@ var Intercooler = Intercooler || (function () {
       }
     }
 
-    elt.trigger("afterHeaders.ic", elt, xhr);
+    elt.trigger("afterHeaders.ic", [elt, xhr]);
 
     return true;
   }
@@ -329,7 +329,7 @@ var Intercooler = Intercooler || (function () {
         "X-HTTP-Method-Override": type
       },
       beforeSend : function(xhr, settings){
-        elt.trigger("beforeSend.ic", elt, data, settings, xhr);
+        elt.trigger("beforeSend.ic", [elt, data, settings, xhr]);
         log(elt, "before AJAX request " + requestId + ": " + type + " to " + url, "DEBUG");
         var onBeforeSend = closestAttrValue(elt, 'ic-on-beforeSend');
         if(onBeforeSend) {
@@ -337,7 +337,7 @@ var Intercooler = Intercooler || (function () {
         }
       },
       success: function (data, textStatus, xhr) {
-        elt.trigger("success.ic", elt, data, textStatus, xhr);
+        elt.trigger("success.ic", [elt, data, textStatus, xhr]);
         log(elt, "AJAX request " + requestId + " was successful.", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
         if(onSuccess) {
@@ -358,11 +358,11 @@ var Intercooler = Intercooler || (function () {
           log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
         }
 
-        elt.trigger("after.success.ic", elt, data, textStatus, xhr);
+        elt.trigger("after.success.ic", [elt, data, textStatus, xhr]);
         target.data("ic-tmp-transition", null);
       },
       error: function (xhr, status, str) {
-        elt.trigger("error.ic", elt, status, str, xhr);
+        elt.trigger("error.ic", [elt, status, str, xhr]);
         var onError = closestAttrValue(elt, 'ic-on-error');
         if(onError) {
           globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
@@ -372,7 +372,7 @@ var Intercooler = Intercooler || (function () {
       complete : function(xhr, status){
         log(elt, "AJAX request " + requestId + " completed in " + (new Date() - requestStart) + "ms", "DEBUG");
         afterRequest(elt);
-        elt.trigger("complete.ic", elt, data, status, xhr);
+        elt.trigger("complete.ic", [elt, data, status, xhr]);
         var onComplete = closestAttrValue(elt, 'ic-on-complete');
         if(onComplete) {
           globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
