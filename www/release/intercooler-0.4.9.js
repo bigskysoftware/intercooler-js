@@ -27,13 +27,12 @@ var Intercooler = Intercooler || (function () {
   function _defineTransition(name, def) {
     if(def.newContent == null) {
       //noinspection JSUnusedLocalSymbols
-      def.newContent = function(parent, newContent, isReverse, replaceParent, after, filter) {
+      def.newContent = function(parent, newContent, isReverse, replaceParent, after) {
         if(replaceParent) {
-          var elts = maybeFilter(newContent, filter);
-          parent.replaceWith(elts);
-          after(elts);
+          parent.replaceWith(newContent);
+          after(newContent);
         } else {
-          parent.empty().append(maybeFilter(newContent, filter));
+          parent.empty().append(newContent);
           after();
         }
       }
@@ -57,17 +56,16 @@ var Intercooler = Intercooler || (function () {
   }
   _defineTransition('none', {});
   _defineTransition('fadeFast', {
-    newContent : function(parent, newContent, isReverse, replaceParent, after, filter){
+    newContent : function(parent, newContent, isReverse, replaceParent, after){
       if(replaceParent) {
         parent.fadeOut('fast', function () {
-          var newContentElts = maybeFilter(newContent, filter).hide();
-          after(newContentElts.replaceAll(parent));
-          newContentElts.fadeIn('fast');
+          after(newContent.replaceAll(parent));
+          newContent.fadeIn('fast');
         });
       } else {
         var fadeTarget = (parent.children().length == parent.contents().length & parent.contents().length > 0) ? parent.children() : parent;
         fadeTarget.fadeOut('fast', function () {
-          parent.empty().append(maybeFilter(newContent, filter));
+          parent.empty().append(newContent);
           fadeTarget.hide();
           after();
           fadeTarget.fadeIn('fast');
@@ -85,12 +83,11 @@ var Intercooler = Intercooler || (function () {
     }
   });
   _defineTransition('prepend', {
-    newContent : function(parent, newContent, isReverse, replaceParent, after, filter){
-      var children = maybeFilter(newContent, filter);
-      children.hide();
-      parent.prepend(children);
+    newContent : function(parent, newContent, isReverse, replaceParent, after){
+      newContent.hide();
+      parent.prepend(newContent);
       after();
-      children.fadeIn();
+      newContent.fadeIn();
       if (parent.attr('ic-limit-children')) {
         var limit = parseInt(parent.attr('ic-limit-children'));
         if (parent.children().length > limit) {
@@ -100,12 +97,11 @@ var Intercooler = Intercooler || (function () {
     }
   });
   _defineTransition('append', {
-    newContent : function(parent, newContent, isReverse, replaceParent, after, filter){
-      var children = maybeFilter(newContent, filter);
-      children.hide();
-      parent.append(children);
+    newContent : function(parent, newContent, isReverse, replaceParent, after){
+      newContent.hide();
+      parent.append(newContent);
       after();
-      children.fadeIn();
+      newContent.fadeIn();
       if (parent.attr('ic-limit-children')) {
         var limit = parseInt(parent.attr('ic-limit-children'));
         if (parent.children().length > limit) {
@@ -118,16 +114,6 @@ var Intercooler = Intercooler || (function () {
   //============================================================
   // Utility Methods
   //============================================================
-  function maybeFilter(newContent, filter) {
-    var content = $.parseHTML(newContent, null, true);
-    var asQuery = $(content);
-    if(filter) {
-      if(!asQuery.is(filter)) {
-        asQuery = asQuery.find(filter);
-      }
-    }
-    return  asQuery;
-  }
 
   function fingerprint(elt) {
     if(elt == null || elt == undefined) {
@@ -414,9 +400,16 @@ var Intercooler = Intercooler || (function () {
 
   function processIncludes(str) {
     var returnString = "";
-    $(str).each(function(){
-      returnString += "&" + $(this).serialize();
-    });
+    if($.trim(str).indexOf("{") == 0) {
+      var obj = $.parseJSON( str );
+      $.each(obj, function(key, value){
+        returnString += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(value);
+      });
+    } else {
+      $(str).each(function(){
+        returnString += "&" + $(this).serialize();
+      });
+    }
     return returnString;
   }
 
@@ -783,7 +776,8 @@ var Intercooler = Intercooler || (function () {
       if (updateContent) {
         var transition = getTransition(elt, target);
         var isReplaceParent = closestAttrValue(elt, 'ic-replace-target') == "true";
-        transition.newContent(target, newContent, false, isReplaceParent, function (replacement) {
+        var contentToSwap = maybeFilter(newContent, closestAttrValue(elt, 'ic-select-from-response'));
+        transition.newContent(target, contentToSwap, false, isReplaceParent, function (replacement) {
           if(replacement) {
             processNodes(replacement);
             updateIntercoolerMetaData(target);
@@ -794,9 +788,20 @@ var Intercooler = Intercooler || (function () {
             updateIntercoolerMetaData(target);
           }
           updateIntercoolerMetaData(target);
-        }, closestAttrValue(elt, 'ic-select-from-response'));
+        });
       }
     }
+  }
+
+  function maybeFilter(newContent, filter) {
+    var content = $.parseHTML(newContent, null, true);
+    var asQuery = $(content);
+    if(filter) {
+      if(!asQuery.is(filter)) {
+        asQuery = asQuery.find(filter);
+      }
+    }
+    return  asQuery;
   }
 
   function getStyleTarget(elt) {

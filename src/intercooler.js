@@ -400,9 +400,16 @@ var Intercooler = Intercooler || (function () {
 
   function processIncludes(str) {
     var returnString = "";
-    $(str).each(function(){
-      returnString += "&" + $(this).serialize();
-    });
+    if($.trim(str).indexOf("{") == 0) {
+      var obj = $.parseJSON( str );
+      $.each(obj, function(key, value){
+        returnString += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(value);
+      });
+    } else {
+      $(str).each(function(){
+        returnString += "&" + $(this).serialize();
+      });
+    }
     return returnString;
   }
 

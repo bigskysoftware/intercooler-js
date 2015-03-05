@@ -287,11 +287,12 @@ nav: docs
   <p>Intercooler includes some additional parameters in the request to help you understand which element invoked
     the request, see <a href="#requests">Anatomy of an Intercooler Request</a> below for more information.</p>
 
-  <h3>Including Other Elements</h3>
+  <h3>Including Other Values In Requests</h3>
 
   <p>Sometimes you may want to include the values of inputs in a different part of the DOM. To do this, intercooler
     supports an attribute, <code>ic-include</code>, in which you can specify a JQuery selector to indicate what other
-    elements to serialize in the request.</p>
+    elements to serialize in the request <em>or</em> you can specify a JSON object of name/value pairs to include
+    in the request.</p>
 
   <div class="live-demo">
     <script>
