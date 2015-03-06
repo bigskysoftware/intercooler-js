@@ -491,6 +491,7 @@ var Intercooler = Intercooler || (function () {
     processSources(elt);
     processPolling(elt);
     processTriggerOn(elt);
+    processRemoveAfter(elt);
     $(elt).trigger('nodesProcessed.ic');
   }
 
@@ -610,6 +611,14 @@ var Intercooler = Intercooler || (function () {
     return elt.is('form') || (elt.is(':submit') && elt.closest('form').length == 1);
   }
 
+  function handleRemoveAfter(elt) {
+    if ($(elt).attr('ic-remove-after')) {
+      var transition = getTransition(elt, elt);
+      var interval = parseInterval($(elt).attr('ic-remove-after'));
+      setTimeout(function () { transition.remove(elt); }, interval);
+    }
+  }
+
   function handleTriggerOn(elt) {
 
     if ($(elt).attr('ic-trigger-on')) {
@@ -645,6 +654,13 @@ var Intercooler = Intercooler || (function () {
     handleTriggerOn(elt);
     $(elt).find('[ic-trigger-on]').each(function () {
       handleTriggerOn($(this));
+    });
+  }
+
+  function processRemoveAfter(elt) {
+    handleRemoveAfter(elt);
+    $(elt).find('[ic-remove-after]').each(function () {
+      handleRemoveAfter($(this));
     });
   }
 
@@ -762,7 +778,7 @@ var Intercooler = Intercooler || (function () {
       var target = getTarget(elt);
 
       // always update if the user tells us to or if there is a script (to reevaluate the script)
-      var updateContent = closestAttrValue(elt, 'ic-always-update') == 'true' || newContent.indexOf("<script>") >= 0;
+      var updateContent = closestAttrValue(elt, 'ic-always-update') != 'false' || newContent.indexOf("<script>") >= 0;
       if(updateContent == false) {
         var dummy = document.createElement('div');
         dummy.innerHTML = newContent;

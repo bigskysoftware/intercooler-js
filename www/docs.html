@@ -508,6 +508,25 @@ nav: docs
 
   <p>In a future intercooler release we may move to pure CSS transitions.</p>
 
+  <h3>Timed Removal Of Elements</h3>
+
+  <p>A common pattern in AJAX applications is to "flash" an element after a request: show the element for a bit then
+  remove it from the DOM.  Intercooler includes the <a href="ic-remove-after"><code>ic-remove-after</code></a> attribute
+  for this situation which, like <code>ic-poll</code>, can take the form "2s" or "1500ms".  Once the given amount of
+  time has elapsed, the element will be removed from the DOM, using the applicable transition for the element.</p>
+
+  <p>Here is an example:</p>
+
+  <div class="live-demo">
+    <script>
+      $.mockjax({
+        url: '/remove_after',
+        responseText: "<span ic-remove-after='1s'>Thanks for clicking!</span>"
+      });
+    </script>
+    <a  ic-post-to="/remove_after" ic-target="#flash-span">Click Me!</a> <span id="flash-span"></span>
+  </div>
+
 </section>
 
 <section>
