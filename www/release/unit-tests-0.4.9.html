@@ -1311,8 +1311,8 @@
       $("#test-response-selector-append").click();
     },
     function (assert) {
-      assert.equal($("#test-response-selector-append").html(), "<li>Example</li>");
-    }, 500);
+      assert.equal($("#test-response-selector-append").text(), "Example");
+    }, 700);
 </script>
 
 <ul id="test-response-selector-prepend" ic-prepend-from="/prepend_response_selector" ic-select-from-response="li" ic-trigger-on="click"></ul>
@@ -1325,7 +1325,7 @@
       $("#test-response-selector-prepend").click();
     },
     function (assert) {
-      assert.equal($("#test-response-selector-prepend").html(), "<li>Example</li>");
+      assert.equal($("#test-response-selector-prepend").text(), "Example");
     }, 500);
 </script>
 
