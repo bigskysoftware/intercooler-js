@@ -199,7 +199,7 @@ var Intercooler = Intercooler || (function () {
   function handleHistory(elt, xhr, originalHtml) {
     if (xhr.getResponseHeader("X-IC-PushURL")) {
       log(elt, "X-IC-PushURL: pushing " + xhr.getResponseHeader("X-IC-PushURL"), "DEBUG");
-      _historySupport.pushUrl(xhr.getResponseHeader("X-IC-SetLocation"), elt, originalHtml);
+      _historySupport.pushUrl(xhr.getResponseHeader("X-IC-PushURL"), elt, originalHtml);
     } else {
       if(closestAttrValue(elt, 'ic-push-url') == "true") {
         _historySupport.pushUrl(elt.attr('ic-src'), elt, originalHtml);
