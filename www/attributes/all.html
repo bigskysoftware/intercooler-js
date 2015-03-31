@@ -175,8 +175,8 @@ nav: attributes > all
 
           <tr>
             <td><a href="/attributes/ic-always-update.html">ic-always-update</a></td>
-            <td>This attribute allows force an element to always update the DOM with content after an intercooler
-              request, even if the content is identical to the current DOM content.</td>
+            <td>By setting this value to "false", intercooler will not update an element if the server responds with
+              the same content that the element already has.</td>
           </tr>
 
           <tr>
@@ -207,6 +207,17 @@ nav: attributes > all
             <td><a href="/attributes/ic-push-url.html">ic-push-url</a></td>
             <td>This attribute tells Intercooler to update the current location with the target URL of the element
             after a successful AJAX request, with history support.</td>
+          </tr>
+
+          <tr>
+            <td><a href="/attributes/ic-select-from-response.html">ic-select-from-response</a></td>
+            <td>This attribute tells Intercooler to filter the servers response to content matching the
+              given CSS selector.  This can be useful for making a full HTML response act like a partial responses.</td>
+          </tr>
+
+          <tr>
+            <td><a href="/attributes/ic-remove-after.html">ic-remove-after</a></td>
+            <td>This attribute tells Intercooler to remove the element it is on after the given amount of time has elapsed.</td>
           </tr>
 
         </tbody>

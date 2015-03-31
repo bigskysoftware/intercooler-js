@@ -17,7 +17,9 @@ nav: attributes > ic-include
 
       <h3>Syntax</h3>
 
-      <p>The value of the <code>ic-include</code> attribute is a CSS/JQuery element selector.</p>
+      <p>The value of the <code>ic-include</code> attribute can either be a CSS/JQuery element selector of elements
+        to include in the request or a JSON object of name/value pairs to include.  If it is a JSON object, it must
+      satisfy the <a href="http://api.jquery.com/jquery.parsejson/">jQuery parseJSON() requirements</a>.</p>
 
       <p>This attribute may be placed on parent elements, allowing you to specify behavior across
         multiple elements.</p>

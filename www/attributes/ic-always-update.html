@@ -12,11 +12,10 @@ nav: attributes > ic-always-update
 
       <h3>Summary</h3>
 
-      <p>The <code>ic-always-update</code> attribute forces an element to always update the DOM when new content
-        is downloaded, even if the current content is identical to the downloaded content.</p>
+      <p>By setting <code>ic-always-update</code> attribute to "false", the element will not be swapped
+        if the current content is identical to the downloaded content.</p>
 
-      <p>This can be useful if you want to clean non-DOM related state (such as checkboxes) after an operation causes
-      an update.</p>
+      <p>This can be useful if you want to avoid the visual clutter of swapping content when no data has changed.</p>
 
       <h3>Syntax</h3>
 

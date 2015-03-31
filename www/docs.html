@@ -99,7 +99,7 @@ nav: docs
 
       <pre style="width:90%">
   &lt;script src="https://code.jquery.com/jquery-1.10.2.min.js">&lt;/script>
-  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-0.4.8.min.js">&lt;/script>
+  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-0.4.9.min.js">&lt;/script>
       </pre>
 
   <p>You can always grab the latest code from the <a href="download.html">Downloads</a> page.</p>
@@ -287,11 +287,12 @@ nav: docs
   <p>Intercooler includes some additional parameters in the request to help you understand which element invoked
     the request, see <a href="#requests">Anatomy of an Intercooler Request</a> below for more information.</p>
 
-  <h3>Including Other Elements</h3>
+  <h3>Including Other Values In Requests</h3>
 
   <p>Sometimes you may want to include the values of inputs in a different part of the DOM. To do this, intercooler
     supports an attribute, <code>ic-include</code>, in which you can specify a JQuery selector to indicate what other
-    elements to serialize in the request.</p>
+    elements to serialize in the request <em>or</em> you can specify a JSON object of name/value pairs to include
+    in the request.</p>
 
   <div class="live-demo">
     <script>
@@ -506,6 +507,25 @@ nav: docs
   <p>Currently the valid transitions are <code>"fadeFast"</code> and <code>"none"</code></p>
 
   <p>In a future intercooler release we may move to pure CSS transitions.</p>
+
+  <h3>Timed Removal Of Elements</h3>
+
+  <p>A common pattern in AJAX applications is to "flash" an element after a request: show the element for a bit then
+  remove it from the DOM.  Intercooler includes the <a href="/attributes/ic-remove-after.html"><code>ic-remove-after</code></a> attribute
+  for this situation which, like <code>ic-poll</code>, can take the form "2s" or "1500ms".  Once the given amount of
+  time has elapsed, the element will be removed from the DOM, using the applicable transition for the element.</p>
+
+  <p>Here is an example:</p>
+
+  <div class="live-demo">
+    <script>
+      $.mockjax({
+        url: '/remove_after',
+        responseText: "<span ic-remove-after='1s'>Thanks for clicking!</span>"
+      });
+    </script>
+    <a  ic-post-to="/remove_after" ic-target="#flash-span">Click Me!</a> <span id="flash-span"></span>
+  </div>
 
 </section>
 
