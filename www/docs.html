@@ -988,7 +988,7 @@ nav: docs
     </tr>
     <tr>
       <td>
-        <code>beforeSend.ic(evt, elt, data)</code>
+        <code>beforeSend.ic(evt, elt, data, settings, xhr)</code>
       </td>
       <td>
         Triggered before sending an intercooler AJAX request to the server. The second argument to the event is
@@ -1005,7 +1005,7 @@ nav: docs
     </tr>
     <tr>
       <td>
-        <code>error.ic(evt, elt, req, status, str)</code>
+        <code>error.ic(evt, elt, status, str, xhr)</code>
       </td>
       <td>
         Triggered after an error occurs during an intercooler request
@@ -1013,7 +1013,7 @@ nav: docs
     </tr>
     <tr>
       <td>
-        <code>complete.ic(evt, elt, data)</code>
+        <code>complete.ic(evt, elt, data, status, xhr)</code>
       </td>
       <td>
         Triggered after an intercooler request completes, regardless of status
