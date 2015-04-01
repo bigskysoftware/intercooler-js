@@ -1355,12 +1355,171 @@
         responseText: "Foo!"
       });
 
-      $("#js-test-events").on("success.ic", function(evt, elt, data) {
-      	assert.ok(evt != undefined);
-      	assert.ok(elt != undefined);
-      	assert.ok(data != undefined);
-      }
-      $("#test-include-with-json").click();
+      var elid="test-js-events";
+      var el=$("#"+elid);
+
+      el.on("beforeSend.ic", function(evt, elt, data, settings, xhr) {
+	assert.notEqual(evt, undefined);
+	assert.notEqual(elt, undefined);
+	assert.notEqual(data, undefined);
+	assert.notEqual(settings, undefined);
+	assert.notEqual(xhr, undefined);
+
+      	assert.equal(evt.type, "beforeSend");
+      	assert.equal(elt.get(0).id, elid);
+
+        var params = parseParams(data);
+        assert.equal(params['ic-element-id'],elid);
+      });
+
+      el.on("beforeHeaders.ic", function(evt, elt, xhr) {
+	assert.notEqual(evt, undefined);
+	assert.notEqual(elt, undefined);
+	assert.notEqual(xhr, undefined);
+
+      	assert.equal(evt.type, "beforeHeaders");
+      	assert.equal(elt.get(0).id, elid);
+      	assert.equal(xhr.responseText, "Foo!");
+      });
+
+      el.on("afterHeaders.ic", function(evt, elt, xhr) {
+	assert.notEqual(evt, undefined);
+	assert.notEqual(elt, undefined);
+	assert.notEqual(xhr, undefined);
+
+      	assert.equal(evt.type, "afterHeaders");
+      	assert.equal(elt.get(0).id, elid);
+      	assert.equal(xhr.responseText, "Foo!");
+      });
+
+      el.on("success.ic", function(evt, elt, data, textStatus, xhr) {
+	assert.notEqual(evt, undefined);
+	assert.notEqual(elt, undefined);
+	assert.notEqual(data, undefined);
+	assert.notEqual(textStatus, undefined);
+	assert.notEqual(xhr, undefined);
+
+      	assert.equal(evt.type, "success");
+      	assert.equal(elt.get(0).id, elid);
+      	assert.equal(data, "Foo!");
+      	assert.equal(textStatus, "success");
+      	assert.equal(xhr.responseText, "Foo!");
+      });
+
+      el.on("error.ic", function(evt, elt, req, status, str) {
+        assert.ok(false);  // shouldn't run
+
+	assert.notEqual(evt, undefined);
+	assert.notEqual(elt, undefined);
+	assert.notEqual(req, undefined);
+	assert.notEqual(status, undefined);
+	assert.notEqual(str, undefined);
+
+      	assert.equal(evt.type, "error");
+      	assert.equal(elt.get(0).id, elid);
+      	assert.equal(req, "Foo!");
+      	assert.equal(status, "error");
+	assert.notEqual(str, undefined);
+      });
+
+      el.on("complete.ic", function(evt, elt, data, status, xhr) {
+	assert.notEqual(evt, undefined);
+	assert.notEqual(elt, undefined);
+	assert.notEqual(data, undefined);
+	assert.notEqual(status, undefined);
+	assert.notEqual(xhr, undefined);
+
+      	assert.equal(evt.type, "complete");
+      	assert.equal(elt.get(0).id, elid);
+
+        var params = parseParams(data);
+        assert.equal(params['ic-element-id'],elid);
+      	assert.equal(status, "success");
+      	assert.equal(xhr.responseText, "Foo!");
+      });
+
+      assert.expect(40);
+
+      el.click();
+    },
+
+    function (assert) {
+      // nothing
+    });
+</script>
+
+<div id="test-js-events-error" ic-get-from="/test-js-events-error"></div>
+<script>
+  intercoolerTest("test that js error events are called correctly", function (assert) {
+      $.mockjax({
+        url: "/test-js-events-error",
+        responseText: "server error",
+        status: 500,
+        statusText: "Internal Error"
+      });
+
+      var elid="test-js-events-error";
+      var el=$("#"+elid);
+
+      el.on("beforeSend.ic", function(evt, elt, data, settings, xhr) {
+	assert.notEqual(evt, undefined);
+	assert.notEqual(elt, undefined);
+	assert.notEqual(data, undefined);
+	assert.notEqual(settings, undefined);
+	assert.notEqual(xhr, undefined);
+
+      	assert.equal(evt.type, "beforeSend");
+      	assert.equal(elt.get(0).id, elid);
+
+        var params = parseParams(data);
+        assert.equal(params['ic-element-id'],elid);
+      });
+
+      el.on("beforeHeaders.ic", function(evt, elt, xhr) {
+	assert.equals("beforeHeaders",""); // doesn't run
+      });
+
+      el.on("afterHeaders.ic", function(evt, elt, xhr) {
+	assert.equals("afterHeaders",""); // doesn't run
+      });
+
+      el.on("success.ic", function(evt, elt, data, textStatus, xhr) {
+	assert.ok(false); // shouldn't run
+      });
+
+      el.on("error.ic", function(evt, elt, status, str, xhr) {
+	assert.notEqual(evt, undefined);
+	assert.notEqual(elt, undefined);
+	assert.notEqual(status, undefined);
+	assert.notEqual(str, undefined);
+	assert.notEqual(xhr, undefined);
+
+      	assert.equal(evt.type, "error");
+      	assert.equal(elt.get(0).id, elid);
+      	assert.equal(status, "error");
+	assert.equal(str, "Internal Error");
+      	assert.equal(xhr.responseText, "server error");
+      });
+
+      el.on("complete.ic", function(evt, elt, data, status, xhr) {
+	assert.notEqual(evt, undefined);
+	assert.notEqual(elt, undefined);
+	assert.notEqual(data, undefined);
+	assert.notEqual(status, undefined);
+	assert.notEqual(xhr, undefined);
+
+      	assert.equal(evt.type, "complete");
+      	assert.equal(elt.get(0).id, elid);
+
+        var params = parseParams(data);
+        assert.equal(params['ic-element-id'],elid);
+      	assert.equal(status, "error");
+      	assert.equal(xhr.responseText, "server error");
+      });
+
+      assert.expect(28);
+
+      el.click();
     },
 
     function (assert) {
