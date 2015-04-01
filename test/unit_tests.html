@@ -1347,6 +1347,27 @@
     });
 </script>
 
+<div id="test-js-events" ic-get-from="/test-js-events"></div>
+<script>
+  intercoolerTest("test that js events are called correctly", function (assert) {
+      $.mockjax({
+        url: "/test-js-events",
+        responseText: "Foo!"
+      });
+
+      $("#js-test-events").on("success.ic", function(evt, elt, data) {
+      	assert.ok(evt != undefined);
+      	assert.ok(elt != undefined);
+      	assert.ok(data != undefined);
+      }
+      $("#test-include-with-json").click();
+    },
+
+    function (assert) {
+      // nothing
+    });
+</script>
+
 </div>
 </body>
 </html>
