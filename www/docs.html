@@ -841,11 +841,11 @@ nav: docs
       });
       $.mockjax({
         url: '/trigger_demo',
-        headers: {"X-IC-Trigger": 'myEvent', "X-IC-Trigger-Ags": 'foo'}
+        headers: {"X-IC-Trigger": 'myEvent', "X-IC-Trigger-Data": '["foo"]'}
       });
     </script>
     <button class="btn btn-default" ic-post-to="/trigger_demo">
-      Invoke The 'myEvent' event!
+      Invoke The 'myEvent' event
     </button>
   </div>
 
