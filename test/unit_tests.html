@@ -1527,6 +1527,42 @@
     });
 </script>
 
+<div id="selftarget">
+    <a id="test-target-self" ic-target="#selftarget" ic-get-from="/api44">click me! (self targeted)</a>
+</div>
+
+<a id="test-target-external" ic-target="#externaltarget" ic-get-from="/api44">click me! (external target)</a>
+<div id="externaltarget"></div>
+<script>
+    $(document).on('complete.ic', function(){
+        window.completed44 = true;
+        console.log('completed');
+    });
+    $.mockjax({
+        url: "/api44",
+        responseText: '<a ic-target="#selftarget" ic-get-from="/api44">click again</a>'
+    });
+
+    intercoolerTest("Issue #44 complete event should fire on click with external ic-target and defaultTransition=none ",
+            function (assert) {
+                window.completed44 = false;
+                $("#test-target-external").click();
+            },
+            function (assert) {
+                assert.equal(window.completed44, true);
+            });
+
+    intercoolerTest("Issue #44 complete event should fire on click with self-replacing ic-target and defaultTransition=none",
+            function (assert) {
+                window.completed44 = false;
+                $("#test-target-slef").click();
+            },
+            function (assert) {
+                assert.equal(window.completed44, true);
+            });
+
+</script>
+
 </div>
 </body>
 </html>
