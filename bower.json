@@ -1,0 +1,22 @@
+{
+  "name": "intercooler-js",
+  "version":"0.4.9",
+  "homepage": "https://github.com/LeadDyno/intercooler-js",
+  "main": "src/intercooler.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "build",
+    "speed",
+    "test",
+    "*.md",
+    "AUTHORS.txt",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "keywords": [
+    "intercooler",
+    "ajax",
+    "intercoolerjs"
+  ]
+}
