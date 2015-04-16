@@ -21,7 +21,7 @@ nav: docs
     <li><a href="#polling">Polling</a></li>
     <li><a href="#progress">Progress Indicators</a></li>
     <li><a href="#transitions">Element Transitions</a></li>
-    <li><a href="#history">History</a></li>
+    <li><a href="#history">History<sub>BETA</sub></a></li>
     <li><a href="#requests">Anatomy of an Intercooler Request</a></li>
     <li><a href="#responses">Anatomy of an Intercooler Response</a></li>
     <li><a href="#dependencies">Dependencies In Intercooler</a></li>
@@ -99,7 +99,7 @@ nav: docs
 
       <pre style="width:90%">
   &lt;script src="https://code.jquery.com/jquery-1.10.2.min.js">&lt;/script>
-  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-0.4.9.min.js">&lt;/script>
+  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-0.4.10.min.js">&lt;/script>
       </pre>
 
   <p>You can always grab the latest code from the <a href="download.html">Downloads</a> page.</p>
@@ -1016,7 +1016,8 @@ nav: docs
         <code>complete.ic(evt, elt, data, status, xhr)</code>
       </td>
       <td>
-        Triggered after an intercooler request completes, regardless of status
+        Triggered after an intercooler request completes, regardless of status.  This event is triggered on the
+        <code>body</code> tag.
       </td>
     </tr>
     <tr>
