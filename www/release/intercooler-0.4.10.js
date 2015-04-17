@@ -971,7 +971,7 @@ var Intercooler = Intercooler || (function () {
       if (window.onpopstate == null || window.onpopstate['ic-on-pop-state-handler'] != true) {
         var currentOnPopState = window.onpopstate;
         window.onpopstate = function(event) {
-          $('body').trigger('onpopstate.ic');
+          $('body').trigger('handle.onpopstate.ic');
           if(!_historySupport.handlePop(event)){
             if(currentOnPopState) {
               currentOnPopState(event);
