@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+<title>DEMO</title>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+<!-- JQuery -->
+<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+ <script src="../src/intercooler.js"></script>
+ <script src="http://evilotto.github.io/jquery-jqtransport/jquery.jqtransport.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Intercooler Confirmation using Bootstrap modals</h1>
+
+<div id="storage" style="display: none">
+  <div id="answer1">The answer is yes!</div>
+  <div id="answer2">The answer is still yes!</div>
+</div>
+
+<!-- Button trigger modal -->
+<button id="q1" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" ic-confirm-target="#myModal" ic-get-from="jq:#answer1">
+  Question 1
+</button>
+
+<button id="q2" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" ic-get-from="jq:#answer2" ic-confirm-target="#myModal">
+  Question 2
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        confirm action?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ic-action="confirm">Confirm action</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

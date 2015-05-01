@@ -504,11 +504,37 @@ var Intercooler = Intercooler || (function () {
 
   function processNodes(elt) {
     processMacros(elt);
+    processConfirm(elt);
     processSources(elt);
     processPolling(elt);
     processTriggerOn(elt);
     processRemoveAfter(elt);
     $(elt).trigger('nodesProcessed.ic');
+  }
+
+  function processConfirm(elt) {
+    $(elt).find("[ic-confirm-target]").each(function() {
+      // modify trigger of this element to be "ic.confirm"
+      // on current trigger, set this element as target data of confirmation
+      var currentTrigger=$(this).attr("ic-trigger-on");
+      $(this).attr('ic-trigger-on','ic.confirm');
+      $(this).off(eventFor(currentTrigger,$(this)));
+      $(this).on(eventFor(currentTrigger,$(this)),$(this),handleRequestConfirm);
+    })
+  }
+
+  function handleRequestConfirm(ev) {
+    var elt=ev.data;
+    var target=$(elt).attr('ic-confirm-target');
+    var actor=$('[ic-action="confirm"]',$(target))
+    $(actor).data('ic-confirm-request',elt);
+    $(actor).on(eventFor('default',actor),handleConfirm);
+  }
+
+  function handleConfirm(ev) {
+    var elt=ev.data;
+    var target=$(this).data('ic-confirm-request');
+    $(target).trigger("ic.confirm");
   }
 
   function processSources(elt) {
