@@ -1,11 +1,7 @@
 ////////////////////////////////////
 
 /**
- * Intercooler.js
- *
- * A javascript library for people who don't don't want to write a lot
- * of javascript.
- *
+ * Intercooler.js - there is no need to be upset.
  */
 var Intercooler = Intercooler || (function () {
   'use strict'; // inside function for better merging
@@ -135,8 +131,14 @@ var Intercooler = Intercooler || (function () {
       elt = $('body');
     }
     elt.trigger("log.ic", [msg, level, elt]);
-    if(level == "ERROR" && window.console) {
-      window.console.log("Intercooler Error : " + msg);
+    if(level == "ERROR") {
+      if(window.console) {
+        window.console.log("Intercooler Error : " + msg);
+      }
+      var errorUrl = closestAttrValue($('body'), 'ic-post-errors-to');
+      if(errorUrl){
+        $.post(errorUrl, {'error': msg})
+      }
     }
   }
 
@@ -187,8 +189,11 @@ var Intercooler = Intercooler || (function () {
   // Request/Parameter/Include Processing
   //============================================================
   function getTarget(elt) {
-    var targetValue = closestAttrValue(elt, 'ic-target');
-    if(targetValue && targetValue.indexOf('this.') != 0) {
+    var closest = $(elt).closest('[ic-target]');
+    var targetValue = closest.attr('ic-target');
+    if(targetValue == 'this') {
+      return closest;
+    } else if(targetValue && targetValue.indexOf('this.') != 0) {
       if(targetValue.indexOf('closest ') == 0) {
         return elt.closest(targetValue.substr(8));
       } else {
@@ -199,13 +204,22 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
-  function handleHistory(elt, xhr, originalHtml) {
+  function getTargetForHistory(elt) {
+    var targetValue = closestAttrValue(elt, 'ic-history-target');
+    if(targetValue) {
+      return $(targetValue);
+    } else {
+      return getTarget(elt);
+    }
+  }
+
+  function handleHistory(elt, target, xhr, originalHtml) {
     if (xhr.getResponseHeader("X-IC-PushURL")) {
       log(elt, "X-IC-PushURL: pushing " + xhr.getResponseHeader("X-IC-PushURL"), "DEBUG");
       _historySupport.pushUrl(xhr.getResponseHeader("X-IC-PushURL"), elt, originalHtml);
     } else {
       if(closestAttrValue(elt, 'ic-push-url') == "true") {
-        _historySupport.pushUrl(elt.attr('ic-src'), elt, originalHtml);
+        _historySupport.pushUrl(elt.attr('ic-src'), elt, target, originalHtml);
       }
     }
   }
@@ -271,7 +285,11 @@ var Intercooler = Intercooler || (function () {
     elt.data('ic-request-in-flight', true);
   }
 
-  function afterRequest(elt) {
+  function requestCleanup(indicator, elt) {
+    if (indicator.length > 0) {
+      var indicatorTransition = getTransition(indicator, indicator);
+      indicatorTransition.hide(indicator);
+    }
     elt.removeClass('disabled');
     elt.data('ic-request-in-flight', false);
     if(elt.data('ic-next-request')) {
@@ -321,8 +339,8 @@ var Intercooler = Intercooler || (function () {
 
     // Spinner support
     var indicator = findIndicator(elt);
-    var indicatorTransition = getTransition(indicator, indicator);
     if(indicator.length > 0) {
+      var indicatorTransition = getTransition(indicator, indicator);
       indicatorTransition.show(indicator);
     }
 
@@ -364,9 +382,17 @@ var Intercooler = Intercooler || (function () {
           if (processHeaders(elt, xhr)) {
             log(elt, "Processed headers for request " + requestId + " in " + (new Date() - beforeHeaders) + "ms", "DEBUG");
             var beforeSuccess = new Date();
-            var originalHtml = target.html();
+
+            var targetForHistory = null;
+            var originalHtml = null;
+            if (xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true") {
+              elt.trigger("beforeHistorySnapshot.ic", [elt, target]);
+              requestCleanup(indicator, elt); // clean up before snapshotting HTML
+              targetForHistory = getTargetForHistory(elt);
+              originalHtml = targetForHistory.html()
+            }
             success(data, textStatus, elt, xhr);
-            handleHistory(elt, xhr, originalHtml);
+            handleHistory(elt, targetForHistory, xhr, originalHtml);
             log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
           }
           elt.trigger("after.success.ic", [elt, data, textStatus, xhr, requestId]);
@@ -385,14 +411,15 @@ var Intercooler = Intercooler || (function () {
       },
       complete : function(xhr, status){
         log(elt, "AJAX request " + requestId + " completed in " + (new Date() - requestStart) + "ms", "DEBUG");
-        afterRequest(elt);
-        $('body').trigger("complete.ic", [elt, data, status, xhr, requestId]);
+        requestCleanup(indicator, elt);
+        try {
+          $('body').trigger("complete.ic", [elt, data, status, xhr, requestId]);
+        } catch(e) {
+          log(elt, "Error during complete.ic event for " + requestId + " : " + formatError(e), "ERROR");
+        }
         var onComplete = closestAttrValue(elt, 'ic-on-complete');
         if(onComplete) {
           globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
-        }
-        if (indicator.length > 0) {
-          indicatorTransition.hide(indicator);
         }
       }
     })
@@ -448,6 +475,9 @@ var Intercooler = Intercooler || (function () {
     }
     if (target.attr('ic-id')) {
       str += "&ic-id=" + target.attr('ic-id');
+    }
+    if (target.attr('id')) {
+      str += "&ic-target-id=" + target.attr('id');
     }
     if (triggerOrigin && triggerOrigin.attr('id')) {
       str += "&ic-trigger-id=" + triggerOrigin.attr('id');
@@ -646,6 +676,15 @@ var Intercooler = Intercooler || (function () {
       } else {
         var triggerOn = $(elt).attr('ic-trigger-on').split(" ");
         $(elt).on(eventFor(triggerOn[0], $(elt)), function (e) {
+
+          var onBeforeTrigger = closestAttrValue(elt, 'ic-on-beforeTrigger');
+          if(onBeforeTrigger) {
+            if(globalEval('(function (evt, elt) {' + onBeforeTrigger + '})')(e, $(elt)) == false) {
+              log($(elt), "ic-trigger cancelled by ic-on-beforeTrigger", "DEBUG");
+              return;
+            }
+          }
+
           if(triggerOn[1] == 'changed') {
             var currentVal = $(elt).val();
             var previousVal = $(elt).data('ic-previous-val');
@@ -788,6 +827,26 @@ var Intercooler = Intercooler || (function () {
     return transition;
   }
 
+  function maybeScrollToTarget(elt, target) {
+    if(closestAttrValue(elt, 'ic-scroll-to-target') == 'true' ||
+      closestAttrValue(target, 'ic-scroll-to-target') == 'true') {
+      var offset = -50; // -50 px default offset padding
+      if(closestAttrValue(elt, 'ic-scroll-offset')) {
+        offset = parseInt(closestAttrValue(elt, 'ic-scroll-offset'));
+      } else if(closestAttrValue(target, 'ic-scroll-offset')) {
+        offset = parseInt(closestAttrValue(target, 'ic-scroll-offset'));
+      }
+      var currentPosition = target.offset().top;
+      var portalTop = $(window).scrollTop();
+      var portalEnd = portalTop + window.innerHeight;
+      //if the current top of this element is not visible, scroll it to the top position
+      if(currentPosition < portalTop || currentPosition > portalEnd) {
+        offset += currentPosition;
+        $('html,body').animate({scrollTop: offset}, 400);
+      }
+    }
+  }
+
   function processICResponse(newContent, elt) {
     if (newContent && /\S/.test(newContent)) {
       log(elt, "response content: \n" + newContent, "DEBUG");
@@ -820,6 +879,7 @@ var Intercooler = Intercooler || (function () {
             updateIntercoolerMetaData(target);
           }
           updateIntercoolerMetaData(target);
+          maybeScrollToTarget(elt, target)
         });
       }
     }
@@ -854,7 +914,7 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
-  function fireICRequest(elt) {
+  function fireICRequest(elt, alternateHandler) {
 
     var triggerOrigin = elt;
     if(!elt.is('[ic-src]')) {
@@ -883,19 +943,21 @@ var Intercooler = Intercooler || (function () {
           var styleTarget = getStyleTarget(elt);
           var attrTarget = styleTarget ? null : getAttrTarget(elt);
           var verb = verbFor(elt);
-          handleRemoteRequest(elt, verb, elt.attr('ic-src'), getParametersForElement(elt, triggerOrigin),
-            function (data) {
-              if (styleTarget) {
-                elt.css(styleTarget, data);
-              } else if (attrTarget) {
-                elt.attr(attrTarget, data);
-              } else {
-                processICResponse(data, elt);
-                if (verb != 'GET') {
-                  refreshDependencies(elt.attr('ic-src'), elt);
-                }
+
+          var success = alternateHandler || function (data) {
+            if (styleTarget) {
+              elt.css(styleTarget, data);
+            } else if (attrTarget) {
+              elt.attr(attrTarget, data);
+            } else {
+              processICResponse(data, elt);
+              if (verb != 'GET') {
+                refreshDependencies(elt.attr('ic-src'), elt);
               }
-            });
+            }
+          };
+
+          handleRemoteRequest(elt, verb, elt.attr('ic-src'), getParametersForElement(elt, triggerOrigin), success);
         }
       };
 
@@ -941,8 +1003,16 @@ var Intercooler = Intercooler || (function () {
         };
       }
 
+      var restorationDataId = "ic-hist-elt-";
+      if(histSupport.slot < 10) {
+        restorationDataId += "00" + histSupport.slot;
+      } else if (histSupport.slot < 100) {
+        restorationDataId += "0" + histSupport.slot;
+      } else  {
+        restorationDataId += histSupport.slot;
+      }
       var restorationData = {
-        "id": "ic-hist-elt-" + histSupport.slot,
+        "id": restorationDataId,
         "elementId": id,
         "content": html,
         "timestamp": new Date().getTime()
@@ -977,32 +1047,38 @@ var Intercooler = Intercooler || (function () {
               currentOnPopState(event);
             }
           }
+          $('body').trigger('pageLoad.ic');
         };
         window.onpopstate['ic-on-pop-state-handler'] = true;
       }
     },
 
-    pushUrl: function (url, elt, originalHtml) {
+    pushUrl: function (url, elt, target, originalHtml) {
       log(elt, "pushing location into history: " + url, "DEBUG");
 
-      var target = getTarget(elt);
       var id = target.attr('id');
       if(id == null) {
-        log(elt, "To support history for a given element, you must have a valid id attribute on the element", "ERROR");
+        log(target, "To support history for a given element, you must have a valid id attribute on the element", "ERROR");
         return;
       }
 
+      // If we have a current restoration ID (i.e. we are working in a restored location)
+      // we can update it with the current HTML in order to capture internal mutations
       if(_historySupport.currentRestorationId != null) {
         _historySupport.updateHistoryData(_historySupport.currentRestorationId, originalHtml);
       } else {
+        // Otherwise this is the first time we've initiated AJAX history so we need to
+        // create a new history element with the original HTML for the element so the
+        // back button works for the original page
         var originalData = _historySupport.newRestorationData(id, originalHtml);
         window.history.replaceState({"ic-id" : originalData.id}, "", "");
       }
 
+      // Finally push the new content in as a new history element (insanity)
       var restorationData = _historySupport.newRestorationData(id, target.html());
       window.history.pushState({'ic-id': restorationData.id}, "", url);
       _historySupport.currentRestorationId = restorationData.id;
-      elt.trigger("pushUrl.ic", target, restorationData);
+      target.trigger("pushUrl.ic", target, restorationData);
     },
 
     handlePop: function (event) {
@@ -1012,6 +1088,7 @@ var Intercooler = Intercooler || (function () {
         if(historyData) {
           var elt = findById(historyData["elementId"]);
           if(_historySupport.currentRestorationId != null) {
+            elt.trigger("beforeHistorySnapshot.ic", [elt, elt]);
             _historySupport.updateHistoryData(_historySupport.currentRestorationId, elt.html());
           }
           processICResponse(historyData["content"], elt);
@@ -1054,12 +1131,31 @@ var Intercooler = Intercooler || (function () {
       window.history.replaceState({"ic-id" : restoData.id}, "", "");
     },
 
+    dumpLocalStorage : function() {
+      var keys = [];
+      for (var x in localStorage) {
+        keys.push(x);
+      }
+      keys.sort();
+      var total = 0;
+      for(var i in keys) {
+        var size = (localStorage[keys[i]].length * 2);
+        total += size;
+        console.log(keys[i] + "=" + (size / 1024 / 1024).toFixed(2) + " MB")
+      }
+      console.log("TOTAL LOCAL STORAGE: " + (total / 1024 / 1024).toFixed(2) + " MB")
+    },
+
     resetHistory: function() {
       _historySupport.clearHistory();
     },
 
     setHistoryLimit: function(count) {
       _historySupport.historyLimit = count;
+    },
+
+    fireRequest: function(elt, callback) {
+      fireICRequest(elt, callback)
     },
 
     processNodes: function(elt) {
@@ -1072,6 +1168,10 @@ var Intercooler = Intercooler || (function () {
 
     defineTransition: function (name, def) {
       _defineTransition(name, def);
+    },
+
+    closestAttrValue: function (elt, attr) {
+      return closestAttrValue(elt, attr);
     },
 
     debug: function() {
@@ -1230,18 +1330,6 @@ var Intercooler = Intercooler || (function () {
         debugPanel.show();
       }
       $(window).resize();
-    },
-
-    /* ===================================================
-     * Mock Testing API
-     * =================================================== */
-    addURLHandler: function () {
-      throw "This method is no longer supported.  Please use the jQuery mockjax plugin instead: https://github.com/jakerella/jquery-mockjax";
-    },
-
-    setRemote: function (remote) {
-      _remote = remote;
-      return Intercooler;
     }
   }
 })();
