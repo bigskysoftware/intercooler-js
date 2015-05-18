@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<script src="/src/intercooler.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+ <div ic-on-error="alert('oh no!')">
+   <div class="btn btn-default" ic-get-from="#storage .hw">Click me</div>
+   <div class="btn btn-default" ic-get-from="#storage .gw" ic-transition="none">Don't Click me</div>
+  </div>
+
+</div>
+
+<div id="storage" style="display: none">
+  <div class="hw">Hello, world</div>
+  <div class="gw" ic-lt-status="500 Server Error">Goodbye, world</div>
+</div>
+
+</body>
+</html>
+
+
