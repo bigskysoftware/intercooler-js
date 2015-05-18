@@ -72,7 +72,6 @@
 
     // no transition and fast response time from mockjax
     $(function () {
-      Intercooler.defaultTransition('none');
       $.mockjaxSettings['responseTime'] = 1;
     });
 
@@ -122,28 +121,22 @@
     <script>
       QUnit.test("IC attributes are set on elements", function (assert) {
         assert.ok($('#ic-src-div1').attr('ic-id') != null, "Has ID");
-        assert.ok($('#ic-src-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-        assert.ok($('#ic-src-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+        assert.ok($('#ic-src-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
         assert.ok($('#ic-post-to-div1').attr('ic-id') != null, "Has ID");
-        assert.ok($('#ic-post-to-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-        assert.ok($('#ic-post-to-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+        assert.ok($('#ic-post-to-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
         assert.ok($('#ic-append-from-div1').attr('ic-id') != null, "Has ID");
-        assert.ok($('#ic-append-from-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-        assert.ok($('#ic-append-from-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+        assert.ok($('#ic-append-from-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
         assert.ok($('#ic-prepend-from-div1').attr('ic-id') != null, "Has ID");
-        assert.ok($('#ic-prepend-from-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-        assert.ok($('#ic-prepend-from-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+        assert.ok($('#ic-prepend-from-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
         assert.ok($('#ic-style-src-div1').attr('ic-id') != null, "Has ID");
-        assert.ok($('#ic-style-src-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-        assert.ok($('#ic-style-src-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+        assert.ok($('#ic-style-src-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
         assert.ok($('#ic-attr-src-div1').attr('ic-id') != null, "Has ID");
-        assert.ok($('#ic-attr-src-div1').attr('ic-fingerprint') != null, "Has Fingerprint");
-        assert.ok($('#ic-attr-src-div1').attr('ic-last-refresh') != null, "Has Last Refresh");
+        assert.ok($('#ic-attr-src-div1').data('ic-last-refresh') != null, "Has Last Refresh");
       });
     </script>
   </div>
@@ -446,54 +439,6 @@
 </script>
 
 
-<div id="fp-test" ic-post-to="/fp_test"><span>Foo</span></div>
-<script>
-  (function(){
-    var originalFp;
-    var t1;
-    intercoolerTest("Fingerprint is stable between requests",
-      function () {
-        $.mockjax({
-          url: "/fp_test",
-          responseText: '<span>Foo</span>'
-        });
-        originalFp = $("#fp-test").attr('ic-fingerprint');
-        t1 = $("#fp-test").html();
-        $("#fp-test").click();
-      },
-      function (assert) {
-        var t2 = $("#fp-test").html();
-        var finalFp = $("#fp-test").attr('ic-fingerprint');
-        assert.equal(t1, t2);
-        assert.equal(originalFp, finalFp);
-      });
-  })();
-</script>
-
-<div id="fp-test-2" ic-post-to="/2fp_test"><span>Foo</span></div>
-<script>
-  (function () {
-    var originalFp;
-    var t1;
-    intercoolerTest("Fingerprint changes with new content",
-      function () {
-        $.mockjax({
-          url: "/2fp_test",
-          responseText: '<span>Bar</span>'
-        });
-        originalFp = $("#fp-test-2").attr('ic-fingerprint');
-        t1 = $("#fp-test-2").html();
-        $("#fp-test-2").click();
-      },
-      function () {
-        var t2 = $("#fp-test-2").html();
-        notEqual(t1, t2);
-        var finalFp = $("#fp-test-2").attr('ic-fingerprint');
-        notEqual(originalFp, finalFp);
-      });
-  })();
-</script>
-
 <div id="refresh-api-test" ic-src="/refresh-api-test">Foo</div>
 <script>
   intercoolerTest("LeadDyno.refresh() with element works",
@@ -522,32 +467,6 @@
     function (assert) {
       assert.equal('Bar', $('#refresh-api-test-2').text());
     });
-</script>
-
-<div id="define-transition-1" ic-src="/define-transition-test" ic-transition="custom">Foo</div>
-<script>
-  (function () {
-    var counter = 0;
-    intercoolerTest("Custom transitions work",
-      function () {
-        Intercooler.defineTransition('custom', {
-          newContent: function (parent, content, reverse, replaceParent, after) {
-            counter++;
-            parent.html(content);
-            after();
-          }
-        });
-        $.mockjax({
-          url: "/define-transition-test",
-          responseText: 'Bar'
-        });
-        Intercooler.refresh('/define-transition-test');
-      },
-      function (assert) {
-        assert.equal('Bar', $('#define-transition-1').text());
-        assert.equal(1, counter);
-      });
-  })()
 </script>
 
 <div id="indicator-test" ic-post-to="/indicator"><strong id="indicator1" class="ic-indicator" style="display:none">loading...</strong> Foo
@@ -610,7 +529,9 @@
 <ul id="target-target-append">
   <li>bar</li>
 </ul>
-<div id="target-test-append" ic-post-to="/append_target_test" ic-transition='append'
+<div id="target-test-append"
+     ic-trigger-on="default"
+     ic-append-from="/append_target_test"
      ic-target="#target-target-append"></div>
 <script>
   intercoolerTest("Target attribute works with append", function () {
@@ -628,7 +549,7 @@
 <ul id="target-target-prepend">
   <li>bar</li>
 </ul>
-<div id="target-test-prepend" ic-post-to="/prepend_target_test" ic-transition='prepend'
+<div id="target-test-prepend" ic-prepend-from="/prepend_target_test" ic-trigger-on='default'
      ic-target="#target-target-prepend"></div>
 <script>
   intercoolerTest("Target attribute works with prepend",
@@ -647,7 +568,7 @@
 
 <ul id="prepend-limit" ic-limit-children="3">
 </ul>
-<div id="prepend-btn" ic-post-to="/prepend_limit" ic-transition='prepend' ic-target="#prepend-limit"></div>
+<div id="prepend-btn" ic-prepend-from="/prepend_limit" ic-trigger-on="click" ic-target="#prepend-limit"></div>
 <script>
   intercoolerTest("ic-limit-children works with prepend",
     function () {
@@ -673,7 +594,7 @@
 
 <ul id="append-limit" ic-limit-children="3">
 </ul>
-<div id="append-btn" ic-post-to="/append_limit" ic-transition='append' ic-target="#append-limit"></div>
+<div id="append-btn" ic-append-from="/append_limit" ic-trigger-on="click" ic-target="#append-limit"></div>
 <script>
   intercoolerTest("ic-limit-children works with append and target",
     function () {
@@ -1204,26 +1125,6 @@
   });
 </script>
 
-<a id="empty-target-test" ic-post-to="/empty_target" ic-target="#empty-target" ic-transition="fadeFast">Empty Target</a>
-<div id="empty-target"></div>
-<script>
-  QUnit.test("Fast fade works with empty target", function (assert) {
-
-    var done = assert.async();
-
-    $.mockjax({
-      url: "/empty_target",
-      responseText: "foo"
-    });
-    $("#empty-target-test").click();
-
-    setTimeout(function(){
-      assert.equal($("#empty-target").text(), "foo");
-      done();
-    }, 300);
-  });
-</script>
-
 <a id="get-from-with-target-test" ic-get-from="/get_from_w_target" ic-target="#get-from-with-target">Get From</a>
 <div id="get-from-with-target"></div>
 <script>
@@ -1269,36 +1170,6 @@
     function (assert) {
       assert.equal($("#test-response-selector-2-ul").html(), "<li>Example</li>");
     });
-</script>
-
-<div id="test-response-selector-ff" ic-post-to="/response_selectorff" ic-select-from-response="ul"
-     ic-transition="fadeFast"></div>
-<script>
-  intercoolerTest("Basic partial response selector works properly with fade-fast", function (assert) {
-      $.mockjax({
-        url: "/response_selectorff",
-        responseText: "<html><body><div><ul><li>Example</li></ul></div></body></html>"
-      });
-      $("#test-response-selector-ff").click();
-    },
-    function (assert) {
-      assert.equal($("#test-response-selector-ff").html(), "<ul><li>Example</li></ul>");
-    }, 500);
-</script>
-
-<div id="test-response-selector-2-ff" ic-post-to="/response_selector2ff" ic-select-from-response="ul"
-     ic-replace-parent="true" ic-transition="fadeFast"></div>
-<script>
-  intercoolerTest("Partial response selector works properly with replace parent  with fade-fast", function (assert) {
-      $.mockjax({
-        url: "/response_selector2ff",
-        responseText: "<html><body><div><ul id='test-response-selector-2-ul-ff'><li>Example</li></ul></div></body></html>"
-      });
-      $("#test-response-selector-2-ff").click();
-    },
-    function (assert) {
-      assert.equal($("#test-response-selector-2-ul-ff").html(), "<li>Example</li>");
-    }, 500);
 </script>
 
 <ul id="test-response-selector-append" ic-append-from="/append_response_selector" ic-select-from-response="li" ic-trigger-on="click"></ul>
@@ -1547,7 +1418,7 @@
         responseText: '<a ic-target="#selftarget" ic-get-from="/api44">click again</a>'
     });
 
-    intercoolerTest("Issue #44 complete event should fire on click with external ic-target and defaultTransition=none ",
+    intercoolerTest("Issue #44 complete event should fire on click with external ic-target",
             function (assert) {
                 window.completed44 = false;
                 $("#test-target-external").click();
@@ -1556,7 +1427,7 @@
                 assert.equal(window.completed44, true);
             });
 
-    intercoolerTest("Issue #44 complete event should fire on click with self-replacing ic-target and defaultTransition=none",
+    intercoolerTest("Issue #44 complete event should fire on click with self-replacing ic-target",
             function (assert) {
                 window.completed44 = false;
                 $("#test-target-self").click();

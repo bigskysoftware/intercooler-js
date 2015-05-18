@@ -26,7 +26,7 @@ nav: tutorial
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="demo">
 
-  <div id="content" ic-transition="none">
+  <div id="content">
     <ul class="nav nav-tabs" ic-target="#content" ic-push-url="true">
       <li class="active"><a ic-get-from="/examples/history/tab1">Tab1</a></li>
       <li><a ic-get-from="/examples/history/tab2">Tab2</a></li>
@@ -70,7 +70,7 @@ nav: tutorial
     //========================================================================
     function tabUITemplate(tab) {
       return '\
-   <div id="content" ic-transition="none">\
+   <div id="content">\
         <ul class="nav nav-tabs" ic-target="#content" ic-push-url="true">\
         <li ' + (tab == 1 ? 'class="active"' : '') + '><a ic-get-from="/examples/history/tab1">Tab1</a></li>\
         <li ' + (tab == 2 ? 'class="active"' : '') + '><a ic-get-from="/examples/history/tab2">Tab2</a></li>\

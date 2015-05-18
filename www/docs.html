@@ -469,51 +469,14 @@ nav: docs
 
   <h2>Element Transitions</h2>
 
-  <p>You can control the way that elements are swapped into the DOM with intercooler's transition support.</p>
-
-  <p>By default, intercooler uses JQuery's <code>fadeFast</code> transition to fade out old elements and fade
-    in new elements. This is a nice visual queue for users.</p>
-
-  <p>You can override this behavior in a few different ways:</p>
-
-  <p>If you wish to override the behavior for a specific element, you can use the <code>ic-transition</code> attribute:
-  </p>
-
-        <pre>
-          &lt;button ic-post-to="/transition_demo" ic-transition="none">Click Me!&lt;/button>
-        </pre>
-
-  <div class="live-demo">
-    <script>
-      $.mockjax({
-        responseTime: 500,
-        url: '/transition_demo',
-        responseText: "Done!"
-      });
-    </script>
-    <button class="btn btn-default" ic-post-to="/transition_demo" ic-transition="none">Click Me!</button>
-  </div>
-
-  <p>Here we use the <code>none</code> transition, for immediate replacement.</p>
-
-  <p>If you wish to override the behavior globally, you can use the <code>Intercooler.defaultTransition()</code> method
-    in javascript:</p>
-
-        <pre>
-
-          Intercooler.defaultTransition("none");
-        </pre>
-
-  <p>Currently the valid transitions are <code>"fadeFast"</code> and <code>"none"</code></p>
-
-  <p>In a future intercooler release we may move to pure CSS transitions.</p>
+  <p>TODO cgross - CSS 3 animation docs</p>
 
   <h3>Timed Removal Of Elements</h3>
 
   <p>A common pattern in AJAX applications is to "flash" an element after a request: show the element for a bit then
   remove it from the DOM.  Intercooler includes the <a href="/attributes/ic-remove-after.html"><code>ic-remove-after</code></a> attribute
   for this situation which, like <code>ic-poll</code>, can take the form "2s" or "1500ms".  Once the given amount of
-  time has elapsed, the element will be removed from the DOM, using the applicable transition for the element.</p>
+  time has elapsed, the element will be removed from the DOM.</p>
 
   <p>Here is an example:</p>
 
@@ -620,15 +583,6 @@ nav: docs
         This is a timestamp of the last time the target element was refreshed.
         This can be used to calculate time-sensitive UI updates (e.g. appending to a list of messages.)
       </td>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <code>ic-fingerprint</code>
-      </td>
-      <td>
-        The SHA256 fingerprint of the current content. This can be used to avoid
-        sending down unnecessary updates, caching, etc.
       </td>
     </tr>
     <tr>
@@ -813,14 +767,6 @@ nav: docs
       </td>
       <td>
         Sets a new location for the page and saves the history of the element being replaced.
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <code>X-IC-Transition</code>
-      </td>
-      <td>
-        Overrides the elements normal transition.
       </td>
     </tr>
     <tr>
@@ -1152,17 +1098,6 @@ nav: docs
     </thead>
     <tbody>
 
-    <tr>
-      <td>
-        <code>Intercooler.defaultTransition(name)</code>
-      </td>
-      <td>
-        Lets you set the default transition to use
-              <pre>
-  Intercooler.defaultTransition('none');
-</pre>
-      </td>
-    </tr>
     <tr>
       <td>
         <code>Intercooler.processNodes(root)</code>

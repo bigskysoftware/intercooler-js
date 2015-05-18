@@ -33,7 +33,7 @@ nav: tutorial
     <div class="form-group">
       <label class="control-label">Email Address <i id="email-ind" class="fa fa-spinner fa-spin" style="display:none"></i> </label>
       <input class="form-control" name="email"
-             ic-post-to="/contact/email" ic-transition="none" ic-target="closest div"
+             ic-post-to="/contact/email" ic-target="closest div"
              ic-replace-target="true" ic-indicator="#email-ind">
     </div>
     <div class="form-group">
@@ -88,7 +88,7 @@ nav: tutorial
       return '<div id="email-div" class="form-group has-' + (errorMsg ? 'error' : 'success') + ' has-feedback"> \
                <label class="control-label">Email Address</label> \
                <input class="form-control" name="email" ic-replace-target="true" \
-                      ic-post-to="/contact/email" ic-transition="none" ic-target="#email-div" value="' + val + '">' +
+                      ic-post-to="/contact/email" ic-target="#email-div" value="' + val + '">' +
                (errorMsg ? '<span class="help-block text-error">' + errorMsg + '</span>' : "") +
              '</div>';
     }

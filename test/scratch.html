@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="../src/intercooler.js"></script>
+    <script type="text/javascript" src="jquery.mockjax.js"></script>
+    <style>
+      button.ic-transitioning {
+        opacity:0;
+        transition:opacity 200ms ease-out;
+      }
+      button {
+        opacity:1;
+        transition:opacity 200ms ease-in;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      $(function () {
+        $.mockjaxSettings['responseTime'] = 1;
+      });
+      var count = 1;
+      $.mockjax({
+        url: "/count",
+        response: function (settings) {
+          this.responseText = "Click Count : " + count++;
+        }
+      });
+    </script>
+    <button ic-transition-delay="200ms" ic-post-to="/count">
+      Click Me
+    </button>
+  </body>
+</html>
