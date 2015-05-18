@@ -425,6 +425,46 @@ var Intercooler = Intercooler || (function () {
     })
   }
 
+  //============================================================
+  // local references transport jquery plugin
+  //============================================================
+  function localTransport(options, origOptions, jqXHR) {
+    var ltAttr="ic-lt-";
+    if (origOptions.url[0]=="#") {
+      var src=$(origOptions.url);
+      var rsphdr=[];
+      var status=200;
+      var statusText="OK";
+      src.each(function(i, el) {
+        $.each(el.attributes, function(j, attr) {
+          if (attr.name.substr(0,ltAttr.length) == ltAttr) {
+            var lhName=attr.name.substring(ltAttr.length);
+            if (lhName == "status") {
+              var statusLine=attr.value.match(/(\d+)\s?(.*)/);
+              if (statusLine != null) {
+                status=statusLine[1];
+                statusText=statusLine[2];
+              } else {
+                status="500";
+                statusText="Attribute Error";
+              }
+            } else {
+              rsphdr.push(lhName+": "+attr.value);
+            }
+          }
+        });
+      });
+      var rsp=src.length > 0 ? src.html() : "";
+      return {
+        send: function(reqhdr, completeCallback) {
+          completeCallback(status, statusText, {html: rsp}, rsphdr.join("\n"));
+        },
+        abort: function() {}
+      }
+    }
+  }
+  _remote.ajaxTransport("text",localTransport);
+
   function findIndicator(elt) {
     var indicator = null;
     if ($(elt).attr('ic-indicator')) {

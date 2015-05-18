@@ -3,7 +3,7 @@
 ## Introduction
 
 Intercooler is a small javascript library that allows you to add AJAX to your web application with
-simple HTML5 attributes.  This makes adding AJAX (almost) as simple as adding an anchor tag.
+simple HTML5 attributes. This makes adding AJAX (almost) as simple as adding an anchor tag.
 
 Here is an example:
 
@@ -25,7 +25,7 @@ Full documentation is available on the [main Intercooler website](http://interco
 
 ## Installing
 
-Intercooler is just another javascript library can be downloaded or hot-linked [from the downloads page](http://intercoolerjs.org/download.html).
+Intercooler is just a javascript library and can be downloaded or hot-linked [from the downloads page](http://intercoolerjs.org/download.html).
 
 ## License
 
