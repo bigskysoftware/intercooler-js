@@ -10,7 +10,7 @@ var Intercooler = Intercooler || (function () {
   // Vars
   //--------------------------------------------------
   var _MACROS = ['ic-get-from', 'ic-post-to', 'ic-put-to', 'ic-delete-from',
-                 'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
+    'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
   var _scrollHandler = null;
   var _UUID = 1;
 
@@ -21,15 +21,25 @@ var Intercooler = Intercooler || (function () {
     elt.remove();
   }
 
-  function show(elt) {
-    elt.show();
+  function showIndicator(elt) {
+    if (elt.closest('.ic-use-transition').length > 0) {
+      elt.data('ic-use-transition', true);
+      elt.removeClass('ic-use-transition');
+    } else {
+      elt.show();
+    }
   }
 
-  function hide(elt) {
-    elt.hide();
+  function hideIndicator(elt) {
+    if (elt.data('ic-use-transition')) {
+      elt.data('ic-use-transition', null);
+      elt.addClass('ic-use-transition');
+    } else {
+      elt.hide();
+    }
   }
 
-  function prepend(parent, responseContent){
+  function prepend(parent, responseContent) {
     parent.prepend(responseContent);
     if (parent.attr('ic-limit-children')) {
       var limit = parseInt(parent.attr('ic-limit-children'));
@@ -39,7 +49,7 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
-  function append(parent, responseContent){
+  function append(parent, responseContent) {
     parent.append(responseContent);
     if (parent.attr('ic-limit-children')) {
       var limit = parseInt(parent.attr('ic-limit-children'));
@@ -53,16 +63,16 @@ var Intercooler = Intercooler || (function () {
   // Utility Methods
   //============================================================
   function log(elt, msg, level) {
-    if(elt == null) {
+    if (elt == null) {
       elt = $('body');
     }
     elt.trigger("log.ic", [msg, level, elt]);
-    if(level == "ERROR") {
-      if(window.console) {
+    if (level == "ERROR") {
+      if (window.console) {
         window.console.log("Intercooler Error : " + msg);
       }
       var errorUrl = closestAttrValue($('body'), 'ic-post-errors-to');
-      if(errorUrl){
+      if (errorUrl) {
         $.post(errorUrl, {'error': msg})
       }
     }
@@ -117,10 +127,10 @@ var Intercooler = Intercooler || (function () {
   function getTarget(elt) {
     var closest = $(elt).closest('[ic-target]');
     var targetValue = closest.attr('ic-target');
-    if(targetValue == 'this') {
+    if (targetValue == 'this') {
       return closest;
-    } else if(targetValue && targetValue.indexOf('this.') != 0) {
-      if(targetValue.indexOf('closest ') == 0) {
+    } else if (targetValue && targetValue.indexOf('this.') != 0) {
+      if (targetValue.indexOf('closest ') == 0) {
         return elt.closest(targetValue.substr(8));
       } else {
         return $(targetValue);
@@ -130,9 +140,22 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
+  function getStringCompressor() {
+    var explicitCompressor = closestAttrValue('body', 'ic-string-compressor');
+    if(explicitCompressor) {
+      return globalEval(explicitCompressor);
+    } else {
+      //No compression library found, return identity compressor
+      return {
+        'compress' : function(str) { return str; },
+        'decompress' : function(str) { return str; }
+      }
+    }
+  }
+
   function getTargetForHistory(elt) {
     var targetValue = closestAttrValue(elt, 'ic-history-target');
-    if(targetValue) {
+    if (targetValue) {
       return $(targetValue);
     } else {
       return getTarget(elt);
@@ -144,7 +167,7 @@ var Intercooler = Intercooler || (function () {
       log(elt, "X-IC-PushURL: pushing " + xhr.getResponseHeader("X-IC-PushURL"), "DEBUG");
       _historySupport.pushUrl(xhr.getResponseHeader("X-IC-PushURL"), elt, originalHtml);
     } else {
-      if(closestAttrValue(elt, 'ic-push-url') == "true") {
+      if (closestAttrValue(elt, 'ic-push-url') == "true") {
         _historySupport.pushUrl(elt.attr('ic-src'), elt, target, originalHtml);
       }
     }
@@ -177,11 +200,11 @@ var Intercooler = Intercooler || (function () {
       log(elt, "X-IC-Open: opening " + xhr.getResponseHeader("X-IC-Open"), "DEBUG");
       window.open(xhr.getResponseHeader("X-IC-Open"));
     }
-    if(xhr.getResponseHeader("X-IC-Trigger")) {
+    if (xhr.getResponseHeader("X-IC-Trigger")) {
       log(elt, "X-IC-Trigger: found trigger " + xhr.getResponseHeader("X-IC-Trigger"), "DEBUG");
       target = getTarget(elt);
       var triggerArgs = [];
-      if(xhr.getResponseHeader("X-IC-Trigger-Data")){
+      if (xhr.getResponseHeader("X-IC-Trigger-Data")) {
         triggerArgs = $.parseJSON(xhr.getResponseHeader("X-IC-Trigger-Data"))
       }
       target.trigger(xhr.getResponseHeader("X-IC-Trigger"), triggerArgs);
@@ -207,11 +230,11 @@ var Intercooler = Intercooler || (function () {
 
   function requestCleanup(indicator, elt) {
     if (indicator.length > 0) {
-      hide(indicator);
+      hideIndicator(indicator);
     }
     elt.removeClass('disabled');
     elt.data('ic-request-in-flight', false);
-    if(elt.data('ic-next-request')) {
+    if (elt.data('ic-next-request')) {
       elt.data('ic-next-request')();
       elt.data('ic-next-request', null);
     }
@@ -220,7 +243,7 @@ var Intercooler = Intercooler || (function () {
   function replaceOrAddMethod(data, actualMethod) {
     var regex = /(&|^)_method=[^&]*/;
     var content = "&_method=" + actualMethod;
-    if(regex.test(data)) {
+    if (regex.test(data)) {
       return data.replace(regex, content)
     } else {
       return data + "&" + content;
@@ -233,7 +256,7 @@ var Intercooler = Intercooler || (function () {
 
   function closestAttrValue(elt, attr) {
     var closestElt = $(elt).closest('[' + attr + ']');
-    if(closestElt) {
+    if (closestElt.length > 0) {
       return closestElt.attr(attr);
     } else {
       return null;
@@ -244,7 +267,7 @@ var Intercooler = Intercooler || (function () {
     var msg = e.toString() + "\n";
     try {
       msg += e.stack;
-    } catch(e) {
+    } catch (e) {
       // ignore
     }
     return msg;
@@ -258,8 +281,8 @@ var Intercooler = Intercooler || (function () {
 
     // Spinner support
     var indicator = findIndicator(elt);
-    if(indicator.length > 0) {
-      show(indicator);
+    if (indicator.length > 0) {
+      showIndicator(indicator);
     }
 
     var requestId = uuid();
@@ -275,11 +298,11 @@ var Intercooler = Intercooler || (function () {
         "X-IC-Request": true,
         "X-HTTP-Method-Override": type
       },
-      beforeSend : function(xhr, settings){
+      beforeSend: function (xhr, settings) {
         elt.trigger("beforeSend.ic", [elt, data, settings, xhr, requestId]);
         log(elt, "before AJAX request " + requestId + ": " + type + " to " + url, "DEBUG");
         var onBeforeSend = closestAttrValue(elt, 'ic-on-beforeSend');
-        if(onBeforeSend) {
+        if (onBeforeSend) {
           globalEval('(function (data, settings, xhr) {' + onBeforeSend + '})')(data, settings, xhr);
         }
       },
@@ -287,8 +310,8 @@ var Intercooler = Intercooler || (function () {
         elt.trigger("success.ic", [elt, data, textStatus, xhr, requestId]);
         log(elt, "AJAX request " + requestId + " was successful.", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
-        if(onSuccess) {
-          if(globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr) == false) {
+        if (onSuccess) {
+          if (globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr) == false) {
             return;
           }
         }
@@ -320,21 +343,21 @@ var Intercooler = Intercooler || (function () {
       error: function (xhr, status, str) {
         elt.trigger("error.ic", [elt, status, str, xhr]);
         var onError = closestAttrValue(elt, 'ic-on-error');
-        if(onError) {
+        if (onError) {
           globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
         }
         log(elt, "AJAX request " + requestId + " experienced an error: " + str, "ERROR");
       },
-      complete : function(xhr, status){
+      complete: function (xhr, status) {
         log(elt, "AJAX request " + requestId + " completed in " + (new Date() - requestStart) + "ms", "DEBUG");
         requestCleanup(indicator, elt);
         try {
           $('body').trigger("complete.ic", [elt, data, status, xhr, requestId]);
-        } catch(e) {
+        } catch (e) {
           log(elt, "Error during complete.ic event for " + requestId + " : " + formatError(e), "ERROR");
         }
         var onComplete = closestAttrValue(elt, 'ic-on-complete');
-        if(onComplete) {
+        if (onComplete) {
           globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
         }
       }
@@ -359,13 +382,13 @@ var Intercooler = Intercooler || (function () {
 
   function processIncludes(str) {
     var returnString = "";
-    if($.trim(str).indexOf("{") == 0) {
-      var obj = $.parseJSON( str );
-      $.each(obj, function(key, value){
+    if ($.trim(str).indexOf("{") == 0) {
+      var obj = $.parseJSON(str);
+      $.each(obj, function (key, value) {
         returnString += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(value);
       });
     } else {
-      $(str).each(function(){
+      $(str).each(function () {
         returnString += "&" + $(this).serialize();
       });
     }
@@ -377,7 +400,7 @@ var Intercooler = Intercooler || (function () {
     var str = "ic-request=true";
 
     // if the element is in a form, include the entire form
-    if(elt.closest('form').length > 0) {
+    if (elt.closest('form').length > 0) {
       str += "&" + elt.closest('form').serialize();
     } else { // otherwise include the element
       str += "&" + elt.serialize();
@@ -417,7 +440,7 @@ var Intercooler = Intercooler || (function () {
     var target = getTarget(elt);
     getIntercoolerId(target);
     maybeSetIntercoolerMetadata(target);
-    if(elt.data('elementAdded.ic') != true){
+    if (elt.data('elementAdded.ic') != true) {
       elt.data('elementAdded.ic', true);
       elt.trigger("elementAdded.ic");
     }
@@ -521,11 +544,11 @@ var Intercooler = Intercooler || (function () {
   //============================================================
 
   function startPolling(elt) {
-    if(elt.data('ic-poll-interval-id') == null) {
+    if (elt.data('ic-poll-interval-id') == null) {
       var interval = parseInterval(elt.attr('ic-poll'));
-      if(interval != null) {
+      if (interval != null) {
         var selector = icSelectorFor(elt);
-        var repeats =  parseInt(elt.attr('ic-poll-repeats')) || -1;
+        var repeats = parseInt(elt.attr('ic-poll-repeats')) || -1;
         var currentIteration = 0;
         log(elt, "POLL: Starting poll for element " + selector, "DEBUG");
         var timerId = setInterval(function () {
@@ -545,7 +568,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function cancelPolling(elt) {
-    if(elt.data('ic-poll-interval-id') != null) {
+    if (elt.data('ic-poll-interval-id') != null) {
       clearTimeout(elt.data('ic-poll-interval-id'));
     }
   }
@@ -558,7 +581,7 @@ var Intercooler = Intercooler || (function () {
     log(src, "refreshing dependencies for path " + dest, "DEBUG");
     $('[ic-src]').each(function () {
       var fired = false;
-      if(verbFor($(this)) == "GET" && $(this).attr('ic-deps') != 'ignore') {
+      if (verbFor($(this)) == "GET" && $(this).attr('ic-deps') != 'ignore') {
         if (isDependent(dest, $(this).attr('ic-src'))) {
           if (src == null || $(src)[0] != $(this)[0]) {
             fireICRequest($(this));
@@ -571,7 +594,7 @@ var Intercooler = Intercooler || (function () {
           }
         }
       }
-      if(fired) {
+      if (fired) {
         log($(this), "depends on path " + dest + ", refreshing...", "DEBUG")
       }
     });
@@ -593,12 +616,12 @@ var Intercooler = Intercooler || (function () {
   }
 
   function eventFor(attr, elt) {
-    if(attr == "default") {
-      if($(elt).is('button')) {
+    if (attr == "default") {
+      if ($(elt).is('button')) {
         return 'click';
-      } else if($(elt).is('form')) {
+      } else if ($(elt).is('form')) {
         return 'submit';
-      } else if($(elt).is(':input')) {
+      } else if ($(elt).is(':input')) {
         return 'change';
       } else {
         return 'click';
@@ -615,7 +638,9 @@ var Intercooler = Intercooler || (function () {
   function handleRemoveAfter(elt) {
     if ($(elt).attr('ic-remove-after')) {
       var interval = parseInterval($(elt).attr('ic-remove-after'));
-      setTimeout(function () { remove(elt); }, interval);
+      setTimeout(function () {
+        remove(elt);
+      }, interval);
     }
   }
 
@@ -626,30 +651,32 @@ var Intercooler = Intercooler || (function () {
         fireICRequest(elt);
       } else if ($(elt).attr('ic-trigger-on') == 'scrolled-into-view') {
         initScrollHandler();
-        setTimeout(function () { $(window).trigger('scroll'); }, 100); // Trigger a scroll in case element is already viewable
+        setTimeout(function () {
+          $(window).trigger('scroll');
+        }, 100); // Trigger a scroll in case element is already viewable
       } else {
         var triggerOn = $(elt).attr('ic-trigger-on').split(" ");
         $(elt).on(eventFor(triggerOn[0], $(elt)), function (e) {
 
           var onBeforeTrigger = closestAttrValue(elt, 'ic-on-beforeTrigger');
-          if(onBeforeTrigger) {
-            if(globalEval('(function (evt, elt) {' + onBeforeTrigger + '})')(e, $(elt)) == false) {
+          if (onBeforeTrigger) {
+            if (globalEval('(function (evt, elt) {' + onBeforeTrigger + '})')(e, $(elt)) == false) {
               log($(elt), "ic-trigger cancelled by ic-on-beforeTrigger", "DEBUG");
-              return;
+              return false;
             }
           }
 
-          if(triggerOn[1] == 'changed') {
+          if (triggerOn[1] == 'changed') {
             var currentVal = $(elt).val();
             var previousVal = $(elt).data('ic-previous-val');
             $(elt).data('ic-previous-val', currentVal);
-            if( currentVal != previousVal ) {
+            if (currentVal != previousVal) {
               fireICRequest($(elt));
             }
           } else {
             fireICRequest($(elt));
           }
-          if(preventDefault(elt)){
+          if (preventDefault(elt)) {
             e.preventDefault();
             return false;
           }
@@ -665,24 +692,24 @@ var Intercooler = Intercooler || (function () {
 
   function processMacro(macro, elt) {
     // action attributes
-    if(macro == 'ic-post-to') {
+    if (macro == 'ic-post-to') {
       setIfAbsent(elt, 'ic-src', elt.attr('ic-post-to'));
       setIfAbsent(elt, 'ic-verb', 'POST');
       setIfAbsent(elt, 'ic-trigger-on', 'default');
       setIfAbsent(elt, 'ic-deps', 'ignore');
     }
-    if(macro == 'ic-put-to') {
+    if (macro == 'ic-put-to') {
       setIfAbsent(elt, 'ic-src', elt.attr('ic-put-to'));
       setIfAbsent(elt, 'ic-verb', 'PUT');
       setIfAbsent(elt, 'ic-trigger-on', 'default');
       setIfAbsent(elt, 'ic-deps', 'ignore');
     }
-    if(macro == 'ic-get-from') {
+    if (macro == 'ic-get-from') {
       setIfAbsent(elt, 'ic-src', elt.attr('ic-get-from'));
       setIfAbsent(elt, 'ic-trigger-on', 'default');
       setIfAbsent(elt, 'ic-deps', 'ignore');
     }
-    if(macro == 'ic-delete-from') {
+    if (macro == 'ic-delete-from') {
       setIfAbsent(elt, 'ic-src', elt.attr('ic-delete-from'));
       setIfAbsent(elt, 'ic-verb', 'DELETE');
       setIfAbsent(elt, 'ic-trigger-on', 'default');
@@ -691,30 +718,30 @@ var Intercooler = Intercooler || (function () {
     // non-action attributes
     var value = null;
     var url = null;
-    if(macro == 'ic-style-src') {
+    if (macro == 'ic-style-src') {
       value = elt.attr('ic-style-src').split(":");
       var styleAttribute = value[0];
       url = value[1];
       setIfAbsent(elt, 'ic-src', url);
       setIfAbsent(elt, 'ic-target', 'this.style.' + styleAttribute);
     }
-    if(macro == 'ic-attr-src') {
+    if (macro == 'ic-attr-src') {
       value = elt.attr('ic-attr-src').split(":");
       var attribute = value[0];
       url = value[1];
       setIfAbsent(elt, 'ic-src', url);
       setIfAbsent(elt, 'ic-target', 'this.' + attribute);
     }
-    if(macro == 'ic-prepend-from') {
+    if (macro == 'ic-prepend-from') {
       setIfAbsent(elt, 'ic-src', elt.attr('ic-prepend-from'));
     }
-    if(macro == 'ic-append-from') {
+    if (macro == 'ic-append-from') {
       setIfAbsent(elt, 'ic-src', elt.attr('ic-append-from'));
     }
   }
 
   function setIfAbsent(elt, attr, value) {
-    if(elt.attr(attr) == null) {
+    if (elt.attr(attr) == null) {
       elt.attr(attr, value);
     }
   }
@@ -735,19 +762,19 @@ var Intercooler = Intercooler || (function () {
   }
 
   function maybeScrollToTarget(elt, target) {
-    if(closestAttrValue(elt, 'ic-scroll-to-target') == 'true' ||
+    if (closestAttrValue(elt, 'ic-scroll-to-target') == 'true' ||
       closestAttrValue(target, 'ic-scroll-to-target') == 'true') {
       var offset = -50; // -50 px default offset padding
-      if(closestAttrValue(elt, 'ic-scroll-offset')) {
+      if (closestAttrValue(elt, 'ic-scroll-offset')) {
         offset = parseInt(closestAttrValue(elt, 'ic-scroll-offset'));
-      } else if(closestAttrValue(target, 'ic-scroll-offset')) {
+      } else if (closestAttrValue(target, 'ic-scroll-offset')) {
         offset = parseInt(closestAttrValue(target, 'ic-scroll-offset'));
       }
       var currentPosition = target.offset().top;
       var portalTop = $(window).scrollTop();
       var portalEnd = portalTop + window.innerHeight;
       //if the current top of this element is not visible, scroll it to the top position
-      if(currentPosition < portalTop || currentPosition > portalEnd) {
+      if (currentPosition < portalTop || currentPosition > portalEnd) {
         offset += currentPosition;
         $('html,body').animate({scrollTop: offset}, 400);
       }
@@ -756,11 +783,11 @@ var Intercooler = Intercooler || (function () {
 
   function getTransitionDurationString(elt, target) {
     var transitionDuration = closestAttrValue(elt, 'ic-transition-duration');
-    if(transitionDuration) {
+    if (transitionDuration) {
       return transitionDuration;
     }
     transitionDuration = closestAttrValue(target, 'ic-transition-duration');
-    if(transitionDuration) {
+    if (transitionDuration) {
       return transitionDuration;
     }
     return $(target).css('transition-duration');
@@ -799,11 +826,11 @@ var Intercooler = Intercooler || (function () {
 
       var transitionDuration = getTransitionDurationString(elt, target);
       var delay = parseInterval(transitionDuration);
-      if(delay > 0) {
+      if (delay > 0) {
         target.addClass('ic-transitioning');
-        setTimeout(function(){
+        setTimeout(function () {
           doSwap();
-          setTimeout(function(){
+          setTimeout(function () {
             target.removeClass('ic-transitioning');
           }, 5);
         }, delay);
@@ -817,8 +844,8 @@ var Intercooler = Intercooler || (function () {
   function maybeFilter(newContent, filter) {
     var content = $.parseHTML(newContent, null, true);
     var asQuery = $(content);
-    if(filter) {
-      if(!asQuery.is(filter)) {
+    if (filter) {
+      if (!asQuery.is(filter)) {
         asQuery = asQuery.find(filter);
       }
     }
@@ -827,7 +854,7 @@ var Intercooler = Intercooler || (function () {
 
   function getStyleTarget(elt) {
     var val = closestAttrValue(elt, 'ic-target');
-    if(val && val.indexOf("this.style.") == 0) {
+    if (val && val.indexOf("this.style.") == 0) {
       return val.substr(11)
     } else {
       return null;
@@ -836,7 +863,7 @@ var Intercooler = Intercooler || (function () {
 
   function getAttrTarget(elt) {
     var val = closestAttrValue(elt, 'ic-target');
-    if(val && val.indexOf("this.") == 0) {
+    if (val && val.indexOf("this.") == 0) {
       return val.substr(5)
     } else {
       return null;
@@ -846,24 +873,24 @@ var Intercooler = Intercooler || (function () {
   function fireICRequest(elt, alternateHandler) {
 
     var triggerOrigin = elt;
-    if(!elt.is('[ic-src]')) {
+    if (!elt.is('[ic-src]')) {
       elt = elt.closest('[ic-src]');
     }
 
     var confirmText = closestAttrValue(elt, 'ic-confirm');
-    if(confirmText) {
-      if(!confirm(confirmText)) {
+    if (confirmText) {
+      if (!confirm(confirmText)) {
         return;
       }
     }
 
-    if(elt.length > 0) {
+    if (elt.length > 0) {
       var icEventId = uuid();
       elt.data('ic-event-id', icEventId);
       var invokeRequest = function () {
 
         // if an existing request is in flight for this element, push this request as the next to be executed
-        if(elt.data('ic-request-in-flight') == true) {
+        if (elt.data('ic-request-in-flight') == true) {
           elt.data('ic-next-request', invokeRequest);
           return;
         }
@@ -905,41 +932,94 @@ var Intercooler = Intercooler || (function () {
 
   var _historySupport = {
 
-    currentRestorationId : null,
-    // limit history slots to 200 total by default
-    historyLimit : 200,
+    currentRestorationId: null,
 
-    clearHistory: function() {
+    clearHistory: function () {
       var keys = [];
-      for (var i = 0; i < localStorage.length; i++){
-        if(localStorage.key(i).indexOf("ic-hist-elt-") == 0) {
+      for (var i = 0; i < localStorage.length; i++) {
+        if (localStorage.key(i).indexOf("ic-hist-elt-") == 0) {
           keys.push(localStorage.key(i));
         }
       }
-      for (var j = 0; j < keys.length; j++){
+      for (var j = 0; j < keys.length; j++) {
         localStorage.removeItem(keys[j]);
       }
       localStorage.removeItem('ic-history-support');
     },
 
-    newRestorationData : function(id, html){
-      var histSupport = JSON.parse(localStorage.getItem('ic-history-support'));
+    trimHistory: function(currentSlot) {
+      var historyLimit = _historySupport.getHistoryLimit();
+      var halfOfHistory = historyLimit / 2;
+      var start = currentSlot + 5;
+      while(start < currentSlot + halfOfHistory) {
+        localStorage.removeItem(_historySupport.generateSlotId(start % historyLimit));
+        start++;
+      }
+    },
 
-      if (histSupport == null || !("slot" in histSupport)) {
+    getHistoryLimit: function () {
+      var override = closestAttrValue($('body'), 'ic-history-limit');
+      if(override) {
+        try {
+          return parseInt(override);
+        } catch(e) {
+          log($('body'), "Bad ic-history-limit, using default 200 slots", "ERROR");
+        }
+      }
+      return 200;
+    },
+
+    saveHistoryData: function (historyMetadata, restorationData) {
+      var compressed = getStringCompressor().compress(JSON.stringify(restorationData));
+      try {
+        localStorage.setItem(restorationData.id, compressed);
+      } catch(e) {
+        //quota error, nuke half of history
+        log($('body'), "Unable save history with  " + _historySupport.getHistoryLimit() + ", clearing all history", "ERROR");
+        try {
+          _historySupport.trimHistory(historyMetadata.slot);
+          localStorage.setItem(restorationData.id, compressed);
+        } catch(e) {
+          //quota error, nuke all of history
+          log($('body'), "Unable to clear enough room for history with history size " + _historySupport.getHistoryLimit() + ", clearing all history", "ERROR");
+          try{
+            _historySupport.clearHistory();
+            localStorage.setItem(restorationData.id, compressed);
+          } catch(e) {
+            log($('body'), "Unable to save intercooler history with entire history cleared, is something else eating " +
+              "local storage? History Limit:" + _historySupport.getHistoryLimit(), "ERROR")
+          }
+        }
+      }
+    },
+
+    generateSlotId: function (slot) {
+      var restorationDataId = "ic-hist-elt-";
+      if (slot < 10) {
+        restorationDataId += "00" + slot;
+      } else if (slot < 100) {
+        restorationDataId += "0" + slot;
+      } else {
+        restorationDataId += slot;
+      }
+      return restorationDataId;
+    },
+
+    newRestorationData: function (id, html) {
+      var histMetaData = JSON.parse(localStorage.getItem('ic-history-support'));
+
+      // Reset history if the history config has changed
+      if (histMetaData == null ||
+        !("slot" in histMetaData) ||
+        histMetaData.limit != _historySupport.getHistoryLimit() ||
+        histMetaData.compressorStr !=  closestAttrValue('body', 'ic-string-compressor')) {
+        log($('body'), "Intercooler History configuration changed, clearing history", "INFO");
         _historySupport.clearHistory();
-        histSupport = {
-          slot : 0
+        histMetaData = {
+          slot: 0
         };
       }
-
-      var restorationDataId = "ic-hist-elt-";
-      if(histSupport.slot < 10) {
-        restorationDataId += "00" + histSupport.slot;
-      } else if (histSupport.slot < 100) {
-        restorationDataId += "0" + histSupport.slot;
-      } else  {
-        restorationDataId += histSupport.slot;
-      }
+      var restorationDataId = _historySupport.generateSlotId(histMetaData.slot);
       var restorationData = {
         "id": restorationDataId,
         "elementId": id,
@@ -947,32 +1027,34 @@ var Intercooler = Intercooler || (function () {
         "timestamp": new Date().getTime()
       };
 
-      histSupport.slot = (histSupport.slot + 1) % _historySupport.historyLimit;
+      histMetaData.slot = (histMetaData.slot + 1) % this.getHistoryLimit();
+      histMetaData.limit = _historySupport.getHistoryLimit();
+      histMetaData.compressorStr = closestAttrValue('body', 'ic-string-compressor');
 
       //save the new element and history support data
-      localStorage.setItem(restorationData.id, JSON.stringify(restorationData));
-      localStorage.setItem('ic-history-support', JSON.stringify(histSupport));
+      _historySupport.saveHistoryData(histMetaData, restorationData);
+      localStorage.setItem('ic-history-support', JSON.stringify(histMetaData));
       return restorationData;
     },
 
-    updateHistoryData : function(id, html){
-      var restorationData = JSON.parse(localStorage.getItem(id));
+    updateHistoryData: function (id, html) {
+      var restorationData = JSON.parse(getStringCompressor().decompress(localStorage.getItem(id)));
       if (restorationData == null) {
         log($('body'), "Could not find restoration data with id " + id, "ERROR");
         return
       }
       restorationData.content = html;
       //save the new element and history support data
-      localStorage.setItem(restorationData.id, JSON.stringify(restorationData));
+      localStorage.setItem(restorationData.id, getStringCompressor().compress(JSON.stringify(restorationData)));
     },
 
     onPageLoad: function () {
       if (window.onpopstate == null || window.onpopstate['ic-on-pop-state-handler'] != true) {
         var currentOnPopState = window.onpopstate;
-        window.onpopstate = function(event) {
+        window.onpopstate = function (event) {
           $('body').trigger('handle.onpopstate.ic');
-          if(!_historySupport.handlePop(event)){
-            if(currentOnPopState) {
+          if (!_historySupport.handlePop(event)) {
+            if (currentOnPopState) {
               currentOnPopState(event);
             }
           }
@@ -986,21 +1068,21 @@ var Intercooler = Intercooler || (function () {
       log(elt, "pushing location into history: " + url, "DEBUG");
 
       var id = target.attr('id');
-      if(id == null) {
+      if (id == null) {
         log(target, "To support history for a given element, you must have a valid id attribute on the element", "ERROR");
         return;
       }
 
       // If we have a current restoration ID (i.e. we are working in a restored location)
       // we can update it with the current HTML in order to capture internal mutations
-      if(_historySupport.currentRestorationId != null) {
+      if (_historySupport.currentRestorationId != null) {
         _historySupport.updateHistoryData(_historySupport.currentRestorationId, originalHtml);
       } else {
         // Otherwise this is the first time we've initiated AJAX history so we need to
         // create a new history element with the original HTML for the element so the
         // back button works for the original page
         var originalData = _historySupport.newRestorationData(id, originalHtml);
-        window.history.replaceState({"ic-id" : originalData.id}, "", "");
+        window.history.replaceState({"ic-id": originalData.id}, "", "");
       }
 
       // Finally push the new content in as a new history element (insanity)
@@ -1013,10 +1095,10 @@ var Intercooler = Intercooler || (function () {
     handlePop: function (event) {
       var data = event.state;
       if (data && data['ic-id']) {
-        var historyData = JSON.parse(localStorage.getItem(data['ic-id']));
-        if(historyData) {
+        var historyData = JSON.parse(getStringCompressor().decompress(localStorage.getItem(data['ic-id'])));
+        if (historyData) {
           var elt = findById(historyData["elementId"]);
-          if(_historySupport.currentRestorationId != null) {
+          if (_historySupport.currentRestorationId != null) {
             elt.trigger("beforeHistorySnapshot.ic", [elt, elt]);
             _historySupport.updateHistoryData(_historySupport.currentRestorationId, elt.html());
           }
@@ -1033,38 +1115,39 @@ var Intercooler = Intercooler || (function () {
   // Local references transport
   //============================================================
 
-  $.ajaxTransport("text",  function(options, origOptions, jqXHR) {
-      if (origOptions.url[0]=="#") {
-        var ltAttr="ic-local-";
-        var src=$(origOptions.url);
-        var rsphdr=[];
-        var status=200;
-        var statusText="OK";
-        src.each(function(i, el) {
-          $.each(el.attributes, function(j, attr) {
-            if (attr.name.substr(0,ltAttr.length) == ltAttr) {
-              var lhName=attr.name.substring(ltAttr.length);
+  $.ajaxTransport("text", function (options, origOptions, jqXHR) {
+      if (origOptions.url[0] == "#") {
+        var ltAttr = "ic-local-";
+        var src = $(origOptions.url);
+        var rsphdr = [];
+        var status = 200;
+        var statusText = "OK";
+        src.each(function (i, el) {
+          $.each(el.attributes, function (j, attr) {
+            if (attr.name.substr(0, ltAttr.length) == ltAttr) {
+              var lhName = attr.name.substring(ltAttr.length);
               if (lhName == "status") {
-                var statusLine=attr.value.match(/(\d+)\s?(.*)/);
+                var statusLine = attr.value.match(/(\d+)\s?(.*)/);
                 if (statusLine != null) {
-                  status=statusLine[1];
-                  statusText=statusLine[2];
+                  status = statusLine[1];
+                  statusText = statusLine[2];
                 } else {
-                  status="500";
-                  statusText="Attribute Error";
+                  status = "500";
+                  statusText = "Attribute Error";
                 }
               } else {
-                rsphdr.push(lhName+": "+attr.value);
+                rsphdr.push(lhName + ": " + attr.value);
               }
             }
           });
         });
-        var rsp=src.length > 0 ? src.html() : "";
+        var rsp = src.length > 0 ? src.html() : "";
         return {
-          send: function(reqhdr, completeCallback) {
+          send: function (reqhdr, completeCallback) {
             completeCallback(status, statusText, {html: rsp}, rsphdr.join("\n"));
           },
-          abort: function() {}
+          abort: function () {
+          }
         }
       } else {
         return null;
@@ -1079,7 +1162,7 @@ var Intercooler = Intercooler || (function () {
   $(function () {
     processNodes('body');
     _historySupport.onPageLoad();
-    if(location.search && location.search.indexOf("ic-launch-debugger=true") >= 0) {
+    if (location.search && location.search.indexOf("ic-launch-debugger=true") >= 0) {
       Intercooler.debug();
     }
   });
@@ -1097,39 +1180,31 @@ var Intercooler = Intercooler || (function () {
       return Intercooler;
     },
 
-    updateHistory: function(id) {
-      var restoData = _historySupport.newRestorationData($(id).attr('id'), $(id).html());
-      window.history.replaceState({"ic-id" : restoData.id}, "", "");
-    },
-
-    dumpLocalStorage : function() {
+    dumpLocalStorage: function () {
+      var str = "";
       var keys = [];
       for (var x in localStorage) {
         keys.push(x);
       }
       keys.sort();
       var total = 0;
-      for(var i in keys) {
+      for (var i in keys) {
         var size = (localStorage[keys[i]].length * 2);
         total += size;
-        console.log(keys[i] + "=" + (size / 1024 / 1024).toFixed(2) + " MB")
+        str += keys[i] + "=" + (size / 1024 / 1024).toFixed(2) + " MB\n";
       }
-      console.log("TOTAL LOCAL STORAGE: " + (total / 1024 / 1024).toFixed(2) + " MB")
+      return str + "\nTOTAL LOCAL STORAGE: " + (total / 1024 / 1024).toFixed(2) + " MB";
     },
 
-    resetHistory: function() {
-      _historySupport.clearHistory();
+    historySupport: function () {
+      return _historySupport;
     },
 
-    setHistoryLimit: function(count) {
-      _historySupport.historyLimit = count;
-    },
-
-    fireRequest: function(elt, callback) {
+    fireRequest: function (elt, callback) {
       fireICRequest(elt, callback)
     },
 
-    processNodes: function(elt) {
+    processNodes: function (elt) {
       return processNodes(elt);
     },
 
@@ -1137,19 +1212,19 @@ var Intercooler = Intercooler || (function () {
       return closestAttrValue(elt, attr);
     },
 
-    verbFor: function(elt) {
+    verbFor: function (elt) {
       return verbFor(elt);
     },
 
-    isDependent: function(src, dest) {
+    isDependent: function (src, dest) {
       return isDependent(src, dest);
     },
 
-    getTarget: function(elt) {
+    getTarget: function (elt) {
       return getTarget(elt);
     },
 
-    debug: function() {
+    debug: function () {
       var debuggerUrl = closestAttrValue('body', 'ic-debugger-url') ||
         "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js";
       $.getScript(debuggerUrl)
