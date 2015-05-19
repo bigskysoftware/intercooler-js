@@ -4,12 +4,13 @@
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="../src/intercooler.js"></script>
     <script type="text/javascript" src="jquery.mockjax.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <style>
-      button.ic-transitioning {
+      button.ic-transitioning * {
         opacity:0;
         transition:opacity 200ms ease-out;
       }
-      button {
+      button * {
         opacity:1;
         transition:opacity 200ms ease-in;
       }
@@ -18,18 +19,20 @@
   <body>
     <script>
       $(function () {
-        $.mockjaxSettings['responseTime'] = 1;
+        $.mockjaxSettings['responseTime'] = 2000;
       });
       var count = 1;
       $.mockjax({
         url: "/count",
         response: function (settings) {
-          this.responseText = "Click Count : " + count++;
+          this.responseText = "<span>Click Count : " + count++ + "</span><i class='fa fa-spinner fa-spin ic-indicator' style='display:none'></i>";
         }
       });
     </script>
-    <button ic-transition-delay="200ms" ic-post-to="/count">
-      Click Me
+    <button ic-post-to="/count" ic-transition-duration="200ms">
+      <span>
+        Click Me <i class='fa fa-spinner fa-spin ic-indicator' style='display:none'></i>
+      </span>
     </button>
   </body>
 </html>

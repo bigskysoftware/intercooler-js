@@ -85,9 +85,9 @@ var Intercooler = Intercooler || (function () {
     if (str == "null" || str == "false" || str == "") {
       return null;
     } else if (str.lastIndexOf("ms") == str.length - 2) {
-      return parseInt(str.substr(0, str.length - 2));
+      return parseFloat(str.substr(0, str.length - 2));
     } else if (str.lastIndexOf("s") == str.length - 1) {
-      return parseInt(str.substr(0, str.length - 1)) * 1000;
+      return parseFloat(str.substr(0, str.length - 1)) * 1000;
     } else {
       return 1000;
     }
@@ -754,6 +754,18 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
+  function getTransitionDurationString(elt, target) {
+    var transitionDuration = closestAttrValue(elt, 'ic-transition-duration');
+    if(transitionDuration) {
+      return transitionDuration;
+    }
+    transitionDuration = closestAttrValue(target, 'ic-transition-duration');
+    if(transitionDuration) {
+      return transitionDuration;
+    }
+    return $(target).css('transition-duration');
+  }
+
   function processICResponse(responseContent, elt) {
     if (responseContent && /\S/.test(responseContent)) {
 
@@ -785,8 +797,9 @@ var Intercooler = Intercooler || (function () {
         }
       };
 
-      if(closestAttrValue(elt, 'ic-transition-delay')) {
-        var delay = parseInterval(closestAttrValue(elt, 'ic-transition-delay'));
+      var transitionDuration = getTransitionDurationString(elt, target);
+      var delay = parseInterval(transitionDuration);
+      if(delay > 0) {
         target.addClass('ic-transitioning');
         setTimeout(function(){
           doSwap();
@@ -795,6 +808,7 @@ var Intercooler = Intercooler || (function () {
           }, 5);
         }, delay);
       } else {
+        // swap immediately
         doSwap();
       }
     }
