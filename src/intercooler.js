@@ -1249,7 +1249,9 @@ var Intercooler = Intercooler || (function () {
     },
 
     debug: function() {
-      $.getScript("https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js")
+      var debuggerUrl = closestAttrValue('body', 'ic-debugger-url') ||
+        "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js";
+      $.getScript(debuggerUrl)
         .fail(function (jqxhr, settings, exception) {
           log($('body'), formatError(exception), "ERROR");
         });

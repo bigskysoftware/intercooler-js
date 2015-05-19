@@ -1249,10 +1249,12 @@ var Intercooler = Intercooler || (function () {
     },
 
     debug: function() {
-      $.getScript("http://localhost:4000/release/intercooler-debugger.js").fail(function( jqxhr, settings, exception ) {
-        log($('body'), formatError(exception), "ERROR");
-      });
-      //$.getScript("https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js")
+      var debuggerUrl = closestAttrValue('body', 'ic-debugger-url') ||
+        "http://localhost:4000/release/intercooler-debugger.js";
+      $.getScript(debuggerUrl)
+        .fail(function (jqxhr, settings, exception) {
+          log($('body'), formatError(exception), "ERROR");
+        });
     }
   }
 })();
