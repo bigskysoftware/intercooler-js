@@ -14,25 +14,36 @@
         opacity:1;
         transition:opacity 200ms ease-in;
       }
+      .fa-spinner.ic-use-transition {
+        opacity:0;
+        transition:opacity 400ms ease-out;
+      }
+      .fa-spinner {
+        opacity:1;
+        transition:opacity 1s ease-out;
+      }
+
     </style>
   </head>
   <body>
     <script>
       $(function () {
-        $.mockjaxSettings['responseTime'] = 2000;
+        $.mockjaxSettings['responseTime'] = 8000;
       });
       var count = 1;
       $.mockjax({
         url: "/count",
         response: function (settings) {
-          this.responseText = "<span>Click Count : " + count++ + "</span><i class='fa fa-spinner fa-spin ic-indicator' style='display:none'></i>";
+          this.responseText = "<span>Click Count : " + count++ + "</span></i>";
         }
       });
     </script>
     <button ic-post-to="/count" ic-transition-duration="200ms">
       <span>
-        Click Me <i class='fa fa-spinner fa-spin ic-indicator' style='display:none'></i>
+        Click Me
+       <i class='fa fa-spinner fa-spin ic-indicator ic-use-transition'></i>
       </span>
     </button>
+
   </body>
 </html>

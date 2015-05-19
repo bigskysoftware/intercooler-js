@@ -21,12 +21,23 @@ var Intercooler = Intercooler || (function () {
     elt.remove();
   }
 
-  function show(elt) {
-    elt.show();
+  function showIndicator(elt) {
+    console.log(elt);
+    if(elt.closest('.ic-use-transition').length > 0) {
+      elt.data('ic-use-transition', true);
+      elt.removeClass('ic-use-transition');
+    } else {
+      elt.show();
+    }
   }
 
-  function hide(elt) {
-    elt.hide();
+  function hideIndicator(elt) {
+    if(elt.data('ic-use-transition')) {
+      elt.data('ic-use-transition', null);
+      elt.addClass('ic-use-transition');
+    } else {
+      elt.hide();
+    }
   }
 
   function prepend(parent, responseContent){
@@ -207,7 +218,7 @@ var Intercooler = Intercooler || (function () {
 
   function requestCleanup(indicator, elt) {
     if (indicator.length > 0) {
-      hide(indicator);
+      hideIndicator(indicator);
     }
     elt.removeClass('disabled');
     elt.data('ic-request-in-flight', false);
@@ -258,8 +269,9 @@ var Intercooler = Intercooler || (function () {
 
     // Spinner support
     var indicator = findIndicator(elt);
+    console.log(indicator);
     if(indicator.length > 0) {
-      show(indicator);
+      showIndicator(indicator);
     }
 
     var requestId = uuid();
