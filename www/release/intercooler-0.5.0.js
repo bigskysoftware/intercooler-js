@@ -140,19 +140,6 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
-  function getStringCompressor() {
-    var explicitCompressor = closestAttrValue('body', 'ic-string-compressor');
-    if(explicitCompressor) {
-      return globalEval(explicitCompressor);
-    } else {
-      //No compression library found, return identity compressor
-      return {
-        'compress' : function(str) { return str; },
-        'decompress' : function(str) { return str; }
-      }
-    }
-  }
-
   function getTargetForHistory(elt) {
     var targetValue = closestAttrValue(elt, 'ic-history-target');
     if (targetValue) {
@@ -164,11 +151,12 @@ var Intercooler = Intercooler || (function () {
 
   function handleHistory(elt, target, xhr, originalHtml) {
     if (xhr.getResponseHeader("X-IC-PushURL")) {
-      log(elt, "X-IC-PushURL: pushing " + xhr.getResponseHeader("X-IC-PushURL"), "DEBUG");
-      _historySupport.pushUrl(xhr.getResponseHeader("X-IC-PushURL"), elt, originalHtml);
+      log(elt, "pushing location into history via header: " + xhr.getResponseHeader("X-IC-PushURL"), "DEBUG");
+      _history.pushUrl(xhr.getResponseHeader("X-IC-PushURL"), target, currentUrl(), originalHtml);
     } else {
       if (closestAttrValue(elt, 'ic-push-url') == "true") {
-        _historySupport.pushUrl(elt.attr('ic-src'), elt, target, originalHtml);
+        log(elt, "pushing location into history via ic-push-url attribute: " + elt.attr('ic-src'), "DEBUG");
+        _history.pushUrl(elt.attr('ic-src'), target, currentUrl(), originalHtml);
       }
     }
   }
@@ -178,6 +166,7 @@ var Intercooler = Intercooler || (function () {
     elt.trigger("beforeHeaders.ic", [elt, xhr]);
     log(elt, "response headers: " + xhr.getAllResponseHeaders(), "DEBUG");
     var target = null;
+
     if (xhr.getResponseHeader("X-IC-Refresh")) {
       var pathsToRefresh = xhr.getResponseHeader("X-IC-Refresh").split(",");
       log(elt, "X-IC-Refresh: refreshing " + pathsToRefresh, "DEBUG");
@@ -185,21 +174,26 @@ var Intercooler = Intercooler || (function () {
         refreshDependencies(str.replace(/ /g, ""), elt);
       });
     }
+
     if (xhr.getResponseHeader("X-IC-Script")) {
       log(elt, "X-IC-Script: evaling " + xhr.getResponseHeader("X-IC-Script"), "DEBUG");
       eval(xhr.getResponseHeader("X-IC-Script"));
     }
+
     if (xhr.getResponseHeader("X-IC-Redirect")) {
       log(elt, "X-IC-Redirect: redirecting to " + xhr.getResponseHeader("X-IC-Redirect"), "DEBUG");
       window.location = xhr.getResponseHeader("X-IC-Redirect");
     }
+
     if (xhr.getResponseHeader("X-IC-CancelPolling") == "true") {
       cancelPolling(elt);
     }
+
     if (xhr.getResponseHeader("X-IC-Open")) {
       log(elt, "X-IC-Open: opening " + xhr.getResponseHeader("X-IC-Open"), "DEBUG");
       window.open(xhr.getResponseHeader("X-IC-Open"));
     }
+
     if (xhr.getResponseHeader("X-IC-Trigger")) {
       log(elt, "X-IC-Trigger: found trigger " + xhr.getResponseHeader("X-IC-Trigger"), "DEBUG");
       target = getTarget(elt);
@@ -209,6 +203,7 @@ var Intercooler = Intercooler || (function () {
       }
       target.trigger(xhr.getResponseHeader("X-IC-Trigger"), triggerArgs);
     }
+
     if (xhr.getResponseHeader("X-IC-Remove")) {
       if (elt) {
         target = getTarget(elt);
@@ -930,144 +925,166 @@ var Intercooler = Intercooler || (function () {
   // History Support
   //============================================================
 
-  var _historySupport = {
+  function newIntercoolerHistory(storage, history, slotLimit, compressorExpr, historyVersion) {
 
-    currentRestorationId: null,
+    /* Constants */
+    var HISTORY_SUPPORT_SLOT = 'ic-history-support';
+    var HISTORY_SLOT_PREFIX = "ic-hist-elt-";
 
-    clearHistory: function () {
-      var keys = [];
-      for (var i = 0; i < localStorage.length; i++) {
-        if (localStorage.key(i).indexOf("ic-hist-elt-") == 0) {
-          keys.push(localStorage.key(i));
-        }
-      }
-      for (var j = 0; j < keys.length; j++) {
-        localStorage.removeItem(keys[j]);
-      }
-      localStorage.removeItem('ic-history-support');
-    },
+    /* Instance Vars */
+    var historySupportData = JSON.parse(storage.getItem(HISTORY_SUPPORT_SLOT));
+    var stringCompressor = evalCompressorExpr(compressorExpr);
+    // Reset history if the history config has changed
+    var currentHistorySlot = null;
+    var nextHistorySlot = 0;
+    if (historyConfigHasChanged(historySupportData)) {
+      log($('body'), "Intercooler History configuration changed, clearing history", "INFO");
+      clearHistory();
+    } else {
+      nextHistorySlot = historySupportData.nextHistorySlot || 0;
+    }
 
-    trimHistory: function(currentSlot) {
-      var historyLimit = _historySupport.getHistoryLimit();
-      var halfOfHistory = historyLimit / 2;
-      var start = currentSlot + 5;
-      while(start < currentSlot + halfOfHistory) {
-        localStorage.removeItem(_historySupport.generateSlotId(start % historyLimit));
-        start++;
-      }
-    },
+    /* Instance Methods  */
+    function historyConfigHasChanged(historySupportData) {
+      return historySupportData == null ||
+        historySupportData.slotLimit != slotLimit ||
+        historySupportData.historyVersion != historyVersion ||
+        historySupportData.compressorExpr != compressorExpr
+    }
 
-    getHistoryLimit: function () {
-      var override = closestAttrValue($('body'), 'ic-history-limit');
-      if(override) {
-        try {
-          return parseInt(override);
-        } catch(e) {
-          log($('body'), "Bad ic-history-limit, using default 200 slots", "ERROR");
-        }
-      }
-      return 200;
-    },
-
-    saveHistoryData: function (historyMetadata, restorationData) {
-      var compressed = getStringCompressor().compress(JSON.stringify(restorationData));
-      try {
-        localStorage.setItem(restorationData.id, compressed);
-      } catch(e) {
-        //quota error, nuke half of history
-        log($('body'), "Unable save history with  " + _historySupport.getHistoryLimit() + ", clearing all history", "ERROR");
-        try {
-          _historySupport.trimHistory(historyMetadata.slot);
-          localStorage.setItem(restorationData.id, compressed);
-        } catch(e) {
-          //quota error, nuke all of history
-          log($('body'), "Unable to clear enough room for history with history size " + _historySupport.getHistoryLimit() + ", clearing all history", "ERROR");
-          try{
-            _historySupport.clearHistory();
-            localStorage.setItem(restorationData.id, compressed);
-          } catch(e) {
-            log($('body'), "Unable to save intercooler history with entire history cleared, is something else eating " +
-              "local storage? History Limit:" + _historySupport.getHistoryLimit(), "ERROR")
+    function evalCompressorExpr(compressorExpr) {
+      if (compressorExpr != null) {
+        return globalEval(compressorExpr)
+      } else {
+        return {
+          'compress': function (str) {
+            return str;
+          },
+          'decompress': function (str) {
+            return str;
           }
         }
       }
-    },
+    }
 
-    generateSlotId: function (slot) {
-      var restorationDataId = "ic-hist-elt-";
+    function clearHistory () {
+      var keys = [];
+      for (var i = 0; i < storage.length; i++) {
+        if (storage.key(i).indexOf(HISTORY_SLOT_PREFIX) == 0) {
+          keys.push(storage.key(i));
+        }
+      }
+      for (var j = 0; j < keys.length; j++) {
+        storage.removeItem(keys[j]);
+      }
+      storage.removeItem(HISTORY_SUPPORT_SLOT);
+      currentHistorySlot = null;
+      nextHistorySlot = 0;
+    }
+
+    function trimHistory(slot) {
+      var halfOfHistory = slotLimit / 2;
+      var start = slot + 5;
+      while (start < slot + halfOfHistory) {
+        storage.removeItem(generateSlotId(start % slotLimit));
+        start++;
+      }
+    }
+
+    function saveHistoryData(restorationData) {
+      var compressed = stringCompressor.compress(JSON.stringify(restorationData));
+      try {
+        storage.setItem(restorationData.id, compressed);
+      } catch (e) {
+        //quota error, nuke half of history
+        log($('body'), "Unable save history with slots " + slotLimit + ", clearing all history", "ERROR");
+        try {
+          trimHistory(nextHistorySlot);
+          storage.setItem(restorationData.id, compressed);
+        } catch (e) {
+          //quota error, nuke all of history
+          log($('body'), "Unable to clear enough room for history with history size " + slotLimit + ", clearing all history", "ERROR");
+          try {
+            clearHistory();
+            storage.setItem(restorationData.id, compressed);
+          } catch (e) {
+            log($('body'), "Unable to save intercooler history with entire history cleared, is something else eating " +
+              "local storage? History Limit:" + slotLimit, "ERROR");
+          }
+        }
+      }
+    }
+
+    function generateSlotId(slot) {
+      var padded = "";
       if (slot < 10) {
-        restorationDataId += "00" + slot;
+        padded += "00" + slot;
       } else if (slot < 100) {
-        restorationDataId += "0" + slot;
+        padded += "0" + slot;
       } else {
-        restorationDataId += slot;
+        padded += slot;
       }
-      return restorationDataId;
-    },
+      return HISTORY_SLOT_PREFIX + padded;
+    }
 
-    newRestorationData: function (id, html) {
-      var histMetaData = JSON.parse(localStorage.getItem('ic-history-support'));
+    function nextHistoryEntry(id, html, url) {
 
-      // Reset history if the history config has changed
-      if (histMetaData == null ||
-        !("slot" in histMetaData) ||
-        histMetaData.limit != _historySupport.getHistoryLimit() ||
-        histMetaData.compressorStr !=  closestAttrValue('body', 'ic-string-compressor')) {
-        log($('body'), "Intercooler History configuration changed, clearing history", "INFO");
-        _historySupport.clearHistory();
-        histMetaData = {
-          slot: 0
-        };
-      }
-      var restorationDataId = _historySupport.generateSlotId(histMetaData.slot);
       var restorationData = {
-        "id": restorationDataId,
+        "slot": nextHistorySlot,
+        "url": url,
+        "id": generateSlotId(nextHistorySlot),
         "elementId": id,
         "content": html,
         "timestamp": new Date().getTime()
       };
 
-      histMetaData.slot = (histMetaData.slot + 1) % this.getHistoryLimit();
-      histMetaData.limit = _historySupport.getHistoryLimit();
-      histMetaData.compressorStr = closestAttrValue('body', 'ic-string-compressor');
+      // save to the history slot
+      saveHistoryData(restorationData);
 
-      //save the new element and history support data
-      _historySupport.saveHistoryData(histMetaData, restorationData);
-      localStorage.setItem('ic-history-support', JSON.stringify(histMetaData));
+      // increment slot
+      nextHistorySlot = (nextHistorySlot + 1) % slotLimit;
+
+      // save history metadata
+      storage.setItem(HISTORY_SUPPORT_SLOT, JSON.stringify({
+        slotLimit : slotLimit,
+        nextHistorySlot : nextHistorySlot,
+        historyVersion: historyVersion,
+        compressorExpr: compressorExpr
+      }));
+
       return restorationData;
-    },
+    }
 
-    updateHistoryData: function (id, html) {
-      var restorationData = JSON.parse(getStringCompressor().decompress(localStorage.getItem(id)));
+    function updateHistoryData(id, html) {
+      var restorationData = JSON.parse(stringCompressor.decompress(storage.getItem(id)));
       if (restorationData == null) {
         log($('body'), "Could not find restoration data with id " + id, "ERROR");
         return
       }
       restorationData.content = html;
       //save the new element and history support data
-      localStorage.setItem(restorationData.id, getStringCompressor().compress(JSON.stringify(restorationData)));
-    },
+      saveHistoryData(restorationData);
+    }
 
-    onPageLoad: function () {
-      if (window.onpopstate == null || window.onpopstate['ic-on-pop-state-handler'] != true) {
-        var currentOnPopState = window.onpopstate;
-        window.onpopstate = function (event) {
+    function addPopStateHandler(windowToAdd) {
+      if (windowToAdd.onpopstate == null || windowToAdd.onpopstate['ic-on-pop-state-handler'] != true) {
+        var currentOnPopState = windowToAdd.onpopstate;
+        windowToAdd.onpopstate = function (event) {
           $('body').trigger('handle.onpopstate.ic');
-          if (!_historySupport.handlePop(event)) {
+          if (!handlePop(event)) {
             if (currentOnPopState) {
               currentOnPopState(event);
             }
           }
           $('body').trigger('pageLoad.ic');
         };
-        window.onpopstate['ic-on-pop-state-handler'] = true;
+        windowToAdd.onpopstate['ic-on-pop-state-handler'] = true;
       }
-    },
+    }
 
-    pushUrl: function (url, elt, target, originalHtml) {
-      log(elt, "pushing location into history: " + url, "DEBUG");
-
+    function pushUrl(url, target, originalUrl, originalHtml) {
       var id = target.attr('id');
+
       if (id == null) {
         log(target, "To support history for a given element, you must have a valid id attribute on the element", "ERROR");
         return;
@@ -1075,47 +1092,136 @@ var Intercooler = Intercooler || (function () {
 
       // If we have a current restoration ID (i.e. we are working in a restored location)
       // we can update it with the current HTML in order to capture internal mutations
-      if (_historySupport.currentRestorationId != null) {
-        _historySupport.updateHistoryData(_historySupport.currentRestorationId, originalHtml);
+      if (currentHistorySlot != null) {
+        updateHistoryData(currentHistorySlot, originalHtml);
       } else {
         // Otherwise this is the first time we've initiated AJAX history so we need to
         // create a new history element with the original HTML for the element so the
         // back button works for the original page
-        var originalData = _historySupport.newRestorationData(id, originalHtml);
-        window.history.replaceState({"ic-id": originalData.id}, "", "");
+        var historyEntry = nextHistoryEntry(id, originalHtml, originalUrl);
+        history.replaceState({"ic-id": historyEntry.id}, "", "");
       }
 
       // Finally push the new content in as a new history element (insanity)
-      var restorationData = _historySupport.newRestorationData(id, target.html());
-      window.history.pushState({'ic-id': restorationData.id}, "", url);
-      _historySupport.currentRestorationId = restorationData.id;
-      target.trigger("pushUrl.ic", target, restorationData);
-    },
+      var restorationData = nextHistoryEntry(id, target.html(), url);
+      history.pushState({'ic-id': restorationData.id}, "", url);
+      currentHistorySlot = restorationData.id;
 
-    handlePop: function (event) {
+      target.trigger("pushUrl.ic", target, restorationData);
+    }
+
+    function handlePop(event) {
       var data = event.state;
       if (data && data['ic-id']) {
-        var historyData = JSON.parse(getStringCompressor().decompress(localStorage.getItem(data['ic-id'])));
+        var historyData = JSON.parse(stringCompressor.decompress(storage.getItem(data['ic-id'])));
         if (historyData) {
           var elt = findById(historyData["elementId"]);
-          if (_historySupport.currentRestorationId != null) {
+          if (currentHistorySlot != null) {
             elt.trigger("beforeHistorySnapshot.ic", [elt, elt]);
-            _historySupport.updateHistoryData(_historySupport.currentRestorationId, elt.html());
+            updateHistoryData(currentHistorySlot, elt.html());
           }
           processICResponse(historyData["content"], elt);
-          _historySupport.currentRestorationId = historyData.id;
+          currentHistorySlot = historyData.id;
           return true;
         }
       }
       return false;
     }
-  };
+
+    function dumpLocalStorage() {
+      var str = "";
+      var keys = [];
+      for (var x in storage) {
+        keys.push(x);
+      }
+      keys.sort();
+      var total = 0;
+      for (var i in keys) {
+        var size = (storage[keys[i]].length * 2);
+        total += size;
+        str += keys[i] + "=" + (size / 1024 / 1024).toFixed(2) + " MB\n";
+      }
+      return str + "\nTOTAL LOCAL STORAGE: " + (total / 1024 / 1024).toFixed(2) + " MB";
+    }
+
+    function dumpHistoryState() {
+      var i = 0;
+      var str = "HISTORY SLOTS\n";
+      str +=    "--------------------------------------------------------------------------------------------\n";
+      while(i < slotLimit) {
+        var slotId = generateSlotId(i);
+        var item = storage.getItem(slotId);
+        if(item) {
+          str += slotId;
+          str += " - " + (item.length * 2 / 1024 / 1024).toFixed(2) + " MB";
+          var itemAsObj = JSON.parse(stringCompressor.decompress(item));
+          str += " - url: " + itemAsObj.url;
+          str += " - content: " + itemAsObj.content.substr(0, 20).replace(/(\r\n|\n|\r)/gm,"");
+        } else if(i == nextHistorySlot || slotId == currentHistorySlot) {
+           str += slotId;
+           str += " - EMPTY";
+        }
+        if(i == nextHistorySlot) {
+          str += " \<-- NEXT SLOT";
+        }
+        if(slotId == currentHistorySlot) {
+          str += " \<-- CURRENT SLOT";
+        }
+        if(item || i == nextHistorySlot || slotId == currentHistorySlot) {
+          str += "\n";
+        }
+        i++;
+      }
+      str += "Local State:\n";
+      str += "==================\n";
+      str += "nextHistorySlot : " + nextHistorySlot + " \n";
+      str += "currentHistorySlot : " + currentHistorySlot + " \n";
+      return str;
+    }
+
+    /* API */
+    return {
+      clearHistory : clearHistory,
+      trimHistory : trimHistory,
+      pushUrl: pushUrl,
+      addPopStateHandler: addPopStateHandler,
+      internal : {
+        addPopStateHandler: addPopStateHandler,
+        dumpHistoryState: dumpHistoryState,
+        dumpLocalStorage: dumpLocalStorage
+      }
+    }
+  }
+
+  function getSlotLimit() {
+    var override = closestAttrValue($('body'), 'ic-history-limit');
+    if (override) {
+      try {
+        return parseInt(override);
+      } catch (e) {
+        log($('body'), "Bad ic-history-limit, using default 200 slots", "ERROR");
+      }
+    }
+    return 200;
+  }
+
+  function getCompressorExpr() {
+    var explicitCompressor = closestAttrValue('body', 'ic-string-compressor');
+    if (explicitCompressor) {
+      return globalEval(explicitCompressor);
+    } else {
+      //No compression library found, return identity compressor
+      return null;
+    }
+  }
+
+  var _history = newIntercoolerHistory(localStorage, window.history, getSlotLimit(), getCompressorExpr(), 1);
 
   //============================================================
   // Local references transport
   //============================================================
 
-  $.ajaxTransport("text", function (options, origOptions, jqXHR) {
+  $.ajaxTransport("text", function (options, origOptions) {
       if (origOptions.url[0] == "#") {
         var ltAttr = "ic-local-";
         var src = $(origOptions.url);
@@ -1161,69 +1267,23 @@ var Intercooler = Intercooler || (function () {
 
   $(function () {
     processNodes('body');
-    _historySupport.onPageLoad();
+    _history.addPopStateHandler(window);
     if (location.search && location.search.indexOf("ic-launch-debugger=true") >= 0) {
       Intercooler.debug();
     }
   });
 
   /* ===================================================
-   * JS API
+   * API
    * =================================================== */
   return {
-    refresh: function (val) {
-      if (typeof val == 'string' || val instanceof String) {
-        refreshDependencies(val);
-      } else {
-        fireICRequest(val);
-      }
-      return Intercooler;
-    },
-
-    dumpLocalStorage: function () {
-      var str = "";
-      var keys = [];
-      for (var x in localStorage) {
-        keys.push(x);
-      }
-      keys.sort();
-      var total = 0;
-      for (var i in keys) {
-        var size = (localStorage[keys[i]].length * 2);
-        total += size;
-        str += keys[i] + "=" + (size / 1024 / 1024).toFixed(2) + " MB\n";
-      }
-      return str + "\nTOTAL LOCAL STORAGE: " + (total / 1024 / 1024).toFixed(2) + " MB";
-    },
-
-    historySupport: function () {
-      return _historySupport;
-    },
-
-    fireRequest: function (elt, callback) {
-      fireICRequest(elt, callback)
-    },
-
-    processNodes: function (elt) {
-      return processNodes(elt);
-    },
-
-    closestAttrValue: function (elt, attr) {
-      return closestAttrValue(elt, attr);
-    },
-
-    verbFor: function (elt) {
-      return verbFor(elt);
-    },
-
-    isDependent: function (src, dest) {
-      return isDependent(src, dest);
-    },
-
-    getTarget: function (elt) {
-      return getTarget(elt);
-    },
-
+    history: function() { return _history },
+    fireRequest: fireICRequest,
+    processNodes: processNodes,
+    closestAttrValue: closestAttrValue,
+    verbFor: verbFor,
+    isDependent: isDependent,
+    getTarget: getTarget,
     debug: function () {
       var debuggerUrl = closestAttrValue('body', 'ic-debugger-url') ||
         "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js";
