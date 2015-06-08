@@ -776,16 +776,25 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
-  function getTransitionDurationString(elt, target) {
+  function getTransitionDuration(elt, target) {
     var transitionDuration = closestAttrValue(elt, 'ic-transition-duration');
     if (transitionDuration) {
-      return transitionDuration;
+      return parseInterval(transitionDuration);
     }
     transitionDuration = closestAttrValue(target, 'ic-transition-duration');
     if (transitionDuration) {
-      return transitionDuration;
+      return parseInterval(transitionDuration);
     }
-    return $(target).css('transition-duration');
+    var duration = 0;
+    var durationStr = $(target).css('transition-duration');
+    if(durationStr) {
+      duration += parseInterval(durationStr);
+    }
+    var delayStr = $(target).css('transition-delay');
+    if(delayStr) {
+      duration += parseInterval(delayStr);
+    }
+    return duration;
   }
 
   function processICResponse(responseContent, elt) {
@@ -819,8 +828,7 @@ var Intercooler = Intercooler || (function () {
         }
       };
 
-      var transitionDuration = getTransitionDurationString(elt, target);
-      var delay = parseInterval(transitionDuration);
+      var delay = getTransitionDuration(elt, target);
       if (delay > 0) {
         target.addClass('ic-transitioning');
         setTimeout(function () {
@@ -840,11 +848,14 @@ var Intercooler = Intercooler || (function () {
     var content = $.parseHTML(newContent, null, true);
     var asQuery = $(content);
     if (filter) {
-      if (!asQuery.is(filter)) {
+      var topLevelMatches = asQuery.filter(filter);
+      if(topLevelMatches.length > 0) {
+        asQuery = topLevelMatches;
+      } else {
         asQuery = asQuery.find(filter);
       }
     }
-    return asQuery;
+    return asQuery.children();
   }
 
   function getStyleTarget(elt) {
