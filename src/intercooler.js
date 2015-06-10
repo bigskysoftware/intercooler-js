@@ -40,7 +40,11 @@ var Intercooler = Intercooler || (function () {
   }
 
   function prepend(parent, responseContent) {
-    parent.prepend(responseContent);
+    try {
+      parent.prepend(responseContent);
+    } catch (e) {
+      log(elt, formatError(e), "ERROR");
+    }
     if (parent.attr('ic-limit-children')) {
       var limit = parseInt(parent.attr('ic-limit-children'));
       if (parent.children().length > limit) {
@@ -50,7 +54,11 @@ var Intercooler = Intercooler || (function () {
   }
 
   function append(parent, responseContent) {
-    parent.append(responseContent);
+    try {
+      parent.append(responseContent);
+    } catch (e) {
+      log(elt, formatError(e), "ERROR");
+    }
     if (parent.attr('ic-limit-children')) {
       var limit = parseInt(parent.attr('ic-limit-children'));
       if (parent.children().length > limit) {
@@ -84,10 +92,6 @@ var Intercooler = Intercooler || (function () {
 
   function icSelectorFor(elt) {
     return "[ic-id='" + getIntercoolerId(elt) + "']";
-  }
-
-  function findById(x) {
-    return $("#" + x);
   }
 
   function parseInterval(str) {
@@ -140,14 +144,14 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
-  function handleHistory(elt, xhr, originalHtml) {
+  function handleHistory(elt, xhr, originalState) {
     if (xhr.getResponseHeader("X-IC-PushURL")) {
       log(elt, "pushing location into history via header: " + xhr.getResponseHeader("X-IC-PushURL"), "DEBUG");
-      _history.pushUrl(xhr.getResponseHeader("X-IC-PushURL"), currentUrl(), originalHtml);
+      _history.pushUrl(xhr.getResponseHeader("X-IC-PushURL"), currentUrl(), originalState);
     } else {
       if (closestAttrValue(elt, 'ic-push-url') == "true") {
         log(elt, "pushing location into history via ic-push-url attribute: " + elt.attr('ic-src'), "DEBUG");
-        _history.pushUrl(elt.attr('ic-src'), currentUrl(), originalHtml);
+        _history.pushUrl(elt.attr('ic-src'), currentUrl(), originalState);
       }
     }
   }
@@ -302,21 +306,25 @@ var Intercooler = Intercooler || (function () {
           }
         }
 
-        var target = getTarget(elt);
         var beforeHeaders = new Date();
         try {
           if (processHeaders(elt, xhr)) {
             log(elt, "Processed headers for request " + requestId + " in " + (new Date() - beforeHeaders) + "ms", "DEBUG");
             var beforeSuccess = new Date();
 
-            var currentBody = null;
-            if (xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true") {
-              elt.trigger("beforeHistorySnapshot.ic", [elt, target]);
-              requestCleanup(indicator, elt); // clean up before snapshotting HTML
-              currentBody = $('body').html();
+            var currentState = null;
+            var pushHistory = xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true";
+            if (pushHistory) {
+              requestCleanup(indicator, elt); // clean up before snap-shotting HTML
+              currentState = _history.snapshotForHistory();
             }
+
             success(data, textStatus, elt, xhr);
-            handleHistory(elt, xhr, currentBody);
+
+            if(pushHistory) {
+              handleHistory(elt, xhr, currentState);
+            }
+
             log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
           }
           elt.trigger("after.success.ic", [elt, data, textStatus, xhr, requestId]);
@@ -455,6 +463,7 @@ var Intercooler = Intercooler || (function () {
     processPolling(elt);
     processTriggerOn(elt);
     processRemoveAfter(elt);
+    processApplyClasses(elt);
     $(elt).trigger('nodesProcessed.ic');
   }
 
@@ -518,6 +527,17 @@ var Intercooler = Intercooler || (function () {
       $(elt).find('[ic-remove-after]').each(function () {
         if ($(this).closest('.ic-ignore').length == 0) {
           handleRemoveAfter($(this));
+        }
+      });
+    }
+  }
+
+  function processApplyClasses(elt) {
+    if ($(elt).closest('.ic-ignore').length == 0) {
+      handleApplyClasses(elt);
+      $(elt).find('[ic-apply-classes]').each(function () {
+        if ($(this).closest('.ic-ignore').length == 0) {
+          handleApplyClasses($(this));
         }
       });
     }
@@ -625,6 +645,30 @@ var Intercooler = Intercooler || (function () {
       setTimeout(function () {
         remove(elt);
       }, interval);
+    }
+  }
+
+  function parseAndApply(classInfo, elt) {
+    var cssClass = "";
+    var delay = 10;
+    if (classInfo.indexOf(":") > 0) {
+      var split = classInfo.split(':');
+      cssClass = split[0];
+      delay = parseInterval(split[1]);
+    } else {
+      cssClass = classInfo;
+    }
+    elt.removeClass(cssClass);
+    setTimeout(function () { elt.addClass(cssClass) }, delay);
+  }
+
+  function handleApplyClasses(elt) {
+    if ($(elt).attr('ic-apply-classes')) {
+      var values = $(elt).attr('ic-apply-classes').split(",");
+      var arrayLength = values.length;
+      for (var i = 0; i < arrayLength; i++) {
+        parseAndApply($.trim(values[i]), elt);
+      }
     }
   }
 
@@ -786,7 +830,7 @@ var Intercooler = Intercooler || (function () {
     return duration;
   }
 
-  function processICResponse(responseContent, elt) {
+  function processICResponse(responseContent, elt, forHistory) {
     if (responseContent && /\S/.test(responseContent)) {
 
       log(elt, "response content: \n" + responseContent, "DEBUG");
@@ -796,24 +840,31 @@ var Intercooler = Intercooler || (function () {
 
       var doSwap = function () {
         if (closestAttrValue(elt, 'ic-replace-target') == "true") {
-          target.replaceWith(contentToSwap);
+          try {
+            target.replaceWith(contentToSwap);
+          } catch (e) {
+            log(elt, formatError(e), "ERROR");
+          }
           processNodes(contentToSwap);
-          updateIntercoolerMetaData(contentToSwap);
-          updateIntercoolerMetaData(contentToSwap);
-          maybeScrollToTarget(elt, contentToSwap);
         } else {
           if (elt.is('[ic-prepend-from]')) {
             prepend(target, contentToSwap);
           } else if (elt.is('[ic-append-from]')) {
             append(target, contentToSwap);
           } else {
-            target.empty().append(contentToSwap);
+            try {
+              target.empty().append(contentToSwap);
+            } catch (e) {
+              log(elt, formatError(e), "ERROR");
+            }
             $(target).children().each(function () {
               processNodes($(this));
             });
           }
           updateIntercoolerMetaData(target);
-          maybeScrollToTarget(elt, target)
+          if(forHistory != true) {
+            maybeScrollToTarget(elt, target);
+          }
         }
       };
 
@@ -844,7 +895,7 @@ var Intercooler = Intercooler || (function () {
         asQuery = asQuery.find(filter);
       }
     }
-    return asQuery.children();
+    return asQuery;
   }
 
   function getStyleTarget(elt) {
@@ -896,17 +947,17 @@ var Intercooler = Intercooler || (function () {
           var verb = verbFor(elt);
 
           var success = alternateHandler || function (data) {
-            if (styleTarget) {
-              elt.css(styleTarget, data);
-            } else if (attrTarget) {
-              elt.attr(attrTarget, data);
-            } else {
-              processICResponse(data, elt);
-              if (verb != 'GET') {
-                refreshDependencies(elt.attr('ic-src'), elt);
+              if (styleTarget) {
+                elt.css(styleTarget, data);
+              } else if (attrTarget) {
+                elt.attr(attrTarget, data);
+              } else {
+                processICResponse(data, elt);
+                if (verb != 'GET') {
+                  refreshDependencies(elt.attr('ic-src'), elt);
+                }
               }
-            }
-          };
+            };
 
           handleRemoteRequest(elt, verb, elt.attr('ic-src'), getParametersForElement(elt, triggerOrigin), success);
         }
@@ -937,7 +988,7 @@ var Intercooler = Intercooler || (function () {
 
     // Reset history if the history config has changed
     if (historyConfigHasChanged(historySupportData)) {
-      log($('body'), "Intercooler History configuration changed, clearing history", "INFO");
+      log(getTargetForHistory(), "Intercooler History configuration changed, clearing history", "INFO");
       clearHistory();
     }
 
@@ -989,19 +1040,20 @@ var Intercooler = Intercooler || (function () {
     }
 
     function updateLRUList(url) {
-      var currentIndex = historySupportData.lruList.indexOf(url);
+      var lruList = historySupportData.lruList;
+      var currentIndex = lruList.indexOf(url);
       // found in current list, shift it to the end
       if(currentIndex >= 0) {
-        log($('body'), "URL found in LRU list, moving to end", "INFO");
-        historySupportData.lruList.splice(currentIndex, 1);
-        historySupportData.push(url);
+        log(getTargetForHistory(), "URL found in LRU list, moving to end", "INFO");
+        lruList.splice(currentIndex, 1);
+        lruList.push(url);
       } else {
         // not found, add and shift if necessary
-        log($('body'), "URL not found in LRU list, adding", "INFO");
-        historySupportData.push(url);
-        if(historySupportData.lruList.length > historySupportData.slotLimit) {
-          var urlToDelete = historySupportData.lruList.shift();
-          log($('body'), "History overflow, removing local history for " + urlToDelete, "INFO");
+        log(getTargetForHistory(), "URL not found in LRU list, adding", "INFO");
+        lruList.push(url);
+        if(lruList.length > historySupportData.slotLimit) {
+          var urlToDelete = lruList.shift();
+          log(getTargetForHistory(), "History overflow, removing local history for " + urlToDelete, "INFO");
           storage.removeItem(HISTORY_SLOT_PREFIX + urlToDelete);
         }
       }
@@ -1020,76 +1072,87 @@ var Intercooler = Intercooler || (function () {
           clearHistory();
           storage.setItem(restorationData.id, compressed);
         } catch (e) {
-          log($('body'), "Unable to save intercooler history with entire history cleared, is something else eating " +
+          log(getTargetForHistory(), "Unable to save intercooler history with entire history cleared, is something else eating " +
             "local storage? History Limit:" + slotLimit, "ERROR");
         }
       }
     }
 
-    function makeHistoryEntry(html, url) {
+    function makeHistoryEntry(state, url) {
       var restorationData = {
         "url": url,
-        "id": HISTORY_SLOT_PREFIX + "url",
-        "content": html,
+        "id": HISTORY_SLOT_PREFIX + url,
+        "content": state.html,
+        "yOffset": state.yOffset,
         "timestamp": new Date().getTime()
       };
-
       updateLRUList(url);
-
       // save to the history slot
       saveHistoryData(restorationData);
-
       return restorationData;
-    }
-
-    function updateHistoryData(id, html) {
-      var restorationData = JSON.parse(stringCompressor.decompress(storage.getItem(id)));
-      if (restorationData == null) {
-        log($('body'), "Could not find restoration data with id " + id, "ERROR");
-        return
-      }
-      restorationData.content = html;
-      //save the new element and history support data
-      saveHistoryData(restorationData);
     }
 
     function addPopStateHandler(windowToAdd) {
       if (windowToAdd.onpopstate == null || windowToAdd.onpopstate['ic-on-pop-state-handler'] != true) {
         var currentOnPopState = windowToAdd.onpopstate;
         windowToAdd.onpopstate = function (event) {
-          $('body').trigger('handle.onpopstate.ic');
-          if (!handlePop(event)) {
+          getTargetForHistory().trigger('handle.onpopstate.ic');
+          if (!handleHistoryNavigation(event)) {
             if (currentOnPopState) {
               currentOnPopState(event);
             }
           }
-          $('body').trigger('pageLoad.ic');
+          getTargetForHistory().trigger('pageLoad.ic');
         };
         windowToAdd.onpopstate['ic-on-pop-state-handler'] = true;
       }
     }
 
-    function pushUrl(url, originalUrl, originalHtml) {
+    function pushUrl(newUrl, originalUrl, originalHtml) {
 
       var historyEntry = makeHistoryEntry(originalHtml, originalUrl);
       history.replaceState({"ic-id": historyEntry.id}, "", "");
 
-      var restorationData = makeHistoryEntry($('body').html(), url);
-      history.pushState({'ic-id': restorationData.id}, "", url);
+      var t = getTargetForHistory();
+      var restorationData = makeHistoryEntry({ html: t.html(), yOffset: window.pageYOffset}, newUrl);
+      history.pushState({'ic-id': restorationData.id}, "", newUrl);
 
-      $('body').trigger("pushUrl.ic", [$('body'), restorationData]);
+      t.trigger("pushUrl.ic", [getTargetForHistory(), restorationData]);
     }
 
-    function handlePop(event) {
+    function handleHistoryNavigation(event) {
       var data = event.state;
       if (data && data['ic-id']) {
         var historyData = JSON.parse(stringCompressor.decompress(storage.getItem(data['ic-id'])));
         if (historyData) {
-          processICResponse(historyData["content"], $('body'));
+          processICResponse(historyData["content"], getTargetForHistory(), true);
+          if(historyData["yOffset"]) {
+            window.scrollTo(0, historyData["yOffset"])
+          }
           return true;
+        } else {
+          //TODO - issue a GET and parse out the response
         }
       }
       return false;
+    }
+
+    function getTargetForHistory() {
+      var explicitHistoryTarget = $('body').find('[ic-history-elt]');
+      if (explicitHistoryTarget.length > 0) {
+        return explicitHistoryTarget;
+      } else {
+        return $('body');
+      }
+    }
+
+    function snapshotForHistory() {
+      var t = getTargetForHistory();
+      t.trigger("beforeHistorySnapshot.ic", [t]);
+      return {
+        html: t.html(),
+        yOffset :  window.pageYOffset
+      }
     }
 
     function dumpLocalStorage() {
@@ -1108,14 +1171,19 @@ var Intercooler = Intercooler || (function () {
       return str + "\nTOTAL LOCAL STORAGE: " + (total / 1024 / 1024).toFixed(2) + " MB";
     }
 
+    function supportData() {
+      return historySupportData;
+    }
+
     /* API */
     return {
       clearHistory : clearHistory,
-      trimHistory : trimHistory,
       pushUrl: pushUrl,
       addPopStateHandler: addPopStateHandler,
+      snapshotForHistory: snapshotForHistory,
       internal : {
         addPopStateHandler: addPopStateHandler,
+        supportData: supportData,
         dumpLocalStorage: dumpLocalStorage
       }
     }
@@ -1141,6 +1209,15 @@ var Intercooler = Intercooler || (function () {
       //No compression library found, return identity compressor
       return null;
     }
+  }
+
+  function refresh(val) {
+    if (typeof val == 'string' || val instanceof String) {
+      refreshDependencies(val);
+    } else {
+      fireICRequest(val);
+    }
+    return Intercooler;
   }
 
   var _history = newIntercoolerHistory(localStorage, window.history, getSlotLimit(), getCompressorExpr(), .1);
@@ -1205,7 +1282,8 @@ var Intercooler = Intercooler || (function () {
    * API
    * =================================================== */
   return {
-    history: function() { return _history },
+    refresh: refresh,
+    history: _history,
     fireRequest: fireICRequest,
     processNodes: processNodes,
     closestAttrValue: closestAttrValue,
