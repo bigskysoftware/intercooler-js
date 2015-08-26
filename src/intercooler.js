@@ -297,9 +297,10 @@ var Intercooler = Intercooler || (function () {
 
     var requestId = uuid();
     var requestStart = new Date();
+    var actualRequestType = type == 'GET' ? 'GET' : 'POST';
 
     $.ajax({
-      type: type,
+      type: actualRequestType,
       url: url,
       data: data,
       dataType: 'text',

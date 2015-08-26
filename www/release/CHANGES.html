@@ -18,6 +18,11 @@ nav: dependencies
       Partial response selector now pulls content from <strong>within</strong> the selected element,
       rather than the entire element.
     </li>
+    <li>
+      All non-GET requests are issued as POSTs now.  This is because browsers have funky, browser dependent
+      rules on how they handle redirects with parameters to a GET: sometimes they pass them along, sometimes
+      they don't.
+    </li>
   </ul>
 
   <a class="anchor" id="0_4_10"></a>
