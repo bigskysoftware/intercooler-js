@@ -24,9 +24,18 @@
   <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
   <script src="https://code.jquery.com/qunit/qunit-1.16.0.js"></script>
   <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="../src/intercooler.js"></script>
+  <script type="text/javascript" src="../src/intercooler.js" data-cover></script>
   <script type="text/javascript" src="jquery.mockjax.js"></script>
+
   <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.16.0.css">
+
+  <script>
+    // clear out the intercooler library for blanket if we are in a coverage test
+    if(location.search.indexOf("coverage") >= 0) {
+      Intercooler = null
+    }
+  </script>
+  <script src="blanket.min.js"></script>
 
   <script>
 
@@ -204,7 +213,8 @@
       $.mockjax({
         url: "/deps_put_test1",
         response: function (settings) {
-          if (settings['type'] == 'PUT') {
+          var params = parseParams(settings.data);
+          if (params["_method"] == 'PUT') {
             text = "Bar";
           }
           this.responseText = text;
@@ -227,7 +237,8 @@
       $.mockjax({
         url: "/deps_delete_test1",
         response: function (settings) {
-          if (settings['type'] == 'DELETE') {
+          var params = parseParams(settings.data);
+          if (params["_method"] == 'DELETE') {
             text = "Bar";
           }
           this.responseText = text;
@@ -671,7 +682,8 @@
       $.mockjax({
         url: "/verb_test",
         response: function (settings) {
-          this.responseText = settings.type;
+          var params = parseParams(settings.data);
+          this.responseText = params["_method"];
         }
       });
       $("#ic-verb-btn1").click();
