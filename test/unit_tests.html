@@ -1156,7 +1156,7 @@
   });
 </script>
 
-<div id="test-response-selector" ic-post-to="/response_selector" ic-select-from-response="ul"></div>
+<div id="test-response-selector" ic-post-to="/response_selector" ic-select-from-response="div"></div>
 <script>
   intercoolerTest("Basic partial response selector works properly", function (assert) {
       $.mockjax({
@@ -1170,21 +1170,7 @@
     });
 </script>
 
-<div id="test-response-selector-2" ic-post-to="/response_selector2" ic-select-from-response="ul" ic-replace-parent="true"></div>
-<script>
-  intercoolerTest("Partial response selector works properly with replace parent", function (assert) {
-      $.mockjax({
-        url: "/response_selector2",
-        responseText: "<html><body><div><ul id='test-response-selector-2-ul'><li>Example</li></ul></div></body></html>"
-      });
-      $("#test-response-selector-2").click();
-    },
-    function (assert) {
-      assert.equal($("#test-response-selector-2-ul").html(), "<li>Example</li>");
-    });
-</script>
-
-<ul id="test-response-selector-append" ic-append-from="/append_response_selector" ic-select-from-response="li" ic-trigger-on="click"></ul>
+<ul id="test-response-selector-append" ic-append-from="/append_response_selector" ic-select-from-response="ul" ic-trigger-on="click"></ul>
 <script>
   intercoolerTest("Partial response selector works properly with append from", function (assert) {
       $.mockjax({
