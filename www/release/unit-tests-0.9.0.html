@@ -24,9 +24,18 @@
   <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
   <script src="https://code.jquery.com/qunit/qunit-1.16.0.js"></script>
   <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="./intercooler-0.5.0.js"></script>
+  <script type="text/javascript" src="./intercooler-0.9.0.js" data-cover></script>
   <script type="text/javascript" src="jquery.mockjax.js"></script>
+
   <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.16.0.css">
+
+  <script>
+    // clear out the intercooler library for blanket if we are in a coverage test
+    if(location.search.indexOf("coverage") >= 0) {
+      Intercooler = null
+    }
+  </script>
+  <script src="blanket.min.js"></script>
 
   <script>
 
@@ -204,7 +213,8 @@
       $.mockjax({
         url: "/deps_put_test1",
         response: function (settings) {
-          if (settings['type'] == 'PUT') {
+          var params = parseParams(settings.data);
+          if (params["_method"] == 'PUT') {
             text = "Bar";
           }
           this.responseText = text;
@@ -227,7 +237,8 @@
       $.mockjax({
         url: "/deps_delete_test1",
         response: function (settings) {
-          if (settings['type'] == 'DELETE') {
+          var params = parseParams(settings.data);
+          if (params["_method"] == 'DELETE') {
             text = "Bar";
           }
           this.responseText = text;
@@ -671,7 +682,8 @@
       $.mockjax({
         url: "/verb_test",
         response: function (settings) {
-          this.responseText = settings.type;
+          var params = parseParams(settings.data);
+          this.responseText = params["_method"];
         }
       });
       $("#ic-verb-btn1").click();
@@ -1156,7 +1168,7 @@
   });
 </script>
 
-<div id="test-response-selector" ic-post-to="/response_selector" ic-select-from-response="ul"></div>
+<div id="test-response-selector" ic-post-to="/response_selector" ic-select-from-response="div"></div>
 <script>
   intercoolerTest("Basic partial response selector works properly", function (assert) {
       $.mockjax({
@@ -1170,21 +1182,7 @@
     });
 </script>
 
-<div id="test-response-selector-2" ic-post-to="/response_selector2" ic-select-from-response="ul" ic-replace-parent="true"></div>
-<script>
-  intercoolerTest("Partial response selector works properly with replace parent", function (assert) {
-      $.mockjax({
-        url: "/response_selector2",
-        responseText: "<html><body><div><ul id='test-response-selector-2-ul'><li>Example</li></ul></div></body></html>"
-      });
-      $("#test-response-selector-2").click();
-    },
-    function (assert) {
-      assert.equal($("#test-response-selector-2-ul").html(), "<li>Example</li>");
-    });
-</script>
-
-<ul id="test-response-selector-append" ic-append-from="/append_response_selector" ic-select-from-response="li" ic-trigger-on="click"></ul>
+<ul id="test-response-selector-append" ic-append-from="/append_response_selector" ic-select-from-response="ul" ic-trigger-on="click"></ul>
 <script>
   intercoolerTest("Partial response selector works properly with append from", function (assert) {
       $.mockjax({

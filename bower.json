@@ -18,5 +18,8 @@
     "intercooler",
     "ajax",
     "intercoolerjs"
-  ]
+  ],
+  "dependencies": {
+    "jquery": ">=1.10.0"
+  }
 }

@@ -120,12 +120,8 @@ code {
     visibility: hidden;
 }
 
-section {
-    margin-bottom: 48px;
-}
-
 section p {
-  margin: 12px;
+  margin: 20px 48px;
 }
 
 section blockquote {
@@ -208,4 +204,8 @@ section table {
     max-width: 70%;
     margin: 8px auto;
   }
+}
+
+section {
+  margin-bottom: 72px;
 }
