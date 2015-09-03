@@ -496,13 +496,19 @@ var Intercooler = Intercooler || (function () {
   //============================================================
 
   function processNodes(elt) {
-    processMacros(elt);
-    processSources(elt);
-    processPolling(elt);
-    processTriggerOn(elt);
-    processRemoveAfter(elt);
-    processAddClasses(elt);
-    processRemoveClasses(elt);
+    if(elt.length > 1) {
+      elt.each(function(){
+        processNodes($(this));
+      })
+    } else {
+      processMacros(elt);
+      processSources(elt);
+      processPolling(elt);
+      processTriggerOn(elt);
+      processRemoveAfter(elt);
+      processAddClasses(elt);
+      processRemoveClasses(elt);
+    }
   }
 
   function fireReadyStuff(elt) {
@@ -923,8 +929,12 @@ var Intercooler = Intercooler || (function () {
         } else {
           if (elt.is('[ic-prepend-from]')) {
             prepend(target, contentToSwap);
+            processNodes(contentToSwap);
+            fireReadyStuff($(target));
           } else if (elt.is('[ic-append-from]')) {
             append(target, contentToSwap);
+            processNodes(contentToSwap);
+            fireReadyStuff($(target));
           } else {
             try {
               target.empty().append(contentToSwap);

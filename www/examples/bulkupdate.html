@@ -67,6 +67,18 @@ nav: tutorial
     </table>
   </form>
 
+  <style scoped>
+    .ic-transitioning tr.deactivate td {
+      background: lightcoral;
+    }
+    .ic-transitioning tr.activate td {
+      background: darkseagreen;
+    }
+    tr td {
+      transition: all 1.2s;
+    }
+  </style>
+
   <script>
 
     //========================================================================
@@ -82,7 +94,7 @@ nav: tutorial
           var id = ids[i];
           dataStore.findContactById(id)['status'] = 'Active';
         }
-        this.responseText = rowsTemplate(dataStore.allContacts());
+        this.responseText = rowsTemplate(ids, dataStore.allContacts(), 'activate');
       }
     });
 
@@ -96,7 +108,7 @@ nav: tutorial
           var id = ids[i];
           dataStore.findContactById(id)['status'] = 'Inactive';
         }
-        this.responseText = rowsTemplate(dataStore.allContacts());
+        this.responseText = rowsTemplate(ids, dataStore.allContacts(), 'deactivate');
       }
     });
 
@@ -117,11 +129,12 @@ nav: tutorial
     //========================================================================
     // Mock Server-Side Templates
     //========================================================================
-    function rowsTemplate(contacts) {
+    function rowsTemplate(ids, contacts, action) {
       var txt = "";
       for (var i = 0; i < contacts.length; i++) {
         var c = contacts[i];
-        txt += "<tr> \
+        console.log($.inArray(i, ids));
+        txt += "<tr" + ($.inArray(i, ids) >= 0 ? " class='" + action + "'" : "") +  "> \
                   <td><input type='checkbox' name='ids' value='" + i + "'></td><td>" + c.name + "</td><td>" + c.email + "</td><td>" + c.status + "</td> \
                 </tr>";
       }

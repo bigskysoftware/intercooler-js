@@ -17,6 +17,29 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation.  Click the "Source Code" tab to see the code.</p>
 
+      <h2>Explaination</h2>
+
+      <ul>
+        <li>
+          The 'Click To Edit' button uses <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a> to
+          issue a GET to <code>/contact/1/edit</code>, and targets the div surrounding the entire Contact UI using
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+        </li>
+        <li>
+          The server returns a form that replaces the content of the div.  The form uses the
+          <a href="/attributes/ic-put-to"><code>ic-put-to</code></a> to issue a PUT to <code>/contact/1</code> and
+          targets the same enclosing div.
+        </li>
+        <li>
+          The 'Cancel' button uses <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a> to
+          issue a GET to <code>/contact/1</code> and targets the same div.  The server-side handler at <code>/contact/1</code>
+          should use the <code>ic-request</code> or <code>ic-target</code> parameter to differentiate between a full
+          window request and this partial request.</a>
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live Demo</a></li>
@@ -57,8 +80,8 @@ nav: tutorial
       url: "/contact/1",
       response: function (settings) {
         var mockUser = dataStore.findUser("1");
-        if (settings.type == 'PUT') {
-          var params = parseParams(settings.data);
+        var params = parseParams(settings.data);
+        if (params['_method']== 'PUT') {
           mockUser.firstName = params['firstName'];
           mockUser.lastName = params['lastName'];
           mockUser.email = params['email'];
@@ -87,8 +110,8 @@ nav: tutorial
     <label>Email address</label> \
     <input type="email" class="form-control" name="email" value="' + mockUser.email + '"> \
   </div> \
-  <button ic-get-from="/contact/1" ic-target="#contact-div" class="btn btn-danger">Cancel</button> \
   <button class="btn btn-default">Submit</button> \
+  <button ic-get-from="/contact/1" ic-target="#contact-div" class="btn btn-danger">Cancel</button> \
 </form>';
     }
 
