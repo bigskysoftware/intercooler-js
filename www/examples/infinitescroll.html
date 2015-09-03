@@ -15,6 +15,25 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation. Click the "Source Code" tab to see the code.</p>
 
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          The last table row of the table generated on the server side, has an
+          <a href="/attributes/ic-append-from.html"><code>ic-append-from</code></a>
+          attribute that loads the next page of results, and that uses
+          <a href="/attributes/ic-trigger-on.html"><code>ic-trigger-on</code></a>
+          to trigger the request when the row is scrolled into view.  The row targets the body of the table to
+          append to using the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute and shows an indicator for the request via the
+          <a href="/attributes/ic-indicator.html"><code>ic-indicator</code></a>
+          attribute.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live

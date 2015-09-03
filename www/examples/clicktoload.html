@@ -15,6 +15,27 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation. Click the "Source Code" tab to see the code.</p>
 
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          After the last row of data, emit a single row/column with a colspan of the entire table, with a button in it.
+        </li>
+        <li>
+          That button has an
+          <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a>
+          attribute that loads the next page of data (including another button).  The button targets the closest
+          table row for replacement with the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute, using the special <code>closest</code> syntax.  Finally, because we want to replace the entire row
+          with the new page of rows returned (rather than simply replacing the inner content of the row), the
+          <a href="/attributes/ic-replace-target.html"><code>ic-replace-target</code></a>
+          is set to <code>true</code>
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
@@ -76,7 +97,7 @@ nav: tutorial
     <tr>
       <td colspan="3">
         <center> <!-- lol -->
-          <button class="btn btn-default" ic-post-to='/contacts/?page=2' ic-target='closest tr' ic-replace-target="true">
+          <button class="btn btn-default" ic-get-from='/contacts/?page=2' ic-target='closest tr' ic-replace-target="true">
             Load More Agents... <i class="fa fa-spinner fa-spin ic-indicator" style="display:none"></i>
           </button>
         </center>

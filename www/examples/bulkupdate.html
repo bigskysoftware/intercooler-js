@@ -15,6 +15,37 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation. Click the "Source Code" tab to see the code.</p>
 
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          The entire table is wrapped in a <code>form</code> tag, with checkboxes on each row indicating the row id.
+        </li>
+        <li>
+          A drop-down button sits outside the form (not strictly necessary) and includes the form with the
+          <a href="/attributes/ic-include.html"><code>ic-include</code></a>
+          attribute.  The drop-down button targets the body of the table using the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute and specifies an request indicator via the
+          <a href="/attributes/ic-indicator.html"><code>ic-indicator</code></a>
+          attribute.
+        </li>
+        <li>
+          The drop-down button has two options, "Active" and "Deactive" which issue posts via
+          <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a>
+          to <code>/activate</code> and <code>/deactivate</code> respectively.  Both options inherit all the
+          attibutes specified by the parent dropdown button.
+        </li>
+        <li>
+          When the server side handles a post it re-renders all the rows of the table, and applies a class,
+          <code>activate</code> or <code>deactivate</code> to a row that is activated or deactivated.  Using
+          CSS transitions and the <code>ic-transitioning</code>, we can flash the color of these rows green or red,
+          respectively.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
