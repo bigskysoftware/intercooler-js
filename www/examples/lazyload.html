@@ -16,6 +16,22 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation. Click the "Source Code" tab to see the code.</p>
 
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          A div within the page loads a graph from another URL using the
+          <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a>
+          attribute.  In order to trigger the loading when the page loads, the
+          <a href="/attributes/ic-trigger.html"><code>ic-trigger</code></a>
+          attribute is set to "load".
+        </li>
+        <li>A progress indicator is nested in the div with the <code>ic-indicator</code>
+          class on it, to be shown as the request for the lazily loaded content is in flight.</li>
+      </ul>
+
+      <h2>Demo</h2>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active">

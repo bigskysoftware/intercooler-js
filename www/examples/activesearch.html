@@ -15,6 +15,27 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation. Click the "Source Code" tab to see the code.</p>
 
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          The search input is set to post to <code>/search</code> via a
+          <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a>
+          attributes.  It does this on keyup by setting the
+          <a href="/attributes/ic-trigger-on.html"><code>ic-trigger-on</code></a>
+          attribute to <code>keyup</code>, but only issues the request when the input value changes by using the
+          <code>changed</code> modifier in the trigger.  The input triggers the body of the table by using the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute, and the server side produces rows of matching contacts.  As usual, an indicator is called out with
+          the
+          <a href="/attributes/ic-indicator.html"><code>ic-indicator</code></a>
+          attribute.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
@@ -35,7 +56,7 @@ nav: tutorial
 
   <input class="form-control" type="text" name="search" placeholder="Begin Typing To Search Users..."
          ic-post-to="/search" ic-trigger-on="keyup changed" ic-trigger-delay="500ms"
-         ic-target="#contact-table" ic-indicator="#indicator"/>
+         ic-target="#contact-table-body" ic-indicator="#indicator"/>
 
 
   <table class="table">
@@ -46,8 +67,7 @@ nav: tutorial
         <th>Email</th>
       </tr>
     </thead>
-    <tbody id="contact-table">
-
+    <tbody id="contact-table-body">
     </tbody>
   </table>
 

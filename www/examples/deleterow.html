@@ -16,6 +16,29 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation. Click the "Source Code" tab to see the code.</p>
 
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          Each row has a button with a
+          <a href="/attributes/ic-delete-from.html"><code>ic-delete-from</code></a>
+          attribute set up to delete the row from the server
+        </li>
+        <li>
+          The table body has an
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          set to <code>closest tr</code> and causes a confirmation message with an
+          <a href="/attributes/ic-confirm.html"><code>ic-confirm</code></a>
+          attribute.  The delete buttons in the table inherit these attributes.
+        </li>
+        <li>
+          The server side returns an empty response, with the special header <code>X-IC-Remove</code> set to
+          <code>true</code>, which tells intercooler to remove the target (in this case, the closest row.)
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live

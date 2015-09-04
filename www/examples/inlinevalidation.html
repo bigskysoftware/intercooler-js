@@ -16,6 +16,26 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation. Click the "Source Code" tab to see the code.</p>
 
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          A intercooler-based form tag is being used.
+        </li>
+        <li>
+          Within the form tag is an input for an email that does server side validation.  It does this by using a
+          <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a>
+          to post the email to the server when the input changes.  It targets the enclosing div tag, using the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute and the <code>closest</code> syntax.  Because we need to replace the entire div to get the proper
+          styling, the
+          <a href="/attributes/ic-replace-target.html"><code>ic-replace-target</code></a>
+          attribute is set to <code>true</code>
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
