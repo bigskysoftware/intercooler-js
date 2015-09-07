@@ -15,6 +15,27 @@ nav: tutorial
       <p>As you click between the tabs, the URL and history will be updated correctly, allowing back button
       support</p>
 
+      <ul>
+        <li>
+          The <code>content</code> div tells Intercooler that it should be snap-shotted for history, rather than the
+          body of the page, by using the
+          <a href="/attributes/ic-history-elt.html"><code>ic-history-elt</code></a>
+          attribute.  The element that is snap-shotted for history should be stable across your entire site
+          so that the UI can be reliably restored.
+        </li>
+        <li>
+          The navigation tabs parent UL targets a div with the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute.  This div encloses both the tabs and content, allowing the server side to render
+          a new tab state as well as the new content.  The ul
+
+        </li>
+        <li>
+          The server side gets the make that was selected in the input via a request parameter and renders an select
+          with all the models available for that make.
+        </li>
+      </ul>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
@@ -26,7 +47,7 @@ nav: tutorial
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="demo">
 
-  <div id="content">
+  <div id="content" ic-history-elt>
     <ul class="nav nav-tabs" ic-target="#content" ic-push-url="true">
       <li class="active"><a ic-get-from="/examples/history/tab1">Tab1</a></li>
       <li><a ic-get-from="/examples/history/tab2">Tab2</a></li>

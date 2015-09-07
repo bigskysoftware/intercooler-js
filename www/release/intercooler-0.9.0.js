@@ -158,18 +158,6 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
-  function handleHistory(elt, xhr, originalState) {
-    if (xhr.getResponseHeader("X-IC-PushURL")) {
-      log(elt, "pushing location into history via header: " + xhr.getResponseHeader("X-IC-PushURL"), "DEBUG");
-      _history.pushUrl(xhr.getResponseHeader("X-IC-PushURL"), currentUrl(), originalState);
-    } else {
-      if (closestAttrValue(elt, 'ic-push-url') == "true") {
-        log(elt, "pushing location into history via ic-push-url attribute: " + elt.attr('ic-src'), "DEBUG");
-        _history.pushUrl(elt.attr('ic-src'), currentUrl(), originalState);
-      }
-    }
-  }
-
   function processHeaders(elt, xhr) {
 
     elt.trigger("beforeHeaders.ic", [elt, xhr]);
@@ -333,22 +321,17 @@ var Intercooler = Intercooler || (function () {
             log(elt, "Processed headers for request " + requestId + " in " + (new Date() - beforeHeaders) + "ms", "DEBUG");
             var beforeSuccess = new Date();
 
-            var currentState = null;
-            var pushHistory = xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true";
-            if (pushHistory) {
+            if (xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true") {
               try {
                 requestCleanup(indicator, elt); // clean up before snap-shotting HTML
-                currentState = _history.snapshotForHistory();
+                var newUrl = xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-src');
+                _history.snapshotForHistory(newUrl);
               } catch(e) {
                 log(elt, "Error during history snapshot for " + requestId + ": " + formatError(e), "ERROR");
               }
             }
 
             success(data, textStatus, elt, xhr);
-
-            if(pushHistory) {
-              handleHistory(elt, xhr, currentState);
-            }
 
             log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
           }
@@ -951,6 +934,7 @@ var Intercooler = Intercooler || (function () {
             maybeScrollToTarget(elt, target);
           }
         }
+        _history.updateHistory();
       };
 
       if(target.length == 0) {
@@ -1069,6 +1053,7 @@ var Intercooler = Intercooler || (function () {
     /* Instance Vars */
     var historySupportData = JSON.parse(storage.getItem(HISTORY_SUPPORT_SLOT));
     var stringCompressor = evalCompressorExpr(compressorExpr);
+    var _snapshot = null;
 
     // Reset history if the history config has changed
     if (historyConfigHasChanged(historySupportData)) {
@@ -1163,12 +1148,12 @@ var Intercooler = Intercooler || (function () {
       }
     }
 
-    function makeHistoryEntry(state, url) {
+    function makeHistoryEntry(html, yOffset, url) {
       var restorationData = {
         "url": url,
         "id": HISTORY_SLOT_PREFIX + url,
-        "content": state.html,
-        "yOffset": state.yOffset,
+        "content": html,
+        "yOffset": yOffset,
         "timestamp": new Date().getTime()
       };
       updateLRUList(url);
@@ -1193,13 +1178,20 @@ var Intercooler = Intercooler || (function () {
       }
     }
 
-    function pushUrl(newUrl, originalUrl, originalHtml) {
+    function updateHistory() {
+      if(_snapshot) {
+        pushUrl(_snapshot.newUrl, currentUrl(), _snapshot.oldHtml, _snapshot.yOffset);
+        _snapshot = null;
+      }
+    }
 
-      var historyEntry = makeHistoryEntry(originalHtml, originalUrl);
+    function pushUrl(newUrl, originalUrl, originalHtml, yOffset) {
+
+      var historyEntry = makeHistoryEntry(originalHtml, yOffset, originalUrl);
       history.replaceState({"ic-id": historyEntry.id}, "", "");
 
       var t = getTargetForHistory($('body'));
-      var restorationData = makeHistoryEntry({ html: t.html(), yOffset: window.pageYOffset}, newUrl);
+      var restorationData = makeHistoryEntry(t.html(), window.pageYOffset, newUrl);
       history.pushState({'ic-id': restorationData.id}, "", newUrl);
 
       t.trigger("pushUrl.ic", [t, restorationData]);
@@ -1235,11 +1227,12 @@ var Intercooler = Intercooler || (function () {
       }
     }
 
-    function snapshotForHistory() {
+    function snapshotForHistory(newUrl) {
       var t = getTargetForHistory($('body'));
       t.trigger("beforeHistorySnapshot.ic", [t]);
-      return {
-        html: t.html(),
+      _snapshot = {
+        newUrl: newUrl,
+        oldHtml: t.html(),
         yOffset :  window.pageYOffset
       }
     }
@@ -1267,7 +1260,7 @@ var Intercooler = Intercooler || (function () {
     /* API */
     return {
       clearHistory : clearHistory,
-      pushUrl: pushUrl,
+      updateHistory : updateHistory,
       addPopStateHandler: addPopStateHandler,
       snapshotForHistory: snapshotForHistory,
       internal : {
