@@ -25,7 +25,10 @@ nav: tutorial
           attributes.  It does this on keyup by setting the
           <a href="/attributes/ic-trigger-on.html"><code>ic-trigger-on</code></a>
           attribute to <code>keyup</code>, but only issues the request when the input value changes by using the
-          <code>changed</code> modifier in the trigger.  The input triggers the body of the table by using the
+          <code>changed</code> modifier in the trigger.  In order to avoid overwhelming the server with requests, a
+          trigger delay of 500 milliseconds is added with the
+          <a href="/attributes/ic-trigger-delay.html"><code>ic-trigger-delay</code></a>
+          attributes. The input targets the body of the table by using the
           <a href="/attributes/ic-target.html"><code>ic-target</code></a>
           attribute, and the server side produces rows of matching contacts.  As usual, an indicator is called out with
           the

@@ -16,6 +16,27 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation. Click the "Source Code" tab to see the code.</p>
 
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          The first dropdown issues a post to <code>/models</code> via a
+          <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a>
+          attributes. It does this when the value changes (the default trigger on inputs).  It targets the model
+          drop down by CSS ID using the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute, and displays a spinner via the
+          <a href="/attributes/ic-indicator.html"><code>ic-indicator</code></a>
+          attribute.
+        </li>
+        <li>
+          The server side gets the make that was selected in the input via a request parameter and renders an select
+          with all the models available for that make.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
