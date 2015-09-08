@@ -2,7 +2,6 @@ $(function () {
   var debugPanel = $(window).data('ic-debug-panel');
   if (debugPanel == null) {
     (function () {
-      console.log("2");
 
       function generateDetailPanel(elt) {
         var dp = $("<div><div><strong>Details</strong></div>" +
@@ -46,7 +45,6 @@ $(function () {
       }
 
       function generateDebugPanel() {
-        console.log("foo");
         return $("<div id='ic-debug-panel' style='font-size: 14px;font-family: Arial;background:white;width:100%;height:200px;position:fixed;left:0;border-top:1px solid #d3d3d3;'>" +
           "  <div style='padding:4px;width:100%;border-bottom: 1px solid #d3d3d3;background: #f5f5f5'><strong>intercooler.js debugger</strong>" +
           "    <span style='float:right'><a>Hide</a> | <a>[x]</a></span>" +
@@ -93,7 +91,6 @@ $(function () {
         });
       }
 
-      console.log("3");
       debugPanel = generateDebugPanel().appendTo($('body'));
       $(window).data('ic-debug-panel', debugPanel);
       var lastElt;
@@ -133,12 +130,10 @@ $(function () {
         }
       });
 
-      console.log("4");
       $('[ic-src]').each(function () {
         debugSourceElt($(this));
       });
 
-      console.log("5");
       $(window).on('log.ic',function (e, msg, level) {
         $("<div style='border-bottom: 1px solid #d3d3d3'>] - " + msg.replace(/</g, '&lt;') + "</div>")
           .appendTo($("#ic-debug-Logs"))
@@ -149,9 +144,7 @@ $(function () {
         }).on('nodesProcessed.ic',function () {
           maybeCleanDebugInfo();
         }).on('resize', function () {
-          console.log('1');
           if (!debugPanel.is(":hidden")) {
-            console.log('2');
             var winOffset = $(window).height() - (debugPanel.data('ic-minimized') == true ? 29 : 200);
             debugPanel.css('top', winOffset + "px");
             $('html').css('margin-bottom', (debugPanel.data('ic-minimized') == true ? 29 : 200) + "px");
