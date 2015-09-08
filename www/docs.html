@@ -26,8 +26,10 @@ nav: docs
     <li><a href="#responses">Anatomy of an Intercooler Response</a></li>
     <li><a href="#dependencies">Dependencies In Intercooler</a></li>
     <li><a href="#events">Events</a></li>
+    <li><a href="#server_side_techniques">Server-Side Techniques</a></li>
     <li><a href="#debugging">Debugging</a></li>
     <li><a href="#javascript">Using Intercooler from Javascript</a></li>
+    <li><a href="#philosophy">Some Philosophy</a></li>
     <li><a href="#conclusion">Conclusion</a></li>
   </ul>
 </div>
@@ -1042,6 +1044,61 @@ nav: docs
 
   <p>These attributes can be placed on parent elements if you want to specify a behavior for an entire secion of a
     DOM tree.</p>
+
+</section>
+
+<section>
+  <a class="anchor" id="server_side_techniques"></a>
+
+  <h2>Server-Side Techniques</h2>
+
+  <p>A great strength of Intercooler is that it is inherently server-side technology agnostic: you can use anything
+    you'd like to serve up the partial HTML and headers needed for your Intercooler-based front-end to function.
+    That being said, there are some techniques that can be applied across all server-side technologies to help you build
+    a better, cleaner web application:</p>
+
+  <h3>Check for the <code>ic-request</code> parameter</h3>
+
+  <p>You can use the <code>ic-request</code> parameter to decide if a request has originated from intercooler (and,
+  therefore, demands a partial bit of HTML) or from a top level browser.  If you are using the
+  <code><a href="/attributes/ic-push-url.html">ic-push-url</a></code> attribute to enable AJAX-based history and navigation
+  this can be especially useful.</p>
+
+  <h3>Check the <code>ic-target-id</code> parameter</h3>
+
+  <p>If you have an even more advanced user interface, you may find yourself making requests to the same URL for
+  different parts of the screen (this is common if you have a second-level navigation within a page) and you will
+  want to differentiate between requests that are targeting different parts of the UI.  Intercooler provides the ID
+  of the target element, if it exists, in the <code>ic-target-id</code> parameter</p>
+
+  <h3>Use the <code>ic-trigger-id</code> to determine who triggered a request</h3>
+
+  <p>If it is annoying to set up multiple routes with your server-side technology, you may have a few actions that you
+    want to run through a <code>POST</code> to a single URL.  You can differentiate between the elements that are
+  sending these posts up by giving them IDS and then checking the <code>ic-trigger-id</code> parameter.</p>
+
+  <h3>Keep your templates <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY</a></h3>
+
+  <p>Intercooler works best with a tidy server-side, with refactored and well composed templates that generate both the
+  full and partial HTML necessary for a web app.</p>
+
+  <h3>Leverage multiple HTTP Actions at the same URL</h3>
+
+  <p>Intercooler makes it easy to issue more exotic HTTP actions, like <code>DELETE</code> and <code>PUT</code>.  Depending
+  on your server-side technology, you can use this to minimize the URL surface area of your app and adhere to
+  <a href="http://www.restapitutorial.com/lessons/restfulresourcenaming.html">REST-ful URL</a> design.  There is no
+  reason to limit this concept to only JSON APIs: it often leads to a minimal and tidy code base when used judiciously
+    for partial HTML.</p>
+
+  <h3>Fire client-side events to manage UI state that can't be handled with content swaps</h3>
+
+  <p>Not every UI pattern is amenable to HTML content swapping.  For example, you may want to use a modal
+  popup from a framework like Bootstrap.  In situations like these, you can often use the <code>IC-Trigger</code>
+  attribute to signal from the server-side to the client-side that something happened, and write javascript
+  to update the UI accordingly (e.g. hide a modal after an update.)</p>
+
+  <p>This is a powerful technique for minimizing the coupling and complexity of your application while still
+  retaining the full power of a javascript client side environment.</p>
 
 </section>
 
