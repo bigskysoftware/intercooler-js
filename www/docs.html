@@ -476,7 +476,143 @@ nav: docs
 
   <h2>Element Transitions</h2>
 
-  <p>TODO cgross - CSS 3 animation docs</p>
+  <p>As of the 0.9.0 release, Intercooler allows you to use CSS 3 transitions to animate content swaps.  It does
+  this by adding the <code>ic-transitioning</code> class to the <em>target element</em> that is about to be swapped,
+  waiting a moment, doing the swap, and then removing the <code>ic-transitioning</code> class from the target.</p>
+
+  <p>The amount of time between when the <code>ic-transitioning</code> class is added, the swap is done and then
+    the <code>ic-transitioning</code> class is removed is determined as follows</p>
+
+  <p>Time to swap is determined by:</p>
+
+  <ul>
+    <li>
+      If the attribute <code><a href="/attributes/ic-transition-duration.html">ic-transition-duration</a></code> is defined
+      on either the target or triggering element or parents thereof, use the time defined by that attribute.
+    </li>
+    <li>
+      Otherwise, add the <code>transition-duration</code> and <code>transition-delay</code> defined in CSS for the element
+      using 0 if either is absent.
+    </li>
+  </ul>
+
+  <p>
+    Intercooler then waits an additional 5 milliseconds before removing the <code>ic-transitioning</code> class.
+  </p>
+
+  <p>This process lets you define CSS transitions for your elements.  Here is a simple example that fades the button
+  out and then back in:</p>
+
+  <pre>
+  &lt;style>
+    #transition-1 {
+      transition: all .9s;
+    }
+
+    #transition-1.ic-transitioning {
+      opacity: 0;
+    }
+  &lt;/style>
+  </pre>
+
+  <div class="live-demo">
+    <style>
+      #transition-1 {
+        transition: all .9s;
+      }
+
+      #transition-1.ic-transitioning {
+        opacity: 0;
+      }
+    </style>
+
+    <script>
+      $.mockjax({
+        url: '/transition_1',
+        responseText: "<span>You Clicked Me!!!</span>"
+      });
+    </script>
+    <a id="transition-1" class="btn btn-primary" ic-post-to="/transition_1">Click Me!</a>
+  </div>
+
+  <p>Since we are using CSS, we can transition elements within the swapped content, rather than the entire content.
+    In this example we only fade in and out the content in the button. Note that we need to define the
+    <code><a href="/attributes/ic-transition-duration.html">ic-transition-duration</a></code> to let intercooler know
+    how long to wait, since the transition delay is not defined on the target.</p>
+
+  <p>Note that the CSS transition time is
+    set to a slightly smaller amount than the <code><a href="/attributes/ic-transition-duration.html">ic-transition-duration</a></code>
+    is, to avoid timing issues with the <code>ic-transitioning</code> class removal.
+  </p>
+
+  <pre>
+  &lt;style>
+    #transition-2 span {
+      transition: all .9s;
+    }
+
+    #transition-2.ic-transitioning span {
+      opacity: 0;
+    }
+  &lt;/style>
+  </pre>
+
+  <div class="live-demo">
+    <style>
+      #transition-2 span {
+        transition: all .9s;
+      }
+
+      #transition-2.ic-transitioning span {
+        opacity: 0;
+      }
+    </style>
+
+    <script>
+      $.mockjax({
+        url: '/transition_2',
+        responseText: "<span>You Clicked Me!!!</span>"
+      });
+    </script>
+    <a id="transition-2" ic-transition-duration="1s" class="btn btn-primary" ic-post-to="/transition_2"><span>Click Me!</span></a>
+  </div>
+
+  <p>And, to show that you can use any CSS transition, here is the same example that uses font size:</p>
+
+  <pre>
+  &lt;style>
+    #transition-3 span {
+      transition: all 900ms;
+    }
+
+    #transition-3.ic-transitioning span {
+      font-size: 4px;
+    }
+  &lt;/style>
+  </pre>
+
+  <div class="live-demo">
+    <style>
+      #transition-3 span {
+        transition: all 900ms;
+      }
+
+      #transition-3.ic-transitioning span {
+        font-size: 4px;
+      }
+    </style>
+
+    <script>
+      $.mockjax({
+        url: '/transition_3',
+        responseText: "<span>You Clicked Me!!!</span>"
+      });
+    </script>
+    <a id="transition-3" ic-transition-duration="1s" class="btn btn-primary" ic-post-to="/transition_2"><span>Click Me!</span></a>
+  </div>
+
+  <p>Using CSS transitions gives you very fine-grained controll over the look and feel of your Intercooler-based app,
+  and they are fun to play with.  (Just don't overdo it.)</p>
 
   <h3>Timed Removal Of Elements</h3>
 
