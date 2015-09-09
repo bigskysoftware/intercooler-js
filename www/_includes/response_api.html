@@ -1,0 +1,95 @@
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th style="width:360px">Header</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>X-IC-Trigger</code>
+      </td>
+      <td>
+        Allows you to <a href="http://api.jquery.com/trigger/">trigger a JQuery event handler</a> on the client
+        side
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Trigger-Data</code>
+      </td>
+      <td>
+        Allows you to pass JSON data to the event triggered by the <code>X-IC-Trigger</code> header. Note that
+        <code>extraParameters</code> passed to the event are treated as an <em>argument list</em> if the data is
+        a JSON
+        array. See <a href="http://api.jquery.com/trigger/">the JQuery trigger() documentation for more
+        information. </a>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Refresh</code>
+      </td>
+      <td>
+        A comma separated list of dependency paths to refresh.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Redirect</code>
+      </td>
+      <td>
+        Causes a client-side redirect to the given URL.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Script</code>
+      </td>
+      <td>
+        Allows you to evaluate arbitrary javascript.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-CancelPolling</code>
+      </td>
+      <td>
+        Cancels any polling associated with the target element or parent thereof.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-ResumePolling</code>
+      </td>
+      <td>
+        Restarts any polling associated with the target element or parent thereof.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Open</code>
+      </td>
+      <td>
+        Opens a new window at the given location.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-PushURL</code>
+      </td>
+      <td>
+        Sets a new location for the page and saves the history of the element being replaced.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Remove</code>
+      </td>
+      <td>
+        Removes the target element.
+      </td>
+    </tr>
+  </tbody>
+</table>

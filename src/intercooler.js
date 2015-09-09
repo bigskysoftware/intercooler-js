@@ -1044,7 +1044,7 @@ var Intercooler = Intercooler || (function () {
   // History Support
   //============================================================
 
-  function newIntercoolerHistory(storage, history, slotLimit, compressorExpr, historyVersion) {
+  function newIntercoolerHistory(storage, history, slotLimit, historyVersion) {
 
     /* Constants */
     var HISTORY_SUPPORT_SLOT = 'ic-history-support';
@@ -1052,7 +1052,6 @@ var Intercooler = Intercooler || (function () {
 
     /* Instance Vars */
     var historySupportData = JSON.parse(storage.getItem(HISTORY_SUPPORT_SLOT));
-    var stringCompressor = evalCompressorExpr(compressorExpr);
     var _snapshot = null;
 
     // Reset history if the history config has changed
@@ -1065,7 +1064,6 @@ var Intercooler = Intercooler || (function () {
       historySupportData = {
         slotLimit : slotLimit,
         historyVersion: historyVersion,
-        compressorExpr: compressorExpr,
         lruList: []
       };
     }
@@ -1075,23 +1073,7 @@ var Intercooler = Intercooler || (function () {
       return historySupportData == null ||
         historySupportData.slotLimit != slotLimit ||
         historySupportData.historyVersion != historyVersion ||
-        historySupportData.compressorExpr != compressorExpr ||
         historySupportData.lruList == null
-    }
-
-    function evalCompressorExpr(compressorExpr) {
-      if (compressorExpr != null) {
-        return globalEval(compressorExpr)
-      } else {
-        return {
-          'compress': function (str) {
-            return str;
-          },
-          'decompress': function (str) {
-            return str;
-          }
-        }
-      }
     }
 
     function clearHistory () {
@@ -1133,14 +1115,14 @@ var Intercooler = Intercooler || (function () {
     }
 
     function saveHistoryData(restorationData) {
-      var compressed = stringCompressor.compress(JSON.stringify(restorationData));
+      var content = JSON.stringify(restorationData);
       try {
-        storage.setItem(restorationData.id, compressed);
+        storage.setItem(restorationData.id, content);
       } catch (e) {
         //quota error, nuke local cache
         try {
           clearHistory();
-          storage.setItem(restorationData.id, compressed);
+          storage.setItem(restorationData.id, content);
         } catch (e) {
           log(getTargetForHistory($('body')), "Unable to save intercooler history with entire history cleared, is something else eating " +
             "local storage? History Limit:" + slotLimit, "ERROR");
@@ -1200,7 +1182,7 @@ var Intercooler = Intercooler || (function () {
     function handleHistoryNavigation(event) {
       var data = event.state;
       if (data && data['ic-id']) {
-        var historyData = JSON.parse(stringCompressor.decompress(storage.getItem(data['ic-id'])));
+        var historyData = JSON.parse(storage.getItem(data['ic-id']));
         if (historyData) {
           processICResponse(historyData["content"], getTargetForHistory($('body')), true);
           if(historyData["yOffset"]) {
@@ -1272,25 +1254,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function getSlotLimit() {
-    var override = closestAttrValue($('body'), 'ic-history-limit');
-    if (override) {
-      try {
-        return parseInt(override);
-      } catch (e) {
-        log($('body'), "Bad ic-history-limit, using default 200 slots", "ERROR");
-      }
-    }
     return 20;
-  }
-
-  function getCompressorExpr() {
-    var explicitCompressor = closestAttrValue('body', 'ic-string-compressor');
-    if (explicitCompressor) {
-      return globalEval(explicitCompressor);
-    } else {
-      //No compression library found, return identity compressor
-      return null;
-    }
   }
 
   function refresh(val) {
@@ -1302,7 +1266,7 @@ var Intercooler = Intercooler || (function () {
     return Intercooler;
   }
 
-  var _history = newIntercoolerHistory(localStorage, window.history, getSlotLimit(), getCompressorExpr(), .1);
+  var _history = newIntercoolerHistory(localStorage, window.history, getSlotLimit(), .1);
 
   //============================================================
   // Local references transport

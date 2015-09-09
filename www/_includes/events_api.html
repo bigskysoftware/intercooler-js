@@ -1,0 +1,85 @@
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>log.ic(evt, msg, level, elt)</code>
+      </td>
+      <td>
+        Event fired when log messages occur internally in intercooler (can be used to debug specific
+        DOM elements.)
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>beforeHeaders.ic(evt, elt, xhr)</code>
+      </td>
+      <td>
+        Triggered before intercooler headers are processed.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>afterHeaders.ic(evt, elt, xhr)</code>
+      </td>
+      <td>
+        Triggered after intercooler headers are processed.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>beforeSend.ic(evt, elt, data, settings, xhr)</code>
+      </td>
+      <td>
+        Triggered before sending an intercooler AJAX request to the server. The second argument to the event is
+        the data hash, and can be added or removed from to change the values sent to the server.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>success.ic(evt, elt, data, textStatus, xhr)</code>
+      </td>
+      <td>
+        Triggered after a successful intercooler request is received
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>error.ic(evt, elt, status, str, xhr)</code>
+      </td>
+      <td>
+        Triggered after an error occurs during an intercooler request
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>complete.ic(evt, elt, data, status, xhr)</code>
+      </td>
+      <td>
+        Triggered after an intercooler request completes, regardless of status. This event is triggered on the
+        <code>body</code> tag.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>onPoll.ic(evt, elt)</code>
+      </td>
+      <td>
+        Triggered before a poll request is dispatched
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>handle.onpopstate.ic(evt)</code>
+      </td>
+      <td>
+        Triggered when intercooler handles an onpopstate event. Triggered on the document body.
+      </td>
+    </tr>
+  </tbody>
+</table>
