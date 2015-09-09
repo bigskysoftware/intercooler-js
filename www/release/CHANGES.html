@@ -7,7 +7,15 @@ nav: dependencies
 
   <a class="anchor" id="0_4_10"></a>
   <h3>Intercooler 0.9.0 - TBD</h3>
+  <div class="alert alert-warning" role="alert">
+    <i class="fa fa-warning"></i> The v0.4.9 to v0.9.0 move involved extensive code changes.  Please test your
+    existing application <b>thoroughly</b> when you upgrade!
+  </div>
   <ul>
+    <li>
+      <code>ic-select-from-response</code> now takes the <em>inner HTML content</em> of the given element, rather than
+      the entire element. This makes the API more natural to work with, but unfortuantely breaks backwards compatibility.
+    </li>
     <li>
       Reworked history to use remote restoration once local storage overflows.
     </li>
@@ -18,13 +26,51 @@ nav: dependencies
       <code>ic-patch-to</code> attribute was added to suppor the <code>PATCH</code> action
     </li>
     <li>
-      Partial response selector now pulls content from <strong>within</strong> the selected element,
-      rather than the entire element.
-    </li>
-    <li>
       All non-GET requests are issued as POSTs now.  This is because browsers have funky, browser dependent
       rules on how they handle redirects with parameters to a GET: sometimes they pass them along, sometimes
       they don't.
+    </li>
+    <li>
+      Element transitions were <a href="/docs.html#transitions">moved to CSS</a>.  <code>Intercooler.defaultTransition()</code> and
+      <code>Intercooler.defineTransition()</code> have been deprecated and now have no effect.
+    </li>
+    <li>
+      <code>Intercooler.addURLHandler()</code> and <code>Intercooler.setRemote()</code> have been deprecated
+      and now have no effect.
+    </li>
+    <li>
+      <code>ic-add-class</code> and <code>ic-remove-class</code> were added to make transitions easier to work with.
+    </li>
+    <li>
+      <code>ic-global-include</code> allows you to include data with requests made by every element on a page.
+    </li>
+    <li>
+      <code>ic-beforeTrigger</code> allows you execute logic before Intercooler fires a request (and potentially
+      cancel the trigger).
+    </li>
+    <li>
+      <code>ic-pause-polling</code> allows you issue an element with an <code>ic-poll</code> attribute in it that
+      is in a paused state.
+    </li>
+    <li>
+      <code>X-IC-ResumePolling</code> response header allows you to restart polling for an element.
+    </li>
+    <li>
+      <code>ic-post-errors-to</code> allows you specify a URL for intercooler to post client side errors to.
+    </li>
+    <li>
+      <code>ic-prompt</code> allows you to prompt the user for input before a request, asking for input.
+    </li>
+    <li>
+      <code>ic-remove-after</code> allows you to remove an element after a given time period.
+    </li>
+    <li>
+      <code>ic-scroll-to-target</code> and <code>ic-scroll-offset</code> allow you to scroll to the top of a target
+      if it is not visible in the viewport.
+    </li>
+    <li>
+      <code>ic-transition-duration</code> allows you to tell intercooler to wait some amount of time for a CSS
+      transition to complete before a swap is done.
     </li>
   </ul>
 
