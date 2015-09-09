@@ -228,6 +228,31 @@
     });
 </script>
 
+<div id="ic-src-div6a" ic-src="/deps_patch_test1">Foo</div>
+<button id="ic-patch-to-btn1" ic-patch-to="/deps_patch_test1">Click</button>
+
+<script>
+  intercoolerTest("Dependency update w/ PATCH",
+    function (assert) {
+      var text = "Foo";
+      $.mockjax({
+        url: "/deps_patch_test1",
+        response: function (settings) {
+          var params = parseParams(settings.data);
+          if (params["_method"] == 'PATCH') {
+            text = "Bar";
+          }
+          this.responseText = text;
+        }
+      });
+      assert.equal($('#ic-src-div6a').text(), "Foo", "Updated");
+      $("#ic-patch-to-btn1").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-src-div6a').text(), "Bar", "Updated");
+    });
+</script>
+
 <div id="ic-src-div7" ic-src="/deps_delete_test1">Foo</div>
 <button id="ic-delete-from-btn1" ic-delete-from="/deps_delete_test1">Click</button>
 <script>

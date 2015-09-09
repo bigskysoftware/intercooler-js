@@ -9,7 +9,7 @@ var Intercooler = Intercooler || (function () {
   //--------------------------------------------------
   // Vars
   //--------------------------------------------------
-  var _MACROS = ['ic-get-from', 'ic-post-to', 'ic-put-to', 'ic-delete-from',
+  var _MACROS = ['ic-get-from', 'ic-post-to', 'ic-put-to', 'ic-patch-to', 'ic-delete-from',
     'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
   var _scrollHandler = null;
   var _UUID = 1;
@@ -790,6 +790,12 @@ var Intercooler = Intercooler || (function () {
     if (macro == 'ic-put-to') {
       setIfAbsent(elt, 'ic-src', elt.attr('ic-put-to'));
       setIfAbsent(elt, 'ic-verb', 'PUT');
+      setIfAbsent(elt, 'ic-trigger-on', 'default');
+      setIfAbsent(elt, 'ic-deps', 'ignore');
+    }
+    if (macro == 'ic-patch-to') {
+      setIfAbsent(elt, 'ic-src', elt.attr('ic-patch-to'));
+      setIfAbsent(elt, 'ic-verb', 'PATCH');
       setIfAbsent(elt, 'ic-trigger-on', 'default');
       setIfAbsent(elt, 'ic-deps', 'ignore');
     }

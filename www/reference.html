@@ -123,6 +123,15 @@ nav: attributes > all
             </tr>
 
             <tr>
+              <td><a href="/attributes/ic-patch-to.html">ic-patch-to</a></td>
+              <td>This attribute allows you to bind the "action" of an element to a given URL. Once it is bound, when an
+                "action" occurs (e.g. clicking a button) Intercooler will issue
+                a <code>PATCH</code> to the URL and replace the element with the new content.
+                Intercooler will detect any other elements that the <code>PATCH</code> effects and automatically refresh them.
+              </td>
+            </tr>
+
+            <tr>
               <td><a href="/attributes/ic-pause-polling.html">ic-pause-polling</a></td>
               <td>If <code>true</code> then an <code>ic-poll</code> attribute will not start polling.  This can be
               used to implement a Pause/Play UX.</td>
