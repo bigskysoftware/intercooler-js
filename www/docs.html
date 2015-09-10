@@ -783,7 +783,7 @@ nav: docs
           is still available on the screen. There is typically a div that wraps the main content of your application and
           this
           is the suggested element to mark as the element to snapshot and restore to, using the
-          <a href="/attributes/ic-history-elt.html">ic-history-elt</a> attribute</p>
+          <a href="/attributes/ic-history-elt.html"><code>ic-history-elt</code></a> attribute</p>
 
         <p>It is <em>highly recommended</em> that you set this attribute in your intercooler application if you are
           using history.</p>
@@ -868,15 +868,17 @@ nav: docs
 
         <div class="live-demo">
           <script>
-            $(window).on('myEvent', function (elt, arg) {
-              alert("myEvent was invoked by a response header with arg: " + arg + "!"); //wire in an event handler
+            $(function(){
+              $('#trigger_demo').on('myEvent', function (elt, arg) {
+                alert("myEvent was invoked by a response header with arg: " + arg + "!"); //wire in an event handler
+              });
             });
             $.mockjax({
               url: '/trigger_demo',
-              headers: {"X-IC-Trigger": 'myEvent', "X-IC-Trigger-Data": '["foo"]'}
+              headers: {"X-IC-Trigger": '{"myEvent":["foo"]}'}
             });
           </script>
-          <button class="btn btn-default" ic-post-to="/trigger_demo">
+          <button id="trigger_demo" class="btn btn-default" ic-post-to="/trigger_demo">
             Invoke The 'myEvent' event
           </button>
         </div>

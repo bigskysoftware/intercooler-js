@@ -12,20 +12,10 @@
       </td>
       <td>
         Allows you to <a href="http://api.jquery.com/trigger/">trigger a JQuery event handler</a> on the client
-        side
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <code>X-IC-Trigger-Data</code>
-      </td>
-      <td>
-        Allows you to pass JSON data to the event triggered by the <code>X-IC-Trigger</code> header. Note that
-        <code>extraParameters</code> passed to the event are treated as an <em>argument list</em> if the data is
-        a JSON
-        array. See <a href="http://api.jquery.com/trigger/">the JQuery trigger() documentation for more
-        information. </a>
-      </td>
+        side.  The value of this header can either be a plain string for the event name, or a JSON object that satisfies
+        the jQuery <a href="http://api.jquery.com/jQuery.parseJSON/"><code>parseJSon()</code></a> requirements, where each
+        property is an event name to trigger, and the value of each property is an array of arguments to pass to that
+        event.</td>
     </tr>
     <tr>
       <td>
