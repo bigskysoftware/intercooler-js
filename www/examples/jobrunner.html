@@ -26,8 +26,16 @@ nav: tutorial
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="demo">
 
+    <style>
+      #main {
+        transition: all .5s;
+      }
+      #main.ic-transitioning {
+        opacity: 0;
+      }
+    </style>
 
-    <div ic-src="/job/status">
+    <div id="main" ic-src="/job/status">
       <!-- This post to /job causes the outer div to refresh due to intercooler's dependencies system -->
       <button class="btn btn-primary" ic-post-to="/job">Start Job</button>
     </div>

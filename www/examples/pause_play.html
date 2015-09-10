@@ -38,7 +38,7 @@ nav: tutorial
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="demo">
 
-  <div ic-prepend-from="/poll" ic-poll="1s" ic-target="#content">
+  <div ic-prepend-from="/poll" ic-poll="2s" ic-target="#content">
     <div>
       <div class="btn btn-default" ic-post-to="/pause"><i class="fa fa-pause"></i></div>
       <div class="btn btn-default" ic-post-to="/play"><i class="fa fa-play"></i></div>
@@ -47,6 +47,14 @@ nav: tutorial
     </div>
   </div>
 
+  <style>
+    #content div {
+      transition: all 2s;
+    }
+    #content div.flash-red {
+      color: red;
+    }
+  </style>
 
   <script>
     (function () {
@@ -54,7 +62,7 @@ nav: tutorial
       $.mockjax({
         'url': '/poll',
         'response': function () {
-          this.responseText = "<div>Poll request #" + pollCount++ + "</div>";
+          this.responseText = "<div class='flash-red' ic-remove-class='flash-red'>Poll request #" + pollCount++ + "</div>";
         }
       });
       $.mockjax({

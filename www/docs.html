@@ -20,7 +20,7 @@ nav: docs
           <li><a href="#inputs">Forms & Input Values</a></li>
           <li><a href="#polling">Polling</a></li>
           <li><a href="#progress">Progress Indicators</a></li>
-          <li><a href="#transitions">Element Transitions</a></li>
+          <li><a href="#transitions">CSS Element Transitions</a></li>
           <li><a href="#history">History<sub>BETA</sub></a></li>
           <li><a href="#requests">Anatomy of an Intercooler Request</a></li>
           <li><a href="#responses">Anatomy of an Intercooler Response</a></li>
@@ -121,12 +121,19 @@ nav: docs
 
         <p>
           The core attributes of intercooler are: <code>ic-get-from</code>, <code>ic-post-to</code>,
-          <code>ic-put-to</code>, and <code>ic-delete-from</code>.</p>
+          <code>ic-put-to</code>, <code>ic-patch-to</code> and <code>ic-delete-from</code>.</p>
 
-        <p>Each of these takes a (typically server-relative) URL
-          to issue a request to and then issue an HTTP <code>GET</code>, <code>POST</code>, <code>PUT</code> or
-          <code>DELETE</code>
-          respectively, loading the response content into the element they are on.
+        <p>Each of attributes these takes a (typically server-relative) URL
+          to issue a request to and then issue an HTTP <code>GET</code>, <code>POST</code>, <code>PUT</code>,
+          <code>PATCH</code> or <code>DELETE</code> respectively, when the element they are declared on is triggered (see
+          below) and then loads the content of the response into the element.
+        </p>
+
+        <p>
+          Arguably even more core to intercooler is the <code>ic-src</code> attribute, which can be thought of as the
+          same as <code>ic-get-from</code>, but does it not have an event trigger.  (It can be triggered manually or
+          via dependencies, see below.)  The attributes above are actually defined in terms of <code>ic-src</code>,
+          and you will not find a need to use this attribute often.
         </p>
 
         <p>Here is an example button that issues a <code>PUT</code>:</p>
@@ -370,6 +377,14 @@ nav: docs
         </pre>
 
         <div class="live-demo">
+          <style>
+            .flashRed {
+              transition: all 1s;
+            }
+            .ic-transitioning .flashRed {
+              color: red;
+            }
+          </style>
           <script>
             (function () {
               var count = 0;
@@ -377,7 +392,7 @@ nav: docs
                 url: '/poll_example',
                 response: function () {
                   count++;
-                  this.responseText = 'This span has polled ' + count + " times...";
+                  this.responseText = 'This span has polled <span class="flashRed">' + count + "</span> times...";
                 }
               })
             })()
@@ -504,7 +519,7 @@ nav: docs
       <section>
         <a class="anchor" id="transitions"></a>
 
-        <h2>Element Transitions</h2>
+        <h2>CSS Element Transitions</h2>
 
         <p>As of the 0.9.0 release, Intercooler allows you to use CSS 3 transitions to animate content swaps. It does
           this by adding the <code>ic-transitioning</code> class to the <em>target element</em> that is about to be

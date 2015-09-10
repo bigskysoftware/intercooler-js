@@ -42,9 +42,10 @@ layout: default
               url : "/click",
               response: function (settings) {
                 clicks++;
-                if (clicks == 5) {
+                if (clicks >= 5) {
                   this.headers = {'X-IC-Redirect' : "/docs.html"};
-                } if (clicks == 4) {
+                  this.responseText = "";
+                } else if (clicks == 4) {
                   this.responseText = "<span>OK, enough clicking...  Check out the docs?</span>";
                 } else {
                   this.responseText = '<span>You clicked me ' + clicks + ' times...</span>';
@@ -53,7 +54,16 @@ layout: default
             });
           })()
         </script>
-        <a class="btn btn-primary" ic-post-to="/click"><span>Click Me!</span></a>
+        <style>
+          #intro-btn span {
+            transition: all .15s;
+          }
+          #intro-btn.ic-transitioning span {
+            opacity: 0;
+            font-size: 2px;
+          }
+        </style>
+        <a id="intro-btn" class="btn btn-primary" ic-transition-duration="250ms" ic-post-to="/click"><span>Click Me!</span></a>
       </div>
 
       <hr/>

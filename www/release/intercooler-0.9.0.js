@@ -700,7 +700,7 @@ var Intercooler = Intercooler || (function () {
 
   function parseAndApplyClass(classInfo, elt, operation) {
     var cssClass = "";
-    var delay = 10;
+    var delay = 50;
     if (classInfo.indexOf(":") > 0) {
       var split = classInfo.split(':');
       cssClass = split[0];
@@ -940,7 +940,6 @@ var Intercooler = Intercooler || (function () {
             maybeScrollToTarget(elt, target);
           }
         }
-        _history.updateHistory();
       };
 
       if(target.length == 0) {
@@ -955,7 +954,8 @@ var Intercooler = Intercooler || (function () {
         doSwap();
         setTimeout(function () {
           target.removeClass('ic-transitioning');
-        }, 5);
+          _history.updateHistory();
+        }, 20);
       }, delay);
     } else {
       log(elt, "Empty response, nothing to do here.", "DEBUG");
