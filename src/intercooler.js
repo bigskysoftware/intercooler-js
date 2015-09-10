@@ -210,7 +210,7 @@ var Intercooler = Intercooler || (function () {
     if (xhr.getResponseHeader("X-IC-Remove")) {
       if (elt) {
         target = getTarget(elt);
-        log(elt, "X-IC-REMOVE header found.", "DEBUG");
+        log(elt, "X-IC-Remove header found.", "DEBUG");
         remove(target);
       }
     }
