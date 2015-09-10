@@ -197,14 +197,23 @@ var Intercooler = Intercooler || (function () {
       window.open(xhr.getResponseHeader("X-IC-Open"));
     }
 
-    if (xhr.getResponseHeader("X-IC-Trigger")) {
-      log(elt, "X-IC-Trigger: found trigger " + xhr.getResponseHeader("X-IC-Trigger"), "DEBUG");
+    var triggerValue = xhr.getResponseHeader("X-IC-Trigger");
+    if (triggerValue) {
+      log(elt, "X-IC-Trigger: found trigger " + triggerValue, "DEBUG");
       target = getTarget(elt);
-      var triggerArgs = [];
+      // Deprecated API
       if (xhr.getResponseHeader("X-IC-Trigger-Data")) {
-        triggerArgs = $.parseJSON(xhr.getResponseHeader("X-IC-Trigger-Data"))
+        var triggerArgs = $.parseJSON(xhr.getResponseHeader("X-IC-Trigger-Data"));
+        target.trigger(triggerValue, triggerArgs);
+      } else {
+        if(triggerValue.indexOf("{") >= 0) {
+          $.each($.parseJSON(triggerValue), function(event, args) {
+            target.trigger(event, args);
+          });
+        } else {
+          target.trigger(triggerValue, []);
+        }
       }
-      target.trigger(xhr.getResponseHeader("X-IC-Trigger"), triggerArgs);
     }
 
     if (xhr.getResponseHeader("X-IC-Remove")) {

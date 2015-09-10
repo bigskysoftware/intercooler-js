@@ -78,6 +78,13 @@ nav: dependencies
       added to intercooler requests, to make it easier to dynamically determine which partial to render in response
       to a given url
     </li>
+    <li>
+      The <code>X-IC-Trigger-Data</code> has been deprecated.  The <code>X-IC-Trigger</code> attribute can now be
+      either a plain string for the event name, or a JSON object that satisfies the jQuery
+      <a href="http://api.jquery.com/jQuery.parseJSON/"><code>parseJSon()</code></a> requirements, where each property
+      is an event name to trigger, and the value of each property is an array of arguments to pass to that
+      event.
+    </li>
   </ul>
 
   <a class="anchor" id="0_4_10"></a>

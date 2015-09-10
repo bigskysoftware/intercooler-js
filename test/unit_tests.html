@@ -839,13 +839,13 @@
     var obj = null;
     intercoolerTest("IC-Trigger Header With Array Args",
       function () {
-        $('body').on('trigger_test_2', function (e, a1, a2, a3) {
+        $('body').on('trigger_test_3', function (e, a1, a2, a3) {
           obj = a3;
         });
         $.mockjax({
           url: "/ic_header_3",
           'headers': {
-            'X-IC-Trigger': 'trigger_test_2',
+            'X-IC-Trigger': 'trigger_test_3',
             'X-IC-Trigger-Data': '[1, 2, 3]'
           }
         });
@@ -853,6 +853,34 @@
       },
       function (assert) {
         assert.equal(3, obj);
+      });
+  })();
+</script>
+
+<span id="header_4" ic-post-to="/ic_header_4"></span>
+<script>
+  (function () {
+    var obj = null;
+    var obj2 = null;
+    intercoolerTest("IC-Trigger with JSON objects",
+      function () {
+        $('body').on('trigger_test_4', function (e, a1, a2, a3) {
+          obj = a3;
+        });
+        $('body').on('trigger_test_5', function (e, a1, a2, a3) {
+          obj2 = a3;
+        });
+        $.mockjax({
+          url: "/ic_header_4",
+          'headers': {
+            'X-IC-Trigger': '{"trigger_test_4":[1, 2, 3], "trigger_test_5": [1, 2, 3]}'
+          }
+        });
+        $("#header_4").click();
+      },
+      function (assert) {
+        assert.equal(3, obj);
+        assert.equal(3, obj2);
       });
   })();
 </script>
