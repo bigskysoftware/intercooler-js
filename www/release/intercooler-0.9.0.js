@@ -361,7 +361,11 @@ var Intercooler = Intercooler || (function () {
         log(elt, "AJAX request " + requestId + " completed in " + (new Date() - requestStart) + "ms", "DEBUG");
         requestCleanup(indicator, elt);
         try {
-          $('body').trigger("complete.ic", [elt, data, status, xhr, requestId]);
+          if ($.contains(document, elt[0])) {
+            $(elt).trigger("complete.ic", [elt, data, status, xhr, requestId]);
+          } else {
+            $('body').trigger("complete.ic", [elt, data, status, xhr, requestId]);
+          }
         } catch (e) {
           log(elt, "Error during complete.ic event for " + requestId + " : " + formatError(e), "ERROR");
         }

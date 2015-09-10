@@ -33,7 +33,7 @@
     </tr>
     <tr>
       <td>
-        <code>beforeSend.ic(evt, elt, data, settings, xhr)</code>
+        <code>beforeSend.ic(evt, elt, data, settings, xhr, requestId)</code>
       </td>
       <td>
         Triggered before sending an intercooler AJAX request to the server. The second argument to the event is
@@ -42,10 +42,18 @@
     </tr>
     <tr>
       <td>
-        <code>success.ic(evt, elt, data, textStatus, xhr)</code>
+        <code>success.ic(evt, elt, data, textStatus, xhr, requestId)</code>
       </td>
       <td>
         Triggered after a successful intercooler request is received
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>after.success.ic(evt, elt, data, textStatus, xhr, requestId)</code>
+      </td>
+      <td>
+        After headers are processed and the swapping mechanism has begun
       </td>
     </tr>
     <tr>
@@ -58,7 +66,7 @@
     </tr>
     <tr>
       <td>
-        <code>complete.ic(evt, elt, data, status, xhr)</code>
+        <code>complete.ic(evt, elt, data, status, xhr, requestId)</code>
       </td>
       <td>
         Triggered after an intercooler request completes, regardless of status. This event is triggered on the
@@ -79,6 +87,31 @@
       </td>
       <td>
         Triggered when intercooler handles an onpopstate event. Triggered on the document body.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>elementAdded.ic(evt)</code>
+      </td>
+      <td>
+        Triggered on an element when it is processed by intercooler.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>pushUrl.ic(evt, target, data)</code>
+      </td>
+      <td>
+        Triggered when a URL is pushed
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>beforeHistorySnapshot.ic(evt, target)</code>
+      </td>
+      <td>
+        Triggered before a snapshot is taken for history.  Can be used to unwire javascript-based widgets that have
+        messed the DOM up after insert.
       </td>
     </tr>
   </tbody>
