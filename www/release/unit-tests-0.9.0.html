@@ -32,7 +32,8 @@
   <script>
     // clear out the intercooler library for blanket if we are in a coverage test
     if(location.search.indexOf("coverage") >= 0) {
-      Intercooler = null
+      Intercooler = null;
+      window.onpopstate = null;
     }
   </script>
   <script src="blanket.min.js"></script>
@@ -1520,6 +1521,85 @@
     function (assert) {
       assert.equal($('#ic-ignore-test').text(), "Ignored");
     });
+</script>
+
+<div id="remove-after-test" ic-post-to="/remove_after"></div>
+<script>
+  intercoolerTest("Test remove-after",
+    function (assert) {
+      $.mockjax({
+        url: "/remove_after",
+        responseText: "<div id='parent_remove_after'><div id='child_remove_after' ic-remove-after='1ms'></div></div>"
+      });
+      assert.equal($('#remove-after-test').text(), "");
+      $("#remove-after-test").click();
+    },
+    function (assert) {
+      assert.equal($('#parent_remove_after').length, 1);
+      assert.equal($('#child_remove_after').length, 0);
+    });
+</script>
+
+<div id="add-class-test" ic-post-to="/add_class"></div>
+<script>
+  intercoolerTest("Test ic-add-class",
+    function (assert) {
+      $.mockjax({
+        url: "/add_class",
+        responseText: "<div id='add_class_div' ic-add-class='classToAdd'></div>"
+      });
+      $("#add-class-test").click();
+    },
+    function (assert) {
+      assert.ok($('#add_class_div').hasClass("classToAdd"));
+    });
+</script>
+
+<div id="remove-class-test" ic-post-to="/remove_class"></div>
+<script>
+  intercoolerTest("Test ic-remove-class",
+    function (assert) {
+      $.mockjax({
+        url: "/remove_class",
+        responseText: "<div id='remove_class_div' class='classToRemove' ic-remove-class='classToRemove'></div>"
+      });
+      $("#remove-class-test").click();
+    },
+    function (assert) {
+      assert.ok(!$('#remove_class_div').hasClass("classToRemove"));
+    });
+</script>
+
+  <div id="local-transport-test" ic-local-X-IC-Trigger="foo">Bar</div>
+<div id="local-transport" ic-post-to="#local-transport-test"></div>
+<script>
+  intercoolerTest("Test local transport",
+    function (assert) {
+      assert.equal($('#local-transport').text(), "");
+      $("#local-transport").click();
+    },
+    function (assert) {
+      assert.equal($('#local-transport').text(), "Bar");
+    });
+</script>
+
+
+<script>
+  QUnit.test('Run initialization sets up pushstate', function (assert) {
+    window.onpopstate = null;
+    Intercooler._internal.init();
+    assert.notEqual(null, window.onpopstate);
+  });
+</script>
+
+<script>
+  QUnit.test('Deprecated methods work', function (assert) {
+    Intercooler.defaultTransition("foo");
+    Intercooler.defineTransition("foo");
+    Intercooler.addURLHandler("foo");
+    Intercooler.setRemote("foo");
+    assert.ok(true)
+  });
 </script>
 
 

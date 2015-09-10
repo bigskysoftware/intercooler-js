@@ -1102,7 +1102,11 @@ var Intercooler = Intercooler || (function () {
         storage.removeItem(keys[j]);
       }
       storage.removeItem(HISTORY_SUPPORT_SLOT);
-      historySupportData = null;
+      historySupportData = {
+        slotLimit : slotLimit,
+        historyVersion: historyVersion,
+        lruList: []
+      };
     }
 
     function updateLRUList(url) {
@@ -1127,6 +1131,7 @@ var Intercooler = Intercooler || (function () {
 
       // save history metadata
       storage.setItem(HISTORY_SUPPORT_SLOT, JSON.stringify(historySupportData));
+      return lruList;
     }
 
     function saveHistoryData(restorationData) {
@@ -1260,10 +1265,11 @@ var Intercooler = Intercooler || (function () {
       updateHistory : updateHistory,
       addPopStateHandler: addPopStateHandler,
       snapshotForHistory: snapshotForHistory,
-      internal : {
+      _internal : {
         addPopStateHandler: addPopStateHandler,
         supportData: supportData,
-        dumpLocalStorage: dumpLocalStorage
+        dumpLocalStorage: dumpLocalStorage,
+        updateLRUList: updateLRUList
       }
     }
   }
@@ -1331,15 +1337,19 @@ var Intercooler = Intercooler || (function () {
   // Bootstrap
   //============================================================
 
-  $(function () {
-    var elt = $('body');
-    processNodes(elt);
-    fireReadyStuff(elt);
-    _history.addPopStateHandler(window);
-    if (location.search && location.search.indexOf("ic-launch-debugger=true") >= 0) {
-      Intercooler.debug();
+    function init() {
+      var elt = $('body');
+      processNodes(elt);
+      fireReadyStuff(elt);
+      _history.addPopStateHandler(window);
+      if (location.search && location.search.indexOf("ic-launch-debugger=true") >= 0) {
+        Intercooler.debug();
+      }
     }
-  });
+
+    $(function () {
+      init();
+    });
 
   /* ===================================================
    * API
@@ -1363,6 +1373,9 @@ var Intercooler = Intercooler || (function () {
         .fail(function (jqxhr, settings, exception) {
           log($('body'), formatError(exception), "ERROR");
         });
+    },
+    _internal : {
+      init:init
     },
     /* ===================================================
      * Deprecated API
