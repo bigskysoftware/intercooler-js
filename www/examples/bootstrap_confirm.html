@@ -18,6 +18,24 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation. Click the "Source Code" tab to see the code.</p>
 
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          The <code>#confirm-me</code> div is wired into the bootstrap confirmation library via a standard
+          jQuery <code>click</code> event handler.  This div also has a standard <code>ic-post-to</code> declaration,
+          as well as an <code>ic-trigger-on</code> attribute which is set to the custom
+          <code>confirmed-by-user</code> event.
+        </li>
+        <li>
+          When the "Confirm" button is clicked on the bootstrap dialog, the <code>confirmed-by-user</code> event is
+          triggered on the <code>#confirm-me</code> div, triggering an intercooler request.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live

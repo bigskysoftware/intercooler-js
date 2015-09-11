@@ -19,6 +19,18 @@ nav: tutorial
 
       <ul>
         <li>
+          A div polls the <code>/poll</code> url every two seconds by using the
+          <a href="/attributes/ic-prepend-from.html"><code>ic-prepend-from</code></a> and
+          <a href="/attributes/ic-poll.html"><code>ic-poll</code></a> attributes, and prepends the results
+          into an inner div using the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute.
+        </li>
+        <li>
+          Two inner divs post to the server using the
+          <a href="/attributes/ic-target.html"><code>ic-post-to</code></a>
+          attribute.  The server either starts or stops polling by using the <code>X-IC-ResumePolling</code> or
+          <code>X-IC-CancelPolling</code> response headers, respectively.
         </li>
       </ul>
 

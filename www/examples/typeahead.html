@@ -22,6 +22,18 @@ nav: tutorial
       <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
         implementation. Click the "Source Code" tab to see the code.</p>
 
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          In the typeahead callback, invoke <code>Intercooler.triggerRequest()</code> on the element in question.
+          Rather than doing a content swap, pass in a handler that properly funnels the resulting JSON into the
+          typeahead callback.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
       <div>
         <ul class="demo-nav nav nav-pills">
           <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
