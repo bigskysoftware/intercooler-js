@@ -29,8 +29,8 @@ nav: tutorial
         <li>
           Two inner divs post to the server using the
           <a href="/attributes/ic-target.html"><code>ic-post-to</code></a>
-          attribute.  The server either starts or stops polling by using the <code>X-IC-ResumePolling</code> or
-          <code>X-IC-CancelPolling</code> response headers, respectively.
+          attribute and update their respective parent div.  The server either starts or stops polling by using
+          the <code>X-IC-ResumePolling</code> or <code>X-IC-CancelPolling</code> response headers, respectively.
         </li>
       </ul>
 
@@ -50,10 +50,10 @@ nav: tutorial
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="demo">
 
-  <div ic-prepend-from="/poll" ic-poll="2s" ic-target="#content">
-    <div>
-      <div class="btn btn-default" ic-post-to="/pause"><i class="fa fa-pause"></i></div>
-      <div class="btn btn-default" ic-post-to="/play"><i class="fa fa-play"></i></div>
+  <div ic-prepend-from="/poll" ic-poll="1s" ic-target="#content">
+    <div ic-target="this">
+      <div class="btn btn-default active" ic-post-to="/play"><i class="fa fa-play"></i></div>
+      <div class="btn btn-default" ic-post-to="/pause" ><i class="fa fa-pause"></i></div>
     </div>
     <div id="content" ic-limit-children="5">
     </div>
@@ -61,7 +61,7 @@ nav: tutorial
 
   <style>
     #content div {
-      transition: all 2s;
+      transition: all 3s;
     }
     #content div.flash-red {
       color: red;
@@ -81,13 +81,17 @@ nav: tutorial
         'url': '/pause',
         "headers": {
           "X-IC-CancelPolling": true
-        }
+        },
+        "responseText" : '<div class="btn btn-default" ic-post-to="/play"><i class="fa fa-play"></i></div>\
+                          <div class="btn btn-default active" ic-post-to="/pause" ><i class="fa fa-pause"></i></div>'
       });
       $.mockjax({
         'url': '/play',
         "headers": {
           "X-IC-ResumePolling": true
-        }
+        },
+        "responseText" : '<div class="btn btn-default active" ic-post-to="/play"><i class="fa fa-play"></i></div>\
+                          <div class="btn btn-default" ic-post-to="/pause" ><i class="fa fa-pause"></i></div>'
       });
     })();
   </script>
