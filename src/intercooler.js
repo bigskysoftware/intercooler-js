@@ -964,10 +964,19 @@ var Intercooler = Intercooler || (function () {
       var delay = getTransitionDuration(elt, target);
       target.addClass('ic-transitioning');
       setTimeout(function () {
-        doSwap();
+        try {
+          doSwap();
+        } catch(e) {
+          log(elt, "Error during content swaop : " + formatError(e), "ERROR");
+        }
         setTimeout(function () {
-          target.removeClass('ic-transitioning');
-          _history.updateHistory();
+          try {
+            target.removeClass('ic-transitioning');
+            _history.updateHistory();
+            target.trigger("complete_transition.ic", [target]);
+          } catch(e) {
+            log(elt, "Error during transition complete : " + formatError(e), "ERROR");
+          }
         }, 20);
       }, delay);
     } else {
