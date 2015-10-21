@@ -1376,6 +1376,7 @@ var Intercooler = Intercooler || (function () {
     verbFor: verbFor,
     isDependent: isDependent,
     getTarget: getTarget,
+    processHeaders: processHeaders,
     ready : function(readyHandler) {
       _readyHandlers.push(readyHandler);
     },
