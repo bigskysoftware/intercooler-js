@@ -357,6 +357,26 @@
   });
 </script>
 
+<script>
+  intercoolerTest("partial path elements do not indicate a dependency", function (assert) {
+    assert.ok(!Intercooler.isDependent("/model/aa", "/model/a"));
+    assert.ok(!Intercooler.isDependent("/model/a", "/model/aa"));
+  }, function(assert) {});
+</script>
+
+<script>
+  intercoolerTest("query string and hash arguments are stripped for dependency checks", function (assert) {
+    assert.ok(Intercooler.isDependent("/model/aa?1", "/model/aa?2"));
+    assert.ok(Intercooler.isDependent("/model/#1", "/model/#2"));
+  }, function(assert) {});
+</script>
+
+<script>
+  intercoolerTest("empty path elements are discarded for isDependent", function (assert) {
+    assert.ok(Intercooler.isDependent("/model/1", "//model//1/"));
+  }, function(assert) {});
+</script>
+
 <div id="ic-deps-div1" ic-src="/deps_test4" ic-deps="/deps_test5">Foo</div>
 <button id="ic-deps-btn1" ic-post-to="/deps_test5">Clicked</button>
 <script>

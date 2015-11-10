@@ -15,6 +15,28 @@ var Intercooler = Intercooler || (function () {
   var _UUID = 1;
   var _readyHandlers = [];
 
+  var _isDependentFunction = function(src, dest) {
+    if (!src || !dest)
+      return false;
+
+    // For two urls to be considered dependant, either one must contain all
+    // of the path arguments the other has, like so:
+    //  - chomp off everything after ? or #. This is a design decision, so this
+    //    function will fail to determine dependencies for sites that store
+    //    their model IDs in query/hash params. If your usecase is not covered
+    //    by this you need to implement this function yourself by overriding
+    //    Intercooler.setIsDependentFunction(function(src, dest) { return bool; });
+    //  - split by / to get the individual path elements, clear out empty values,
+    //    then simply compare them
+    var asrc  = src.split(/[\?#]/, 1)[0].split("/").
+                filter(function(e) { return e != ""; });
+    var adest = dest.split(/[\?#]/, 1)[0].split("/").
+                filter(function(e) { return e != ""; });
+
+    return adest.slice(0, asrc.length).join("/") == asrc.join("/") ||
+           asrc.slice(0, adest.length).join("/") == adest.join("/");
+  }
+
   //============================================================
   // Base Swap Definitions
   //============================================================
@@ -668,7 +690,7 @@ var Intercooler = Intercooler || (function () {
   }
 
   function isDependent(src, dest) {
-    return (src && dest) && (dest.indexOf(src) == 0 || src.indexOf(dest) == 0);
+    return !!_isDependentFunction(src, dest);
   }
 
   //============================================================----
@@ -1377,6 +1399,9 @@ var Intercooler = Intercooler || (function () {
     isDependent: isDependent,
     getTarget: getTarget,
     processHeaders: processHeaders,
+    setIsDependentFunction: function(func) {
+      _isDependentFunction = func;
+    },
     ready : function(readyHandler) {
       _readyHandlers.push(readyHandler);
     },
