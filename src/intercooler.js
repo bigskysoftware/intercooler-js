@@ -172,6 +172,8 @@ var Intercooler = Intercooler || (function () {
     } else if (targetValue && targetValue.indexOf('this.') != 0) {
       if (targetValue.indexOf('closest ') == 0) {
         return elt.closest(targetValue.substr(8));
+      } else if (targetValue.indexOf('find ') == 0) {
+        return elt.find(targetValue.substr(5));
       } else {
         return $(targetValue);
       }

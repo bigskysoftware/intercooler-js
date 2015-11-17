@@ -1030,6 +1030,25 @@
     });
 </script>
 
+<div>
+  <span id="find-test"></span>
+  <span id="find-test-btn" ic-post-to="/find_target_test" ic-target="find a">
+    <a id="find-a-link">Foo</a>
+  </span>
+</div>
+<script>
+  intercoolerTest("ic-target with a find expression works", function (assert) {
+      $.mockjax({
+        url: "/find_target_test",
+        responseText: '<a id="find-a-link">Bar</a>'
+      });
+      assert.equal($("#find-a-link").text(), "Foo");
+      $("#find-test-btn").click();
+    },
+    function (assert) {
+      assert.equal($("#find-a-link").text(), "Bar");
+    });
+</script>
 
 <div>
   <span id="delay-test1" ic-post-to="/ic_delay_test1" ic-trigger-delay="500ms">0</span>
