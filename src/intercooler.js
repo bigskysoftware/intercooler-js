@@ -282,7 +282,7 @@ var Intercooler = Intercooler || (function () {
     if (regex.test(data)) {
       return data.replace(regex, content)
     } else {
-      return data + "&" + content;
+      return data + content;
     }
   }
 
@@ -1421,7 +1421,8 @@ var Intercooler = Intercooler || (function () {
         });
     },
     _internal : {
-      init:init
+      init:init,
+      replaceOrAddMethod:replaceOrAddMethod
     },
     /* ===================================================
      * Deprecated API

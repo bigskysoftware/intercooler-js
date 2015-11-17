@@ -1536,6 +1536,17 @@
   });
 </script>
 
+<script>
+  QUnit.test('Test replaceOrAddMethod', function (assert) {
+    assert.equal("foo=bar&_method=POST", Intercooler._internal.replaceOrAddMethod("foo=bar", "POST"));
+    assert.equal("&_method=POST", Intercooler._internal.replaceOrAddMethod("", "POST"));
+    assert.equal("foo=bar&_method=POST", Intercooler._internal.replaceOrAddMethod("foo=bar&_method=GET", "POST"));
+    assert.equal("&_method=POST&foo=bar", Intercooler._internal.replaceOrAddMethod("_method=GET&foo=bar", "POST"));
+    assert.equal("foo=bar&_method=POST&foo=bar", Intercooler._internal.replaceOrAddMethod("foo=bar&_method=GET&foo=bar", "POST"));
+    assert.equal("&_method=POST", Intercooler._internal.replaceOrAddMethod("_method=GET", "POST"));
+  });
+</script>
+
 
 </div>
 </body>
