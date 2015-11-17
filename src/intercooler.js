@@ -214,6 +214,13 @@ var Intercooler = Intercooler || (function () {
       startPolling(pollingElt);
     }
 
+    if (xhr.getResponseHeader("X-IC-SetPollInterval")) {
+      var pollingElt = $(elt).closest('[ic-poll]');
+      cancelPolling(pollingElt);
+      pollingElt.attr('ic-poll', xhr.getResponseHeader("X-IC-SetPollInterval"));
+      startPolling(pollingElt);
+    }
+
     if (xhr.getResponseHeader("X-IC-Open")) {
       log(elt, "X-IC-Open: opening " + xhr.getResponseHeader("X-IC-Open"), "DEBUG");
       window.open(xhr.getResponseHeader("X-IC-Open"));
