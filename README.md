@@ -46,10 +46,4 @@ This keeps changes from bleeding into one another and makes my life easier.
 
 ## Contributors
 
-* carsongross
-* matdrapeau
-* mindreframer
-* juggy
-* niv
-* coffeecodecouch
-* evilotto
+Thank you to [all the contributors](https://github.com/LeadDyno/intercooler-js/graphs/contributors) to intercooler!
