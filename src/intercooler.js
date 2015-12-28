@@ -33,6 +33,10 @@ var Intercooler = Intercooler || (function () {
     var adest = dest.split(/[\?#]/, 1)[0].split("/").
                 filter(function(e) { return e != ""; });
 
+    // ignore purely local tags (local transport)
+    if(asrc == "" || adest == "") {
+      return false;
+    }
     return adest.slice(0, asrc.length).join("/") == asrc.join("/") ||
            asrc.slice(0, adest.length).join("/") == adest.join("/");
   };
