@@ -1112,7 +1112,7 @@ var Intercooler = Intercooler || (function () {
   function invokeLocalAction(elt, actions) {
     var target = getTarget(elt);
     var actionArr = actions.split(";").reverse();
-    var lastAction = null;
+    var lastAction = function(){};
     var delayedActions = [];
     $.each(actionArr, function (i, actionStr) {
       var actionDef = $.trim(actionStr);
@@ -1127,7 +1127,10 @@ var Intercooler = Intercooler || (function () {
       actionArgs.push(lastAction);
       var applyAction = makeApplyAction(target, action, actionArgs);
 
-      if(action == "delay") {
+      if(action == "") {
+        delayedActions.unshift([0, lastAction]);
+        lastAction = function(){}; // push no-op
+      } else if(action == "delay") {
         delayedActions.unshift([parseInterval(actionArgs[0] + ""), lastAction]);
         lastAction = function(){}; // push no-op
       } else {
@@ -1156,7 +1159,7 @@ var Intercooler = Intercooler || (function () {
       if(func) {
         func.apply(target, args);
       } else {
-        log(target, "Action" + action + " was not found", "ERROR");
+        log(target, "Action " + action + " was not found", "ERROR");
       }
     };
   }
