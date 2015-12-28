@@ -4,65 +4,6 @@
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="../src/intercooler.js"></script>
     <script type="text/javascript" src="jquery.mockjax.js"></script>
-    <script type="text/javascript" src="http://pieroxy.net/lzstring/lz-string-1.3.5.js"></script>
-    <script type="text/javascript">
-      function genIt(i) {
-
-        //----------------------------
-        //  Variables
-        //----------------------------
-        var int = i > 0 ? i : 0;
-
-        //----------------------------
-        //  Init
-        //----------------------------
-
-        //----------------------------
-        //  Functions
-        //----------------------------
-        function increment(){
-          i++;
-        }
-
-        function incrementAndGet() {
-          increment();
-          return i;
-        }
-
-        //----------------------------
-        //  API
-        //----------------------------
-        return {
-          increment:increment,
-          incrementAndGet:incrementAndGet
-        }
-      }
-
-      $(function(){
-        $('html').on('log.ic', function(evt, msg, level) {
-          console.log(level + ": " + msg);
-        });
-      });
-    </script>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <style>
-      button.ic-transitioning * {
-        opacity:0;
-        transition:opacity 200ms ease-out;
-      }
-      button * {
-        opacity:1;
-        transition:opacity 200ms ease-in;
-      }
-      .fa-spinner.ic-use-transition {
-        opacity:0;
-        transition:opacity 400ms ease-out;
-      }
-      .fa-spinner {
-        opacity:1;
-        transition:opacity 1s ease-out;
-      }
-    </style>
   </head>
   <body id="body" ic-history-target="#body">
     <script>
@@ -82,7 +23,30 @@
         Click Me
        <i class='fa fa-spinner fa-spin ic-indicator ic-use-transition'></i>
       </span>
-    </button>
+    </button><br/>
+
+    <style>
+      .fade-hide {
+        opacity: 0;
+        transition: all 1s ease;
+      }
+      .red {
+        color: red;
+        transition: all 1s ease;
+      }
+    </style>
+
+    <button ic-action="addClass:fade-hide; delay:1s; remove" ic-target="#demo-div">Click Me 1!</button><br/>
+    <button ic-action="addClass:red; delay:1s; remove" ic-target="#demo-div">Click Me 2!</button><br/>
+    <button ic-action="fadeOut; remove" ic-target="#demo-div">Click Me 3!</button><br/>
+    <button ic-action="slideUp; remove" ic-target="#demo-div">Click Me 4!</button><br/>
+    <button ic-action="slideToggle" ic-target="#demo-div">Click Me 5!</button><br/>
+    <button ic-action="toggleClass:red" ic-target="#demo-div">Click Me 6!</button><br/>
+    <button onclick="$('#demo-div').toggleClass('red');">Click Me 6!</button><br/>
+
+    <div id="demo-div">
+      <h1>Hello World...</h1>
+    </div>
 
   </body>
 </html>
