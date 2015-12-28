@@ -1566,6 +1566,34 @@
   });
 </script>
 
+<button id="ica-btn-1" ic-action="addClass:ic-apply1">ic-apply-button</button>
+<button id="ica-btn-2" ic-action="addClass:ic-apply1;delay:10ms;addClass:ic-apply2">ic-apply-button</button>
+<button id="ica-btn-3" ic-action="fadeOut:10;addClass:ic-apply1">ic-apply-button</button>
+
+<script>
+  QUnit.test('Test ic-action', function (assert) {
+    var done = assert.async();
+
+    $('#ica-btn-1').click();
+    $('#ica-btn-2').click();
+    $('#ica-btn-3').click();
+    $('#ica-btn-4').click();
+
+    assert.ok($('#ica-btn-1').is(".ic-apply1"));
+    assert.ok($('#ica-btn-2').is(".ic-apply1"));
+    assert.ok(!$('#ica-btn-3').is(".ic-apply1"));
+    assert.ok(!$('#ica-btn-4').is(".ic-apply1"));
+
+    setTimeout(function () {
+      assert.ok($('#ica-btn-1').is(".ic-apply1"));
+      assert.ok($('#ica-btn-2').is(".ic-apply1"));
+      assert.ok($('#ica-btn-2').is(".ic-apply2"));
+      assert.ok($('#ica-btn-3').is(".ic-apply1"));
+      done();
+    }, 50);
+  });
+</script>
+
 
 </div>
 </body>

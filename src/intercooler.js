@@ -10,7 +10,7 @@ var Intercooler = Intercooler || (function () {
   // Vars
   //--------------------------------------------------
   var _MACROS = ['ic-get-from', 'ic-post-to', 'ic-put-to', 'ic-patch-to', 'ic-delete-from',
-    'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from'];
+    'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from', 'ic-action'];
   var _scrollHandler = null;
   var _UUID = 1;
   var _readyHandlers = [];
@@ -35,7 +35,7 @@ var Intercooler = Intercooler || (function () {
 
     return adest.slice(0, asrc.length).join("/") == asrc.join("/") ||
            asrc.slice(0, adest.length).join("/") == adest.join("/");
-  }
+  };
 
   //============================================================
   // Base Swap Definitions
@@ -854,6 +854,10 @@ var Intercooler = Intercooler || (function () {
       setIfAbsent(elt, 'ic-trigger-on', 'default');
       setIfAbsent(elt, 'ic-deps', 'ignore');
     }
+    if (macro == 'ic-action') {
+      setIfAbsent(elt, 'ic-trigger-on', 'default');
+    }
+
     // non-action attributes
     var value = null;
     var url = null;
@@ -1046,7 +1050,7 @@ var Intercooler = Intercooler || (function () {
   function fireICRequest(elt, alternateHandler) {
 
     var triggerOrigin = elt;
-    if (!elt.is('[ic-src]')) {
+    if (!elt.is('[ic-src]') && elt.attr('ic-action') == undefined) {
       elt = elt.closest('[ic-src]');
     }
 
@@ -1072,21 +1076,27 @@ var Intercooler = Intercooler || (function () {
           var styleTarget = getStyleTarget(elt);
           var attrTarget = styleTarget ? null : getAttrTarget(elt);
           var verb = verbFor(elt);
-
-          var success = alternateHandler || function (data) {
-              if (styleTarget) {
-                elt.css(styleTarget, data);
-              } else if (attrTarget) {
-                elt.attr(attrTarget, data);
-              } else {
-                processICResponse(data, elt);
-                if (verb != 'GET') {
-                  refreshDependencies(elt.attr('ic-src'), elt);
+          var url = elt.attr('ic-src');
+          if(url) {
+            var success = alternateHandler || function (data) {
+                if (styleTarget) {
+                  elt.css(styleTarget, data);
+                } else if (attrTarget) {
+                  elt.attr(attrTarget, data);
+                } else {
+                  processICResponse(data, elt);
+                  if (verb != 'GET') {
+                    refreshDependencies(elt.attr('ic-src'), elt);
+                  }
                 }
-              }
-            };
+              };
+            handleRemoteRequest(elt, verb, url, getParametersForElement(verb, elt, triggerOrigin), success);
+          }
 
-          handleRemoteRequest(elt, verb, elt.attr('ic-src'), getParametersForElement(verb, elt, triggerOrigin), success);
+          var actions = elt.attr('ic-action');
+          if(actions) {
+            invokeLocalAction(elt, actions);
+          }
         }
       };
 
@@ -1099,7 +1109,59 @@ var Intercooler = Intercooler || (function () {
     }
   }
 
-  //============================================================
+  function invokeLocalAction(elt, actions) {
+    var target = getTarget(elt);
+    var actionArr = actions.split(";").reverse();
+    var lastAction = null;
+    var delayedActions = [];
+    $.each(actionArr, function (i, actionStr) {
+      var actionDef = $.trim(actionStr);
+      var action = actionDef;
+      var actionArgs = [];
+      if(actionDef.indexOf(":") > 0) {
+        action = actionDef.substr(0, actionDef.indexOf(":"));
+        actionArgs = computeArgs(actionDef.substr(actionDef.indexOf(":") + 1, actionDef.length));
+      }
+
+      // push the last action as a argument to this one
+      actionArgs.push(lastAction);
+      var applyAction = makeApplyAction(target, action, actionArgs);
+
+      if(action == "delay") {
+        delayedActions.unshift([parseInterval(actionArgs[0] + ""), lastAction]);
+        lastAction = function(){}; // push no-op
+      } else {
+        lastAction = applyAction
+      }
+    });
+    lastAction();
+    var delay = 0;
+    $.each(delayedActions, function(i, action){
+      delay += action[0];
+      setTimeout(action[1], delay);
+    });
+  }
+
+  function computeArgs(args){
+    try {
+      return eval("[" + args + "]")
+    } catch(e) {
+      return [$.trim(args)];
+    }
+  }
+
+  function makeApplyAction(target, action, args) {
+    return function () {
+      var func = target[action];
+      if(func) {
+        func.apply(target, args);
+      } else {
+        log(target, "Action " + action + " was not found", "ERROR");
+      }
+    };
+  }
+
+    //============================================================
   // History Support
   //============================================================
 
