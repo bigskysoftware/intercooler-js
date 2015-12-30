@@ -283,12 +283,17 @@ var Intercooler = Intercooler || (function () {
   }
 
   function replaceOrAddMethod(data, actualMethod) {
-    var regex = /(&|^)_method=[^&]*/;
-    var content = "&_method=" + actualMethod;
-    if (regex.test(data)) {
-      return data.replace(regex, content)
+    if($.type( data ) === "string") {
+      var regex = /(&|^)_method=[^&]*/;
+      var content = "&_method=" + actualMethod;
+      if (regex.test(data)) {
+        return data.replace(regex, content)
+      } else {
+        return data + content;
+      }
     } else {
-      return data + content;
+      data.append("_method", actualMethod);
+      return data;
     }
   }
 
@@ -331,7 +336,7 @@ var Intercooler = Intercooler || (function () {
     var requestStart = new Date();
     var actualRequestType = type == 'GET' ? 'GET' : 'POST';
 
-    $.ajax({
+    var ajaxSetup = {
       type: actualRequestType,
       url: url,
       data: data,
@@ -409,7 +414,13 @@ var Intercooler = Intercooler || (function () {
           globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
         }
       }
-    })
+    };
+    if($.type(data) != "string"){
+      ajaxSetup.dataType = null;
+      ajaxSetup.processData = false;
+      ajaxSetup.contentType = false;
+    }
+    $.ajax(ajaxSetup)
   }
 
   function findIndicator(elt) {
@@ -432,69 +443,88 @@ var Intercooler = Intercooler || (function () {
     return indicator;
   }
 
-  function processIncludes(str) {
-    var returnString = "";
+  function processIncludes(data, str) {
     if ($.trim(str).indexOf("{") == 0) {
       var obj = $.parseJSON(str);
-      $.each(obj, function (key, value) {
-        returnString += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(value);
+      $.each(obj, function (name, value) {
+        data = appendData(data, name, value);
       });
     } else {
       $(str).each(function () {
-        returnString += "&" + $(this).serialize();
+        var obj = $(this).serializeArray();
+        $.each(obj, function (i, input) {
+          data = appendData(data, input.name, input.value);
+        });
       });
     }
-    return returnString;
+    return data;
+  }
+
+  function appendData(data, string, value) {
+    if($.type( data ) === "string") {
+      return data + "&" + string + "=" + encodeURIComponent(value);
+    } else {
+      data.append(string, value);
+      return data;
+    }
   }
 
   function getParametersForElement(verb, elt, triggerOrigin) {
     var target = getTarget(elt);
-    var str = "ic-request=true";
+    var data = null;
 
-    // if the element is in a form, include the entire form
-    if (verb != "GET" && elt.closest('form').length > 0) {
-      str += "&" + elt.closest('form').serialize();
-    } else { // otherwise include the element
-      str += "&" + elt.serialize();
+    if(elt.is('form') && elt.attr('enctype') == 'multipart/form-data') {
+      data = new FormData(elt[0]);
+      data = appendData(data, 'ic-request', true);
+    } else {
+      data = "ic-request=true";
+      // if the element is in a form, include the entire form
+      if (verb != "GET" && elt.closest('form').length > 0) {
+        data += "&" + elt.closest('form').serialize();
+      } else { // otherwise include the element
+        data += "&" + elt.serialize();
+      }
     }
 
     var promptText = closestAttrValue(elt, 'ic-prompt');
     if(promptText) {
       var promptVal = prompt(promptText);
-      str += "&ic-prompt-value=" + encodeURIComponent(promptVal);
+      data = appendData(data, 'ic-prompt-value', promptVal);
     }
 
     if (elt.attr('id')) {
-      str += "&ic-element-id=" + elt.attr('id');
+      data = appendData(data, 'ic-element-id', elt.attr('id'));
     }
     if (elt.attr('name')) {
-      str += "&ic-element-name=" + elt.attr('name');
+      data = appendData(data, 'ic-element-name', elt.attr('name'));
     }
     if (target.attr('ic-id')) {
-      str += "&ic-id=" + target.attr('ic-id');
+      data = appendData(data, 'ic-id', target.attr('ic-id'));
     }
     if (target.attr('id')) {
-      str += "&ic-target-id=" + target.attr('id');
+      data = appendData(data, 'ic-target-id', target.attr('id'));
     }
     if (triggerOrigin && triggerOrigin.attr('id')) {
-      str += "&ic-trigger-id=" + triggerOrigin.attr('id');
+      data = appendData(data, 'ic-trigger-id', triggerOrigin.attr('id'));
     }
     if (triggerOrigin && triggerOrigin.attr('name')) {
-      str += "&ic-trigger-name=" + triggerOrigin.attr('name');
+      data = appendData(data, 'ic-trigger-name', triggerOrigin.attr('name'));
     }
     if (target.data('ic-last-refresh')) {
-      str += "&ic-last-refresh=" + target.data('ic-last-refresh');
+      data = appendData(data, 'ic-last-refresh', target.data('ic-last-refresh'));
     }
     var includeAttr = closestAttrValue(elt, 'ic-include');
     if (includeAttr) {
-      str += processIncludes(includeAttr);
+      data = processIncludes(data, includeAttr);
     }
     $('[ic-global-include]').each(function() {
-      str += processIncludes($(this).attr('ic-global-include'));
+      data = processIncludes(data, $(this).attr('ic-global-include'));
     });
-    str += "&ic-current-url=" + encodeURIComponent(currentUrl());
-    log(elt, "request parameters " + str, "DEBUG");
-    return str;
+    data = appendData(data, 'ic-current-url', currentUrl());
+
+    log(elt, "request parameters " + data, "DEBUG");
+
+    return data;
   }
 
   function maybeSetIntercoolerInfo(elt) {
@@ -1094,7 +1124,8 @@ var Intercooler = Intercooler || (function () {
                   }
                 }
               };
-            handleRemoteRequest(elt, verb, url, getParametersForElement(verb, elt, triggerOrigin), success);
+            var data = getParametersForElement(verb, elt, triggerOrigin);
+            handleRemoteRequest(elt, verb, url, data, success);
           }
 
           var actions = elt.attr('ic-action');
@@ -1168,7 +1199,7 @@ var Intercooler = Intercooler || (function () {
     };
   }
 
-    //============================================================
+  //============================================================
   // History Support
   //============================================================
 
@@ -1450,19 +1481,19 @@ var Intercooler = Intercooler || (function () {
   // Bootstrap
   //============================================================
 
-    function init() {
-      var elt = $('body');
-      processNodes(elt);
-      fireReadyStuff(elt);
-      _history.addPopStateHandler(window);
-      if (location.search && location.search.indexOf("ic-launch-debugger=true") >= 0) {
-        Intercooler.debug();
-      }
+  function init() {
+    var elt = $('body');
+    processNodes(elt);
+    fireReadyStuff(elt);
+    _history.addPopStateHandler(window);
+    if (location.search && location.search.indexOf("ic-launch-debugger=true") >= 0) {
+      Intercooler.debug();
     }
+  }
 
-    $(function () {
-      init();
-    });
+  $(function () {
+    init();
+  });
 
   /* ===================================================
    * API
