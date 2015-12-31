@@ -121,7 +121,7 @@ code {
 }
 
 section p {
-  margin: 20px 48px;
+  margin: 20px 32px;
 }
 
 section blockquote {
@@ -193,8 +193,11 @@ section table {
 }
 
 @media screen and (min-width: 0px) and (max-width: 992px) {
+  .jumbotron {
+    padding: 20px;
+  }
   .jumbotron h1, .jumbotron .h1 {
-    font-size: 40px;
+    font-size: 32px;
   }
   .toc{
     display: none;
@@ -203,6 +206,9 @@ section table {
     display: block !important;
     max-width: 70%;
     margin: 8px auto;
+  }
+  section p {
+    margin: 20px 4px;
   }
 }
 
