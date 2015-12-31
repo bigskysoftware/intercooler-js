@@ -1,0 +1,30 @@
+---
+layout: default
+nav: blog
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+
+      <h1>You, Sir, Are Doing It Wrong...<br/> <small><em>The Intercooler Blog</em></small></h1>
+      <hr/>
+
+      <ul class="list-unstyled">
+        {% for post in site.posts %}
+        <li>
+          <p>
+            <h4><a href="{{ post.url }}">{{ post.title }} - <em>{{ post.date | date: "%-d %B %Y" }}</em></a></h4>
+            <blockquote>
+          {{ post.excerpt }}
+            </blockquote>
+          </p>
+        </li>
+        {% endfor %}
+      </ul>
+
+    </div>
+  </div>
+</div>
