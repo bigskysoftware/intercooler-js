@@ -33,9 +33,9 @@ commitment to the library.
 
 ### Security
 
-I don't see this discussed much, buy the client-side browser environment is *not* a secure environment, despite how it 
-is treated by many people.  All data from a browser environment should be verified on the server side and I would argue 
-you should be worried about domain logic *even executing* in an environment as chaotic and open as a browser.
+I don't see this discussed much, buy the client-side browser environment is *not* a trusted execution environment.  All 
+data from a browser environment should be verified on the server side and I would argue 
+you should be worried about domain logic *even executing* in an execution environment as chaotic and open as a browser.
 
 An application built in intercooler keeps domain logic on the server side, in a 
 [trusted](http://www.quickmeme.com/img/2a/2afb26e85dbd25d09c0275c619d04519e2b58d145e9a8b330935fdde74dab27b.jpg), secure environment.
@@ -79,7 +79,7 @@ Intercooler [standardizes the application of classes during AJAX requests and du
 making CSS transitions easy to wire in without explicit javascript.  Additionally, intercooler [provides tools](/docs.html#client-side) for declarative 
 manipulation of classes based on timing or events.
 
-All of this makes working with CSS transitions both intuitive and easy.
+All of this makes working with CSS transitions both intuitive and [easy](http://cdn.meme.am/instances/52877562.jpg).
 
 ### Conclusion
 
