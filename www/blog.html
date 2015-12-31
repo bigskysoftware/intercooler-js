@@ -16,7 +16,7 @@ nav: blog
         {% for post in site.posts %}
         <li>
           <p>
-            <h4><a href="{{ post.url }}">{{ post.title }} - <em>{{ post.date | date: "%-d %B %Y" }}</em></a></h4>
+            <h3><a href="{{ post.url }}">{{ post.title }} - <em>{{ post.date | date: "%-d %B %Y" }}</em></a></h3>
             <blockquote>
           {{ post.excerpt }}
             </blockquote>
