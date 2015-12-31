@@ -34,7 +34,7 @@ into an existing application easily, without making a huge commitment to the lib
 
 ### Security
 
-I don't see this discussed much, buy the client-side browser is *not* a trusted execution environment.  All 
+I don't see this discussed much, but the client-side browser is *not* a trusted execution environment.  All 
 data from a browser environment should be verified on the server side, of course, and I would argue 
 you should be concerned about domain logic *even being run* in an execution environment as chaotic and open as a browser.
 
@@ -88,7 +88,7 @@ Intercooler can be [deceptively simple](https://bodhitreepose.files.wordpress.co
 you can build advanced interfaces in it using modern browser features like CSS3 transitions, HTTP headers, extended HTTP actions,
 hierarchical dependencies, and DOM events, to name just a few.  It is also quite fun, once you get the hang of it.
 
-So, unfit citizens of web development, heed my instructions: you should take a hard look at intercooler in 2016.  It might 
+So, unfit citizens of web development, you must heed my instructions: take a look at intercooler in 2016.  It might 
 not be right [for every project](https://fir.sh/projects/jsnes/), but it would be a great alternative for many of them.
 
 <center>
