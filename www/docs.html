@@ -112,7 +112,7 @@ nav: docs
 
       <pre style="width:90%">
   &lt;script src="https://code.jquery.com/jquery-1.10.2.min.js">&lt;/script>
-  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-0.9.1.min.js">&lt;/script>
+  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-0.9.2.min.js">&lt;/script>
       </pre>
 
         <p>If you are using <a href="http://bower.io/">Bower</a>, the package name for Intercooler is
@@ -361,6 +361,17 @@ nav: docs
           </form>
           <span id="form-target">Submit the form above...</span>
         </div>
+
+        <h3>File Uploads</h3>
+
+        <p>File uploads can be accomplished with intercooler by adding the <code>enctype='multipart/form-data'</code>
+        to a form that is set up to submit via intercooler.  When intercooler detects this, it will use the
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects"><code>FormData</code></a> object
+        for creating the request, which will include any file inputs.</p>
+
+        <p>Note that <code>FormData</code> is only available as of IE10.  Also be aware that sub-elements within the form
+        that trigger their own AJAX requests (e.g. an input that triggers on change) will <b>not</b> be submitted as
+        <code>multipart/form-data</code> requests, and will therefore not include any files.</p>
 
       </section>
 

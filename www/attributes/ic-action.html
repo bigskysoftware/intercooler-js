@@ -35,20 +35,16 @@ nav: attributes > ic-action
         for example, to give a CSS transition time to complete before executing another action.
       </p>
 
-      <p>If two commands are chained with no <code>delay</code> command between them, the second command will be
-      passed into the first as a completion callback.  This can be used to properly chain jQuery actions such as
-      <code>fadeOut</code> with <code>remove</code></p>
-
-      <p>If you wish for two adjacent commands to execute simultaneously, you can use a double
-         semi-colon to split them.</p>
+      <p>Each command will be executed with a 420ms delay between them, unless otherwise specified by a <code>delay</code>
+      command. (420 milliseconds is a bit longer than the standard jQuery animation time.)</p>
 
       <h3>Why Not Just Use jQuery handlers?  Or <code>onclick</code>?</h3>
 
       <p>This command syntax allows you to execute client side code using a declarative syntax and leveraging the
       existing intercooler attirbutes (e.g. <code>ic-target</code>, <code>ic-confirm</code>, etc.)</p>
 
-      <p>It is more expressive than regular javascript, supporting both delays and callbacks with linear, declarative
-      commands, rather than requiring complex expressions.</p>
+      <p>It is more expressive than regular javascript, supporting linear, declarative commands, rather than requiring
+        complex expressions.</p>
 
       <p>It does not handle all UX cases, of course, but does allow you to capture many common UI/UX needs using a small
       and simple syntax.</p>

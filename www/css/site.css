@@ -194,7 +194,7 @@ section table {
 
 @media screen and (min-width: 0px) and (max-width: 992px) {
   .jumbotron {
-    padding: 20px;
+    padding: 12px !important;
   }
   .jumbotron h1, .jumbotron .h1 {
     font-size: 32px;
