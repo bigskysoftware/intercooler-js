@@ -5,7 +5,7 @@ nav: blog
 
 Intercooler is a funny sort of javascript library - when you use it, you often don't end up writing all that much javascript.  
 Because of this, people sometimes  dismiss it as [an older way](http://2.bp.blogspot.com/-KYftkSiFvq4/T9VUCZ1iAiI/AAAAAAAABz4/H3pOtXlT7Kk/s1600/clinteastwood.jpg)
-of building web applications, without digging into the libraries many interesting features or its 
+of building web applications, without digging into the library's many interesting features or its 
 [underlying philosophy](https://upload.wikimedia.org/wikipedia/commons/9/98/Sanzio_01_Plato_Aristotle.jpg).
 
 This is understandable: [life is short](https://austraalien.files.wordpress.com/2013/10/baby-yolo.jpg), the javascript 
