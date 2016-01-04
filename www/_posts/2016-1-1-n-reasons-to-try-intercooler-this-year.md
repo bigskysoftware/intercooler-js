@@ -56,7 +56,7 @@ in the server environment best for you.
 ### REST-ful Friendliness
 
 REST is somewhat controversial in development circles, particularly in the context of JSON APIs.  While I agree
-with many of the criticisms of REST for JSON APIs, it turns out that REST-ful styel thinking is *wonderful* when you are
+with many of the criticisms of REST for JSON APIs, it turns out that REST-ful style thinking is *wonderful* when you are
 designing web interfaces: it helps you produce clean, decoupled and stateless web applications that are easy to reason about and,
 therefore, easy to maintain.  
 
