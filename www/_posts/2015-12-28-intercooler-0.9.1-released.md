@@ -1,5 +1,5 @@
 ---
-layout: blog
+layout: blog_post
 nav: blog
 ---
 

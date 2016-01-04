@@ -1,5 +1,5 @@
 ---
-layout: blog
+layout: blog_post 
 nav: blog
 ---
 
@@ -82,15 +82,18 @@ for declarative manipulation of classes based on timing or events.
 
 All of this makes working with CSS transitions both intuitive and [easy](http://cdn.meme.am/instances/52877562.jpg).
 
+### Easy History Support
+
+Adding history and back-button support is literally as easy as [adding two attribute](/docs.html#history).  This means
+you can use nice, clean, copy-and-paste-able semantic URLs for your app. And because intercooler applications are stateless 
+on the client side (for the most part) a user can refresh a page and not lose everything.  Just like old times.
+
 ### Conclusion
 
 Intercooler can be [deceptively simple](https://bodhitreepose.files.wordpress.com/2014/06/bruce-lee-simplicity-is-the-key-2-brilliance.jpg): 
 you can build advanced interfaces in it using modern browser features like CSS3 transitions, HTTP headers, extended HTTP actions,
 hierarchical dependencies, and DOM events, to name just a few.  It is also quite fun, once you get the hang of it.
 
-So, unfit citizens of web development, you must heed my instructions: take a look at intercooler in 2016.  It might 
-not be right [for every project](https://fir.sh/projects/jsnes/), but it would be a great alternative for many of them.
-
-<center>
-<iframe width="400" height="280" src="https://www.youtube.com/embed/F_d4VDDfjpA" frameborder="0"></iframe>
-</center>
+So, [unfit citizens of web development](https://www.youtube.com/watch?v=F_d4VDDfjpA), heed my instruction: take a look 
+at intercooler in 2016.  It might not be right [for every project](https://fir.sh/projects/jsnes/), but it would be a 
+great alternative for many of them.
