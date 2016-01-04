@@ -84,7 +84,7 @@ All of this makes working with CSS transitions both intuitive and [easy](http://
 
 ### Easy History Support
 
-Adding history and back-button support is literally as easy as [adding two attribute](/docs.html#history).  This means
+Adding history and back-button support is literally as easy as [adding two attributes](/docs.html#history).  This means
 you can use nice, clean, copy-and-paste-able semantic URLs for your app. And because intercooler applications are stateless 
 on the client side (for the most part) a user can refresh a page and not lose everything.  Just like old times.
 
