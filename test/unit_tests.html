@@ -1546,16 +1546,6 @@
 </script>
 
 <script>
-  QUnit.test('Deprecated methods work', function (assert) {
-    Intercooler.defaultTransition("foo");
-    Intercooler.defineTransition("foo");
-    Intercooler.addURLHandler("foo");
-    Intercooler.setRemote("foo");
-    assert.ok(true)
-  });
-</script>
-
-<script>
   QUnit.test('Test replaceOrAddMethod', function (assert) {
     assert.equal("foo=bar&_method=POST", Intercooler._internal.replaceOrAddMethod("foo=bar", "POST"));
     assert.equal("&_method=POST", Intercooler._internal.replaceOrAddMethod("", "POST"));

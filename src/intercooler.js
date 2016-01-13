@@ -1558,21 +1558,6 @@ var Intercooler = Intercooler || (function() {
     _internal: {
       init: init,
       replaceOrAddMethod: replaceOrAddMethod
-    },
-    /* ===================================================
-     * Deprecated API
-     * =================================================== */
-    defaultTransition: function() {
-      log($('body'), "This method is no longer supported.  Transitions are now done via CSS", "ERROR");
-    },
-    defineTransition: function() {
-      log($('body'), "This method is no longer supported.  Transitions are now done via CSS", "ERROR");
-    },
-    addURLHandler: function() {
-      log($('body'), "This method is no longer supported.  Please use the jQuery mockjax plugin instead: https://github.com/jakerella/jquery-mockjax", "ERROR");
-    },
-    setRemote: function() {
-      log($('body'), "This method is no longer supported.  Please use the jQuery mockjax plugin instead: https://github.com/jakerella/jquery-mockjax", "ERROR");
     }
   }
 })();
