@@ -447,6 +447,9 @@ var Intercooler = Intercooler || (function() {
       ajaxSetup.processData = false;
       ajaxSetup.contentType = false;
     }
+
+    $(document).trigger("beforeAjaxSend.ic", ajaxSetup);
+
     $.ajax(ajaxSetup)
   }
 

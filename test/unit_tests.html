@@ -1625,6 +1625,29 @@
 </script>
 
 
+<button id="reqhandler-btn-1" ic-get-from="/reqhandler_start"></button>
+
+<script>
+  intercoolerTest("Test beforeAjaxSend.ic can modify ajax setup", function (assert) {
+
+      $(document).on("beforeAjaxSend.ic", function(evt, settings){
+        if(settings['url'] == "/reqhandler_start") {
+          settings['url'] = "/reqhandler_end"
+        }
+      });
+      $.mockjax({
+        url: "/reqhandler_end",
+        responseText: "foo"
+      });
+      $('#reqhandler-btn-1').click();
+    },
+    function (assert) {
+      assert.equal($("#reqhandler-btn-1").text(), "foo");
+    });
+</script>
+
+
+
 </div>
 </body>
 </html>
