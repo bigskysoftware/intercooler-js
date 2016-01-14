@@ -22,6 +22,43 @@
   <![endif]-->
 
   <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script>
+    var USE_DATA_ATTRS = location.search.indexOf("use-data-attr") >= 0;
+    function fixAttrName(name) {
+      if(USE_DATA_ATTRS) {
+        return "data-" + name;
+      } else {
+        return name;
+      }
+    }
+    if (USE_DATA_ATTRS) {
+      console.log("Switching to data");
+      $('head').append('<meta name="intercoolerjs:use-data-prefix" content="true"/>');
+      $(function() {
+        function addDataPrefix(elt) {
+          var attrs = elt[0].attributes;
+          for (var i = 0; i < attrs.length; i++) {
+            var attr = attrs[i];
+            var name = attr.name;
+            if (name.indexOf('ic-') == 0) {
+              elt.attr(fixAttrName(name), attr.value);
+            }
+          }
+          for (var i = 0; i < attrs.length; i++) {
+            var attr = attrs[i];
+            var name = attr.name;
+            if (name.indexOf('ic-') == 0) {
+              elt.removeAttr(name);
+            }
+          }
+        }
+
+        $('body').find('*').each(function() {
+          addDataPrefix($(this));
+        });
+      });
+    }
+  </script>
   <script src="https://code.jquery.com/qunit/qunit-1.16.0.js"></script>
   <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="../src/intercooler.js" data-cover></script>
@@ -98,6 +135,10 @@
   <p>New tests should follow the existing test templates, using
     the <code>intercoolerTest()</code> helper and <a href="https://github.com/jakerella/jquery-mockjax">mockjax</a> for
     mocking out AJAX requests.</p>
+
+  <p>
+    <a class="btn btn-primary" href="?use-data-attr=true">Run With data-* style attributes</a>
+  </p>
 </div>
 
 <hr/>
@@ -130,22 +171,22 @@
     <div id="ic-attr-src-div1" ic-attr-src="style:/attr-test-1"></div>
     <script>
       QUnit.test("IC attributes are set on elements", function (assert) {
-        assert.ok($('#ic-src-div1').attr('ic-id') != null, "Has ID");
+        assert.ok($('#ic-src-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
         assert.ok($('#ic-src-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
-        assert.ok($('#ic-post-to-div1').attr('ic-id') != null, "Has ID");
+        assert.ok($('#ic-post-to-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
         assert.ok($('#ic-post-to-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
-        assert.ok($('#ic-append-from-div1').attr('ic-id') != null, "Has ID");
+        assert.ok($('#ic-append-from-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
         assert.ok($('#ic-append-from-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
-        assert.ok($('#ic-prepend-from-div1').attr('ic-id') != null, "Has ID");
+        assert.ok($('#ic-prepend-from-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
         assert.ok($('#ic-prepend-from-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
-        assert.ok($('#ic-style-src-div1').attr('ic-id') != null, "Has ID");
+        assert.ok($('#ic-style-src-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
         assert.ok($('#ic-style-src-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
-        assert.ok($('#ic-attr-src-div1').attr('ic-id') != null, "Has ID");
+        assert.ok($('#ic-attr-src-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
         assert.ok($('#ic-attr-src-div1').data('ic-last-refresh') != null, "Has Last Refresh");
       });
     </script>
@@ -932,7 +973,7 @@
     function () {
       $.mockjax({
         url: "/child_wiring_test",
-        responseText: "<span id='child_wiring_test2' ic-post-to='/new_child_wiring_test'></span>"
+        responseText: "<span id='child_wiring_test2' " + fixAttrName("ic-post-to") + "='/new_child_wiring_test'></span>"
       });
       $.mockjax({
         url: "/new_child_wiring_test",
@@ -1482,7 +1523,7 @@
     function (assert) {
       $.mockjax({
         url: "/remove_after",
-        responseText: "<div id='parent_remove_after'><div id='child_remove_after' ic-remove-after='1ms'></div></div>"
+        responseText: "<div id='parent_remove_after'><div id='child_remove_after' " + fixAttrName("ic-remove-after") + "='1ms'></div></div>"
       });
       assert.equal($('#remove-after-test').text(), "");
       $("#remove-after-test").click();
@@ -1499,7 +1540,7 @@
     function (assert) {
       $.mockjax({
         url: "/add_class",
-        responseText: "<div id='add_class_div' ic-add-class='classToAdd'></div>"
+        responseText: "<div id='add_class_div' " + fixAttrName("ic-add-class") + "='classToAdd'></div>"
       });
       $("#add-class-test").click();
     },
@@ -1514,7 +1555,7 @@
     function (assert) {
       $.mockjax({
         url: "/remove_class",
-        responseText: "<div id='remove_class_div' class='classToRemove' ic-remove-class='classToRemove'></div>"
+        responseText: "<div id='remove_class_div' class='classToRemove' " + fixAttrName("ic-remove-class") + "='classToRemove'></div>"
       });
       $("#remove-class-test").click();
     },
@@ -1646,8 +1687,15 @@
     });
 </script>
 
-
-
+<script>
+  QUnit.test("If testing w/ data, assert there are data-* attributes", function (assert) {
+    if(USE_DATA_ATTRS) {
+      assert.ok($("[data-ic-target]").length > 0);
+    } else {
+      assert.ok($("[data-ic-target]").length == 0);
+    }
+  });
+</script>
 </div>
 </body>
 </html>
