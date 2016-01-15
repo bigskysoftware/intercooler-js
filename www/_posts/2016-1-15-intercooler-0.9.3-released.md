@@ -9,7 +9,7 @@ I have released intercooler v0.9.3, available on the main site, as well as throu
 
 Intercooler now supports for the `data-*` prefix on attributes via the `<meta name="intercoolerjs:use-data-prefix" content="true"/>` meta-tag.
 
-I also introduced the <code>beforeAjaxSend.ic</code>, which allows programmers to modify the setting hash passed
+I also introduced the <code>beforeAjaxSend.ic(event, settings)</code> event, which allows programmers to modify the setting hash passed
 to `$.ajax()` to do thinks like add headers, set content type, remove parameters, etc.
 
 Full release notes are here:
