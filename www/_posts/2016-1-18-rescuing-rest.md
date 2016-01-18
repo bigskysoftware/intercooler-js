@@ -69,7 +69,7 @@ whole scene, and simply tried to make things work.
 The second problem that eventually came to the fore, again almost exclusively in *JSON APIs*, was the confusion around HATEOS.  Today,
 if someone actually recognizes that acronym, there is a 50/50 chance they will recoil in disgust.  The acronym stands
 for [Hypermedia as the Engine of Application State](https://en.wikipedia.org/wiki/HATEOAS) and, in plain terms, it
-means that a REST-ful system should send both data *and the operations on that data* in responses to clients, so clients
+means that a REST-ful system should send both data *and the network operations on that data* in responses to clients, so clients
 don't need to know anything in advance of about the structure of the server.
 
 This actually makes loads of sense and, upon reflection, you will realize that this is *exactly how HTML works*: you
