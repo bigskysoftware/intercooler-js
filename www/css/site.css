@@ -125,7 +125,11 @@ section p {
 }
 
 section blockquote {
-  margin: 24px;
+  margin: 48px;
+}
+
+section blockquote p {
+  margin: 0;
 }
 
 section ul {
