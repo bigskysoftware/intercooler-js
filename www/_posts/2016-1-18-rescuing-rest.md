@@ -82,10 +82,11 @@ But, as we know, REST was being pushed for and adopted by JSON APIs.  JSON doesn
 forms, so it wasn't obvious what to do.  Some people started including representations of links 
 [encoded in the JSON itself](https://spring.io/understanding/HATEOAS), other people thought that 
 [using HTTP headers](https://www.w3.org/wiki/LinkHeader) was the right approach.  Lots of arguments were had and
-no one obvious and widely used solution emerged.
+no one obvious and widely used solution emerged.  Again, holy wars were waged, friendships were won and lost, and so on,
+ad internetum.
 
 Most normal developers dropped (or never understood) HATEOS in the JSON context anyway, so it didn't end up mattering 
-too much, *except, unfortunately, that it was the most innovative aspect of REST!*  
+too much, except that, unfortunately, *it was the most innovative aspect of REST!*  
 
 As the wikipedia page says:
 
@@ -112,9 +113,11 @@ a great raw data-level API architecture, and efforts like [GraphQL](https://face
 and RPC-like architectures are likely to end up producing something more usable for complicated data needs.  
 
 REST-ful JSON APIs can still be useful, of course, for simple cases where CRUD-style operations are sufficient.  But
-there is a reason that database vendors decided on something as powerful as SQL for describing data operations.  As JSON 
+there is a reason that database vendors decided on something as powerful as [SQL](https://en.wikipedia.org/wiki/SQL) for describing data operations.  As JSON 
 API needs approach the complexity of relational data-store needs, we should expect that infrastructure
 approximating the complexity of SQL will arise.
+
+The fact is, highly-stateful SPAs and REST will probably never mix well.
 
 ### A New Hope
 
@@ -123,36 +126,38 @@ approximating the complexity of SQL will arise.
 So, is there any hope for those of us who appreciate the original REST architecture?  Well, I wouldn't be writing this
 if I didn't think that there was, would I?
 
-And I believe that that hope can be found in our old friend, [HTML](https://en.wikipedia.org/wiki/HTML).
+And I believe that that hope can be found in our old friend: [HTML](https://en.wikipedia.org/wiki/HTML).
 
 In the last few years, a small number of libraries have come along that focus on the server providing HTML response to AJAX 
-requests.  As a rails developer, [pjax](https://github.com/defunkt/jquery-pjax) and [turbolinks](https://github.com/rails/turbolinks)
-are the ones that loom largest.  These libraries build on an older tradition, mainly from the jQuery world, of simply issuing
+requests.  
+
+As a Rails developer, [pjax](https://github.com/defunkt/jquery-pjax) and [turbolinks](https://github.com/rails/turbolinks)
+are the ones that loom largest.  These libraries built on an older tradition, mainly from the jQuery world, of simply issuing
 an AJAX request, getting back some HTML and slamming it into the DOM.
 
 #### Intercooler
 
 It is out of this tradition that [intercooler.js](http://intercoolerjs.org/) was born.  Intercooler began life as a single
-javascript function that, over time, grew into a library to support declarative, REST-style HTML applications.
+javascript function that, over time, grew into a full (if small) library to support declarative, REST-style HTML applications.
 
 As the [introduction](http://intercoolerjs.org/docs.html) points out, intercooler is a generalization of the link/form
 concept in HTML, for AJAX requests: it gives you control over the HTTP action, the user event that triggers the action and where the
 response is placed in the DOM, instead of forcing you into the click-on-link/submit-form pattern of plain HTML, all with
-declarative attributesj.
+declarative attributes.
 
 The beauty of this approach, if you wish to use a REST-ful architecture, is manifold: 
 
-First, it enables HATEOS in a dead simple and obvious manner, by allowing you to simply return HTML (your data) annotated 
-with the network actions appropriate for that data, using familiar attributes.
+First, it re-enables HATEOS in a dead simple and obvious manner, by allowing you to simply return HTML (your data) annotated 
+with the network actions appropriate for that data, using familiar HTML attributes.
 
-Second, intercooler addresses the shortcoming of standard HTMLs limited set of supported HTTP actions, so you can implement a
-rich REST-ful HTML API for your application.
+Second, intercooler addresses the shortcoming of standard HTML: a limited set of supported HTTP actions tied to only a few
+specific client events.  This allows you to implement a much richer REST-ful HTML API for your application than is usual.
 
 Third, all the tried-and true techniques and advantages of stateless web applications can be applied in your application.
 
-Intercooler supports [REST-ful dependencies](http://intercoolerjs.org/docs.html#dependencies), [transparent history](http://intercoolerjs.org/docs.html#history)
+And intercooler supports [REST-ful dependencies](http://intercoolerjs.org/docs.html#dependencies), [transparent history](http://intercoolerjs.org/docs.html#history)
 and many other features that allow you to stay within the REST-ful architecture, while providing a modern web 
-application experience for your users.
+application experience for users.
 
 #### Conclusio
 
@@ -162,8 +167,8 @@ original vision of the web, is to rescue and revive this architecture while, at 
 experience people have come to expect in web applications.
 
 [There is burgeoning recognition that web development is badly broken](https://medium.com/@wob/the-sad-state-of-web-development-1603a861d29f#.p54rj9jzq),
-so there is opportunity for us.  But we, the REST-ful, must provide both the tools and the theory to convince web developers to invest
-in and design for the REST-ful architectural style.
+so the opportunity is there.  But we, the REST-ful, must provide both the tools and the theory to convince web developers to 
+again invest in and design for the REST-ful architectural style.
 
 I hope that intercooler is a step in that direction.
 
