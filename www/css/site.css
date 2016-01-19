@@ -231,3 +231,17 @@ section {
 .blog-col {
   max-width: 768px;
 }
+
+.blog-summary {
+  margin-bottom: 24px;
+}
+
+.blog-summary div {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.blog-summary em {
+  border-bottom: 1px solid whitesmoke;
+}

@@ -1,27 +1,42 @@
 ---
 layout: blog_post
 nav: blog
-title: Rescuing REST
+title: Rescuing REST From the API Winter
 ---
+
+***TLDR***: REST is increasingly unfit for modern JSON API needs, but can be rescued by a return to HTML as the
+response format.
 
 ## In The Beginning
 
 > In the beginning was the hyperlink, and the hyperlink was with the web, and the hyperlink was the web.  And it was good.
 
 [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) is a description of the software
-architectural style of the web, originally put forward by [Roy Fielding](https://en.wikipedia.org/wiki/Roy_Fielding)
-in his [justifiably famous dissertation](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm).  Fielding's description 
-was a massive presence in the early thinking about the web, and in thinking about web applications in particular.  
-Every web developer eventually came across the term and, agree or disagree with this or that aspect of it, it provided 
+architectural style of the web, originally put forward by [Roy Fielding](https://en.wikipedia.org/wiki/Roy_Fielding) very
+early on in his [justifiably famous dissertation](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm).  Fielding's description 
+was a massive presence in the early thinking about the web, and in thinking about web applications in particular.  Every web 
+developer eventually came across the term and, agree or disagree with this or that aspect of it, it provided 
 a mental framework, many conventions and a vocabulary to use as we groped toward understanding how this new 
 software system should be used.
 
 Looking around today, one can only say that REST has fallen on hard times.  In this post I will examine why that is, and 
-then I will present what I hope is a way to rescue this architectural pattern, for those of us who find value in it.
+then I will present what I hope is a way to rescue this architectural pattern for use in the modern web.
 
 #### The Theory
 
-First, let us review the (claimed) advantages of the REST style of architecture.  From the Wikipedia article:
+First, let us review the core constraints imposed by REST, from the Wikipedia article:
+
+* A stateless client context on the server
+* Intermediary servers may cache results
+* A layered system of servers must be transparent to the client
+* Code may be provided on demand (optional, often ambiguous what exactly this means)
+* A uniform client-server interface that:
+    * provides identification for resources
+    * provides all information for manipulation of those resources
+    * provides self descriptive messages, minimizing client knowledge of the server state
+    * provides a complete description of possible actions (HATEOAS, see below)
+
+And here are the (claimed) advantages of the REST style of architecture.  Again, from the Wikipedia article:
 
 * Performance 
 * Scalability 
@@ -51,7 +66,7 @@ REST-ful JSON APIs were fairly easy to understand and use.
 
 But, underneath this initial success, lurked deep problems.  Problems that would, in time, come to the fore.
 
-#### The Haters &amp; HATEOS  
+#### The Haters &amp; HATEOAS  
 
 Of the many issues that eventually lead to the decline and fall of REST, I would like to focus on two: one mostly 
 cultural and one entirely technological, both related to the later adoption of REST for JSON APIs.
@@ -63,16 +78,17 @@ following REST-ful conventions, particularly when it comes to JSON APIs.
 
 This ambiguity and confusion provided fertile ground for the growth of what can be profitably though of as online 
 holy wars, with passionate zealots arguing with one another over what did and what did not constitute a 
-True REST-ful JSON API.  As usual, in as much as they were aware of it, moderates were typically confused and alienated by the 
-whole scene, and simply tried to make things work.
+True REST-ful JSON API.  As usual, in as much as they were aware of it, the moderate developers trying to get
+work done were confused and alienated by the whole scene, and simply tried to make things work.
 
-The second problem that eventually came to the fore, again almost exclusively in *JSON APIs*, was the confusion around HATEOS.  Today,
-if someone actually recognizes that acronym, there is a 50/50 chance they will recoil in disgust.  The acronym stands
-for [Hypermedia as the Engine of Application State](https://en.wikipedia.org/wiki/HATEOAS) and, in plain terms, it
+The second problem that eventually came to the fore, again almost exclusively in *JSON APIs*, was confusion around HATEOAS.  Today,
+if someone actually recognizes that acronym, there is a good chance that they will [recoil in disgust](https://www.jeffknupp.com/blog/2014/06/03/why-i-hate-hateoas/).  
+
+The acronym stands for [Hypermedia as the Engine of Application State](https://en.wikipedia.org/wiki/HATEOAS) and, in plain terms, it
 means that a REST-ful system should send both data *and the network operations on that data* in responses to clients, so clients
 don't need to know anything in advance of about the structure of the server.
 
-This actually makes loads of sense and, upon reflection, you will realize that this is *exactly how HTML works*: you
+This actually makes loads of sense and, upon reflection, you will realize that this is *exactly how the web and normal HTML works*: you
 get a page of HTML (data) and, embedded in that HTML, you have links and forms that tell you what you can do with
 that data.
 
@@ -85,28 +101,28 @@ forms, so it wasn't obvious what to do.  Some people started including represent
 no one obvious and widely used solution emerged.  Again, holy wars were waged, friendships were won and lost, and so on,
 ad internetum.
 
-Most normal developers dropped (or never understood) HATEOS in the JSON context anyway, so it didn't end up mattering 
-too much, except that, unfortunately, *it was the most innovative aspect of REST!*  
+Most normal developers dropped (or never really understood) HATEOAS in the JSON context anyway, so it didn't end up mattering 
+too much.  Except that, unfortunately, *it was the most important and innovative aspect of REST!*  
 
 As the wikipedia page says:
 
 > HATEOAS is a constraint of the REST application architecture that distinguishes it from most other network application architectures.
 
-Without HATEOS, REST is a collection of (very) good ideas on client-server layout, but not a revolutionary 
+Without HATEOAS, REST is just a collection of (very) good ideas on client-server layout, but not a revolutionary 
 architecture shift.
 
 ### The API Winter
 
 Artificial intelligence was a wildly popular area of research in early computer science.  After an auspicious
-beginning, however, it fell into what is called [The AI Winter](https://en.wikipedia.org/wiki/AI_winter), and it took
+beginning, however, it fell into what is called **[The AI Winter](https://en.wikipedia.org/wiki/AI_winter)**, and it took
 many decades to re-emerge as a prominent and useful field of research.  
  
-REST has also entered a winter, and, as with the AI Winter, Hype and its nemesis Disappointment figure large in this transition.
+REST has also entered a winter, and, as with AI, Hype and its nemesis Disappointment figure large in this transition.
 If its early association with "basic" web applications and their attendant usability issues weren't enough to
 turn developers off, it was the application of REST to (typically CRUD-style) JSON APIs that sealed RESTs fate.  
 
-So we are now living through REST's "API Winter", as most of the thought leaders in web development have abandoned the 
-concept entirely, and many younger developers may have never even heard of it.
+We are now living through REST's **"API Winter"**, as most of the thought leaders in web development have grown indifferent 
+towards or have abandoned the concept, and many younger developers have never heard of it except perhaps in passing.
 
 It's time to admit it: [the REST-haters are right](https://mmikowski.github.io/the_lie/).  REST does not make for
 a great raw data-level API architecture, and efforts like [GraphQL](https://facebook.github.io/react/blog/2015/05/01/graphql-introduction.html)
@@ -115,7 +131,7 @@ and RPC-like architectures are likely to end up producing something more usable 
 REST-ful JSON APIs can still be useful, of course, for simple cases where CRUD-style operations are sufficient.  But
 there is a reason that database vendors decided on something as powerful as [SQL](https://en.wikipedia.org/wiki/SQL) for describing data operations.  As JSON 
 API needs approach the complexity of relational data-store needs, we should expect that infrastructure
-approximating the complexity of SQL will arise.
+approximating the complexity of SQL will arise alongside those needs.
 
 The fact is, highly-stateful SPAs and REST will probably never mix well.
 
@@ -126,7 +142,7 @@ The fact is, highly-stateful SPAs and REST will probably never mix well.
 So, is there any hope for those of us who appreciate the original REST architecture?  Well, I wouldn't be writing this
 if I didn't think that there was, would I?
 
-And I believe that that hope can be found in our old friend: [HTML](https://en.wikipedia.org/wiki/HTML).
+And I believe that that hope can be found in our old friend: **[HTML](https://en.wikipedia.org/wiki/HTML)**.
 
 In the last few years, a small number of libraries have come along that focus on the server providing HTML response to AJAX 
 requests.  
@@ -147,27 +163,29 @@ declarative attributes.
 
 The beauty of this approach, if you wish to use a REST-ful architecture, is manifold: 
 
-First, it re-enables HATEOS in a dead simple and obvious manner, by allowing you to simply return HTML (your data) annotated 
+First, it re-enables HATEOAS in a dead simple and obvious manner, by allowing you to simply return HTML (your data) annotated 
 with the network actions appropriate for that data, using familiar HTML attributes.
 
-Second, intercooler addresses the shortcoming of standard HTML: a limited set of supported HTTP actions tied to only a few
-specific client events.  This allows you to implement a much richer REST-ful HTML API for your application than is usual.
+Second, intercooler addresses the primary shortcoming of standard HTML as a REST-ful hypermedia: a limited set of supported 
+HTTP actions tied to only a few specific client events.  With intercooler you can implement a much richer REST-ful HTML API 
+*and user experience* in your web application.
 
-Third, all the tried-and true techniques and advantages of stateless web applications can be applied in your application.
+Third, all the tried-and true techniques and advantages of stateless web applications can continue to be applied in your 
+web application: it's just HTTP requests sending back HTML, after all.
 
-And intercooler supports [REST-ful dependencies](http://intercoolerjs.org/docs.html#dependencies), [transparent history](http://intercoolerjs.org/docs.html#history)
+And so on: intercooler supports [REST-ful dependencies](http://intercoolerjs.org/docs.html#dependencies), [transparent history](http://intercoolerjs.org/docs.html#history)
 and many other features that allow you to stay within the REST-ful architecture, while providing a modern web 
 application experience for users.
 
-#### Conclusio
+#### Conclusion
 
-In some ways, the RESTs failure as an architecture for JSON APIs should be a relief: it establishes that HATEOS is,
+In some ways, the RESTs failure as an architecture for JSON APIs should be a relief: it establishes that HATEOAS is,
 indeed, a crucial aspect of the architecture.  The task before us now, those of us who appreciate the beauty of this 
 original vision of the web, is to rescue and revive this architecture while, at the same time, delivering the modern user 
 experience people have come to expect in web applications.
 
 [There is burgeoning recognition that web development is badly broken](https://medium.com/@wob/the-sad-state-of-web-development-1603a861d29f#.p54rj9jzq),
-so the opportunity is there.  But we, the REST-ful, must provide both the tools and the theory to convince web developers to 
+so the opportunity is there.  But we must provide both the tools and the theory to convince web developers to 
 again invest in and design for the REST-ful architectural style.
 
 I hope that intercooler is a step in that direction.
@@ -175,6 +193,7 @@ I hope that intercooler is a step in that direction.
 ### Links
 
 * [The Sad State of Web Development](https://medium.com/@wob/the-sad-state-of-web-development-1603a861d29f#.p54rj9jzq)
+* [Why I hate HATEOAS](https://www.jeffknupp.com/blog/2014/06/03/why-i-hate-hateoas/)
 * [Turbolinks](https://github.com/rails/turbolinks)
 * [PJAX](https://github.com/defunkt/jquery-pjax)
 * [Wikipedia REST Article](https://en.wikipedia.org/wiki/Representational_state_transfer)
