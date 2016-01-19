@@ -219,3 +219,15 @@ section table {
 section {
   margin-bottom: 72px;
 }
+
+.blog-title {
+  margin-top: 32px;
+}
+
+.blog-section {
+  padding: 8px 16px;
+}
+
+.blog-col {
+  max-width: 768px;
+}

@@ -21,7 +21,7 @@ then I will present what I hope is a way to rescue this architectural pattern, f
 
 #### The Theory
 
-First, let us review the (claimed) advantages of the REST style of architecture are:
+First, let us review the (claimed) advantages of the REST style of architecture.  From the Wikipedia article:
 
 * Performance 
 * Scalability 
