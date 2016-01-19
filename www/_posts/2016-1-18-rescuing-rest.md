@@ -11,9 +11,9 @@ title: Rescuing REST
 [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) is a description of the software
 architectural style of the web, originally put forward by [Roy Fielding](https://en.wikipedia.org/wiki/Roy_Fielding)
 in his [justifiably famous dissertation](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm).  Fielding's description 
-was a massive presence in early thinking about the web, and about web applications in particular.  Every web developer 
-eventually came across it and, agree or disagree with this or that aspect of it, it provided 
-a mental framework, conventions and vocabulary to use as we groped around trying to understand how this new 
+was a massive presence in the early thinking about the web, and in thinking about web applications in particular.  
+Every web developer eventually came across the term and, agree or disagree with this or that aspect of it, it provided 
+a mental framework, many conventions and a vocabulary to use as we groped toward understanding how this new 
 software system should be used.
 
 Looking around today, one can only say that REST has fallen on hard times.  In this post I will examine why that is, and 
