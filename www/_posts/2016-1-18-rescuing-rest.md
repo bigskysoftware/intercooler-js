@@ -4,7 +4,7 @@ nav: blog
 title: Rescuing REST From the API Winter
 ---
 
-***TLDR***: REST is increasingly unfit for modern JSON API needs, but can be rescued by a return to HTML as the
+***TLDR***: REST is increasingly unfit for modern JSON API needs, but can be rescued by a return to HTML as a
 response format.
 
 ## In The Beginning
