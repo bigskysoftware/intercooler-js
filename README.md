@@ -1,4 +1,6 @@
-<h1><img src="http://intercoolerjs.org/images/Intercooler_CMYK_noType_64.png" height="32px"> intercooler<span style="color: #26628E;">.</span><span style="color: #8EB3D0;">js</span></h1>
+<center>
+  <img src="http://i.imgur.com/CQh4tnm.png">
+</center>
 
 ## Introduction
 
