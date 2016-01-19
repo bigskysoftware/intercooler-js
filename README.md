@@ -22,7 +22,7 @@ Despite its small size, intercooler supports quite a bit of functionality:
 * Custom HTTP response headers for meta directives
 * A REST-ful dependency mechanism
 * Simple AJAX history/back-button support
-* And much more...
+* And [much more...](http://intercoolerjs.org/docs.html)
 
 These features allow you to build a modern web application with minimal fuss, following are REST-ful architecture
 that ensures good performance and a minimum of complexity.
