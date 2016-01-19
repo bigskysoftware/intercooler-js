@@ -2,48 +2,56 @@
 
 ## Introduction
 
-Intercooler is a small javascript library that allows you to add AJAX to your web application with
-simple HTML5 attributes. This makes adding AJAX (almost) as simple as adding an anchor tag.
+Intercooler is a small (25K unzipped) library that allows you to add AJAX to your application using
+HTML attributes.
 
 Here is an example:
 
-    // When this button is clicked an AJAX POST request is sent to /example and the response is
+    // When this button is clicked an AJAX POST request is sent to /example and the response content is
     // swapped in to the body of the button
     <button ic-post-to="/example">
         Click Me!
     </button>
 
-Despite its small size, Intercooler supports quite a bit of functionality. Some examples:
+Despite its small size, intercooler supports quite a bit of functionality:
 
 * Specifying the UI event that causes an AJAX request
-* A pluggable event hook system
-* Custom HTTP response headers for meta-actions
-* A dependency mechanism between HTML elements
-* A visual debugger
+* A rich event model
+* Custom HTTP response headers for meta directives
+* A REST-ful dependency mechanism
+* Simple AJAX history/back-button support
+* And much more...
 
-Full documentation is available on the [main Intercooler website](http://intercoolerjs.org/)
+These features allow you to build a modern web application with minimal fuss, following are REST-ful architecture
+that ensures good performance and a minimum of complexity.
+
+It also is very easy to incrementally retrofit intercooler into existing applications to add AJAX functionality where
+it is most valuable.
+
+Full documentation is available on the [main intercooler website](http://intercoolerjs.org/)
 
 ## Installing
 
-Intercooler is just a javascript library and can be downloaded or hot-linked [from the downloads page](http://intercoolerjs.org/download.html).
+Intercooler can be downloaded or hot-linked [from the downloads page](http://intercoolerjs.org/download.html).
+
+Or installed via bower:
+
+     "dependencies": {
+        "intercooler-js" : "0.9.3"
+      }
 
 ## License
 
-Intercooler is licenced under the MIT License (see the [LICENSE](https://raw.githubusercontent.com/LeadDyno/intercooler-js/master/LICENSE))
+Intercooler is licenced under the [MIT License](https://raw.githubusercontent.com/LeadDyno/intercooler-js/master/LICENSE)
 
 ## Contributing
 
-To contribute a change to Intercooler please try to follow this workflow:
+To contribute a change to intercooler:
 
 * Fork the main intercooler repository
-* Create a new feature branch based on the master branch with a reasonably descriptive name (e.g. fix_http_get_parameter_overriding)
-* Implement your fix, trying not to mix multiple fixes/improvements in the same feature branch
-* Add a test to <code>/test/unit_tests.html</code>.  (It's pretty easy!)
-* Create a pull request for that branch against master in the main repository
-* Add yourself to the "Contributors" section below
+* Create a new feature branch based on the `development` branch with a reasonably descriptive name (e.g. `fix_http_get_parameter_overriding`)
+* Implement your fix
+* Add a test to `/test/unit_tests.html`.  (It's pretty easy!)
+* Create a pull request for that branch against `development` in the main repository
 
-This keeps changes from bleeding into one another and makes my life easier.
-
-## Contributors
-
-Thank you to [all the contributors](https://github.com/LeadDyno/intercooler-js/graphs/contributors) to intercooler!
+Thank you to [all the contributors](https://github.com/LeadDyno/intercooler-js/graphs/contributors)!
