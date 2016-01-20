@@ -13,7 +13,10 @@ nav: attributes > ic-prompt
       <h3>Summary</h3>
 
       <p>The <code>ic-prompt</code> attribute tells Intercooler to prompt the user for input before issuing an AJAX
-        request.  The input is included in the <code>ic-prompt-value</code> parameter of the request.</p>
+        request.  The input is included in the <code>ic-prompt-value</code> parameter of the request.  If you wish
+        to change this, you can use the <code>ic-prompt-name</code> attribute to override it.</p>
+
+      <p>If the user cancels the prompt, no request will be made.</p>
 
       <h3>Syntax</h3>
 
@@ -39,11 +42,11 @@ nav: attributes > ic-prompt
             'url': '/target_url',
             'response': function (settings) {
               var params = parseParams(settings.data);
-              this.responseText = "Hi, " + params['ic-prompt-value'] + "!";
+              this.responseText = "Hi, " + params['your-name'] + "!";
             }
           });
         </script>
-        <button class="btn btn-lg btn-primary" ic-post-to="/target_url" ic-prompt="What's your name?">Click Me!</button>
+        <button class="btn btn-lg btn-primary" ic-post-to="/target_url" ic-prompt="What's your name?" ic-prompt-name="your-name">Click Me!</button>
       </div>
 
     </div>

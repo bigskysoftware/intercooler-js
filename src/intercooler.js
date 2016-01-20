@@ -519,7 +519,12 @@ var Intercooler = Intercooler || (function() {
     var promptText = closestAttrValue(elt, 'ic-prompt');
     if (promptText) {
       var promptVal = prompt(promptText);
-      data = appendData(data, 'ic-prompt-value', promptVal);
+      if (promptVal) {
+        var promptParamName = closestAttrValue(elt, 'ic-prompt-name') || 'ic-prompt-value';
+        data = appendData(data, promptParamName, promptVal);
+      } else {
+        return null;
+      }
     }
 
     if (elt.attr('id')) {
@@ -1159,7 +1164,9 @@ var Intercooler = Intercooler || (function() {
               }
             };
             var data = getParametersForElement(verb, elt, triggerOrigin);
-            handleRemoteRequest(elt, verb, url, data, success);
+            if(data) {
+              handleRemoteRequest(elt, verb, url, data, success);
+            }
           }
 
           var actions = getICAttribute(elt, 'ic-action');
