@@ -798,8 +798,8 @@ var Intercooler = Intercooler || (function() {
     }
   }
 
-  function preventDefault(elt) {
-    return elt.is('form') || (elt.is(':submit') && elt.closest('form').length == 1);
+  function preventDefault(elt, evt) {
+    return elt.is('form') || (elt.is(':submit') && elt.closest('form').length == 1) || elt.is('a');
   }
 
   function handleRemoveAfter(elt) {
@@ -878,7 +878,7 @@ var Intercooler = Intercooler || (function() {
           } else {
             fireICRequest($(elt));
           }
-          if (preventDefault(elt)) {
+          if (preventDefault(elt, e)) {
             e.preventDefault();
             return false;
           }

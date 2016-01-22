@@ -1695,6 +1695,26 @@
     }
   });
 </script>
+
+
+  <a id="google_link" href="http://www.google.com" ic-get-from="/anchor_override">Before</a>
+
+  <script>
+    intercoolerTest("Anchors do not navigate if overridden by intercooler",
+      function (assert) {
+        $.mockjax({
+          url: "/anchor_override",
+          responseText: "After"
+        });
+        assert.equal($('#google_link').text(), "Before");
+        $("#google_link").click();
+      },
+      function (assert) {
+        assert.equal($('#google_link').text(), "After");
+      });
+  </script>
+
+
 </div>
 </body>
 </html>
