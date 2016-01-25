@@ -66,9 +66,9 @@ REST-ful JSON APIs were fairly easy to understand and use.
 
 But, underneath this initial success, lurked deep problems.  Problems that would, in time, come to the fore.
 
-#### The Haters &amp; HATEOAS  
+#### HATEOAS &amp; The Haters
 
-Of the many issues that eventually lead to the decline and fall of REST, I would like to focus on two: one mostly 
+Of the many issues that eventually led to the decline and fall of REST, I would like to focus on two: one mostly 
 cultural and one entirely technological, both related to the later adoption of REST for JSON APIs.
 
 The first, cultural, issue revolved around the inherently abstract and, in places, ambiguous specification of REST.
@@ -76,7 +76,7 @@ A common question, even up to today is "is my API REST?"  Leaving aside whether 
 initial REST specification, we can simply observe that many people have a hard time knowing if they are properly
 following REST-ful conventions, particularly when it comes to JSON APIs.  
 
-This ambiguity and confusion provided fertile ground for the growth of what can be profitably though of as online 
+This ambiguity and confusion provided fertile ground for the growth of what can be profitably thought of as online 
 holy wars, with passionate zealots arguing with one another over what did and what did not constitute a 
 True REST-ful JSON API.  As usual, in as much as they were aware of it, the moderate developers trying to get
 work done were confused and alienated by the whole scene, and simply tried to make things work.
@@ -86,7 +86,7 @@ if someone actually recognizes that acronym, there is a good chance that they wi
 
 The acronym stands for [Hypermedia as the Engine of Application State](https://en.wikipedia.org/wiki/HATEOAS) and, in plain terms, it
 means that a REST-ful system should send both data *and the network operations on that data* in responses to clients, so clients
-don't need to know anything in advance of about the structure of the server.
+don't need to know anything in advance about the structure of the server.
 
 This actually makes loads of sense and, upon reflection, you will realize that this is *exactly how the web and normal HTML works*: you
 get a page of HTML (data) and, embedded in that HTML, you have links and forms that tell you what you can do with
@@ -117,9 +117,8 @@ Artificial intelligence was a wildly popular area of research in early computer 
 beginning, however, it fell into what is called **[The AI Winter](https://en.wikipedia.org/wiki/AI_winter)**, and it took
 many decades to re-emerge as a prominent and useful field of research.  
  
-REST has also entered a winter, and, as with AI, Hype and its nemesis Disappointment figure large in this transition.
-If its early association with "basic" web applications and their attendant usability issues weren't enough to
-turn developers off, it was the application of REST to (typically CRUD-style) JSON APIs that sealed RESTs fate.  
+REST, similarly, has entered its own winter: if REST's early association with "basic" web applications and their attendant 
+usability issues weren't enough to turn developers off, it was the application of REST to (typically CRUD-style) JSON APIs that sealed REST's fate.  
 
 We are now living through REST's **"API Winter"**, as most of the thought leaders in web development have grown indifferent 
 towards or have abandoned the concept, and many younger developers have never heard of it except perhaps in passing.
@@ -144,7 +143,7 @@ if I didn't think that there was, would I?
 
 And I believe that that hope can be found in our old friend: **[HTML](https://en.wikipedia.org/wiki/HTML)**.
 
-In the last few years, a small number of libraries have come along that focus on the server providing HTML response to AJAX 
+In the last few years, a small number of libraries have come along that focus on the server providing HTML responses to AJAX 
 requests.  
 
 As a Rails developer, [pjax](https://github.com/defunkt/jquery-pjax) and [turbolinks](https://github.com/rails/turbolinks)
@@ -179,7 +178,7 @@ application experience for users.
 
 #### Conclusion
 
-In some ways, the RESTs failure as an architecture for JSON APIs should be a relief: it establishes that HATEOAS is,
+In some ways, REST's failure as an architecture for JSON APIs should be a relief: it establishes that HATEOAS is,
 indeed, a crucial aspect of the architecture.  The task before us now, those of us who appreciate the beauty of this 
 original vision of the web, is to rescue and revive this architecture while, at the same time, delivering the modern user 
 experience people have come to expect in web applications.
