@@ -24,9 +24,32 @@ nav: attributes > ic-action
       <p>The value of the <code>ic-action</code> attribute is a list of commands, separated by
       the semi-colon character.</p>
 
-      <p>Each command consists of a name, followed optionally by a colon character arguments for the
-        command.  The arguments can be either a raw string with no quotes, or a comma, separated
-        group of valid javascript expressions.</p>
+      <p>Each command consists of a function name, followed by:</p>
+
+      <ul>
+        <li>
+          Nothing, if there are no arguments to the function:
+          <pre>
+// equivalent to $(elt).remove();
+
+&lt;div ic-action="remove">Remove Me&lt;/div></pre>
+        </li>
+        <li>
+          A colon followed by an unquoted string, if there is a single string argument to the function:
+          <pre>
+// equivalent to $(elt).toggleClass("example-class"), note the lack of quotes
+
+&lt;div ic-action="toggleClass:example-class">Toggle Class&lt;/div></pre>
+        </li>
+        <li>
+          A comma separated list of arguments to the function (strings must be quoted in this form):
+          <pre>
+// equivalent to $(elt).effect('highlight', {color: '#99ff99'}, 1500), note that quotes are required for strings
+
+&lt;div ic-action="effect:'highlight', {color: '#99ff99'}, 1500">Highlight Green&lt;/div></pre>
+        </li>
+      </ul>
+
 
       <p>Valid commands are any jQuery method that can be invoked on the target element (e.g. <code>fadeOut</code>)
         as well as the special <code>delay</code> command.  The <code>delay</code> command takes an argument
@@ -44,7 +67,7 @@ nav: attributes > ic-action
       existing intercooler attirbutes (e.g. <code>ic-target</code>, <code>ic-confirm</code>, etc.)</p>
 
       <p>It is more expressive than regular javascript, supporting linear, declarative commands, rather than requiring
-        complex expressions.</p>
+        complex callback expressions or multiple calls to <code>setTimeout()</code>.</p>
 
       <p>It does not handle all UX cases, of course, but does allow you to capture many common UI/UX needs using a small
       and simple syntax.</p>
@@ -65,28 +88,31 @@ nav: attributes > ic-action
       </style>
 
       <div>
-        Fade out and then remove the button:<br/>
-        <div class="btn btn-primary" ic-action="fadeOut;remove">ic-action="fadeOut;remove"</div>
-        <br/><br/>
-
-        Simply remove the button:<br/>
-        <div class="btn btn-primary" ic-action="remove">ic-action="remove"</div>
-        <br/><br/>
-
-        Fade out the button quickly (100 means 100 milliseconds, when passed to the <a href="http://api.jquery.com/fadeout/"><code>fadeOut()</code></a> method)
-        and then remove the button:<br/>
-        <div class="btn btn-primary" ic-action="fadeOut:100;remove">ic-action="fadeOut:100;remove"</div>
-        <br/><br/>
-
-        Add the <code>fadeMe</code> class to the button, wait 1 second for the CSS transition to complete
-        (<a href="https://api.jquery.com/addclass/"><code>addClass</code></a> does not provide a completion callback)
-        and then remove the button:<br/>
-        <div class="btn btn-primary" ic-action="addClass:fadeMe;delay:1s;remove">ic-action="addClass:fadeMe;delay:1s;remove"</div>
-        <br/><br/>
-
-        Toggle the <code>btn-primary</code> class on the button:<br/>
-        <div class="btn btn-primary btn-default" ic-action="toggleClass:btn-primary">ic-action="toggleClass:btn-primary"</div>
-        <br/><br/>
+        <ul>
+          <li>
+            Fade out and then remove the button:<br/>
+            <div class="btn btn-primary" ic-action="fadeOut;remove">Code: fadeOut;remove</div>
+          </li>
+          <li>
+            Remove the button:<br/>
+            <div class="btn btn-primary" ic-action="remove">Code: remove</div>
+          </li>
+          <li>
+            Fade out the button quickly (100 means 100 milliseconds, when passed to the <a href="http://api.jquery.com/fadeout/"><code>fadeOut()</code></a> method)
+            and then remove the button:<br/>
+            <div class="btn btn-primary" ic-action="fadeOut:100;remove">Code: fadeOut:100;remove</div>
+          </li>
+          <li>
+            Add the <code>fadeMe</code> class to the button, wait 1 second for the CSS transition to complete
+            (<a href="https://api.jquery.com/addclass/"><code>addClass</code></a> does not provide a completion callback)
+            and then remove the button:<br/>
+            <div class="btn btn-primary" ic-action="addClass:fadeMe;delay:1s;remove">Code: addClass:fadeMe;delay:1s;remove</div>
+          </li>
+          <li>
+            Toggle the <code>btn-primary</code> class on the button:<br/>
+            <div class="btn btn-primary btn-default" ic-action="toggleClass:btn-primary">Code: toggleClass:btn-primary</div>
+          </li>
+        </ul>
 
       </div>
 
