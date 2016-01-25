@@ -39,7 +39,7 @@ Intercooler can be downloaded or hot-linked [from the downloads page](http://int
 Or installed via bower:
 
      "dependencies": {
-        "intercooler-js" : "0.9.3"
+        "intercooler-js" : "0.9.4"
       }
 
 ## License
