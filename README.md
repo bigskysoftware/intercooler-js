@@ -18,16 +18,16 @@ Here is an example:
 Despite its small size, intercooler supports quite a bit of functionality:
 
 * Specifying the UI event that causes an AJAX request
-* A rich event model
-* Custom HTTP response headers for meta directives
+* Progress indicators
+* Meta-directives via HTTP response headers
 * A REST-ful dependency mechanism
-* Simple AJAX history/back-button support
-* And [much more...](http://intercoolerjs.org/docs.html)
+* AJAX history & back-button support
+* A rich event model
+* [And more...](http://intercoolerjs.org/docs.html)
 
-These features allow you to build a modern web application with minimal fuss, following are REST-ful architecture
-that ensures good performance and a minimum of complexity.
+These features allow you to build modern web applications with minimal fuss, using a simple and intuitive REST-ful architecture that ensures good performance, excellent user experience and a minimum of complexity.
 
-It also is very easy to incrementally retrofit intercooler into existing applications to add AJAX functionality where
+It also is very easy to incrementally retrofit intercooler into existing web applications to add AJAX functionality where
 it is most valuable.
 
 Full documentation is available on the [main intercooler website](http://intercoolerjs.org/)
