@@ -42,6 +42,8 @@ Or installed via bower:
         "intercooler-js" : "0.9.4"
       }
 
+Intercooler depends on [jQuery](https://jquery.com/) v1.10.0 or higher.
+
 ## License
 
 Intercooler is licenced under the [MIT License](https://raw.githubusercontent.com/LeadDyno/intercooler-js/master/LICENSE)
