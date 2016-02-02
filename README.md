@@ -19,7 +19,7 @@ Despite this simplicity, intercooler supports quite a bit of functionality:
 
 * It allows you to [specify the UI event](http://intercoolerjs.org/docs.html#triggers) that triggers the AJAX request
 * It makes [progress indicators](http://intercoolerjs.org/docs.html#progress) very simple to add
-* It supports many [custom HTTP response headers](http://intercoolerjs.org/docs.html#responses) for thinks like client-side redirection
+* It supports many [custom HTTP response headers](http://intercoolerjs.org/docs.html#responses) for things like client-side redirection
 * It has a [REST-ful dependency mechanism](http://intercoolerjs.org/docs.html#dependencies)
 * It has simple [AJAX history & back-button support](http://intercoolerjs.org/docs.html#history)
 * It provides a [rich event model](http://intercoolerjs.org/docs.html#events)
