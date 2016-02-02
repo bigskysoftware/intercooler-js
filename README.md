@@ -9,11 +9,13 @@ HTML attributes.
 
 Here is an example:
 
-    // When this button is clicked an AJAX POST request is sent to /example and the response content is
-    // swapped in to the body of the button
+```html
+    <!-- When this button is clicked an AJAX POST request is sent to /example and the 
+         response content is swapped in to the body of the button -->
     <button ic-post-to="/example">
         Click Me!
     </button>
+```
 
 Despite this simplicity, intercooler supports quite a bit of functionality:
 
