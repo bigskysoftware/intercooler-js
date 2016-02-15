@@ -399,7 +399,7 @@ var Intercooler = Intercooler || (function() {
         log(elt, "AJAX request " + requestId + " was successful.", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
         if (onSuccess) {
-          if (!globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr)) {
+          if (globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr) == false) {
             return;
           }
         }
