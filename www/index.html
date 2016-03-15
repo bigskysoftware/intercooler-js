@@ -48,7 +48,7 @@ layout: default
                 } else if (clicks == 4) {
                   this.responseText = "<span>OK, enough clicking...  Go to the docs?</span>";
                 } else {
-                  this.responseText = '<span>You clicked me ' + clicks + ' times...</span>';
+                  this.responseText = '<span>You clicked me ' + clicks + ' time' + (clicks > 1 ? 's' : '') + '...</span>';
                 }
               }
             });
