@@ -32,7 +32,7 @@ nav: attributes > ic-trigger-on
 
       <h3>Simple Example</h3>
 
-      <p>Here is a simple button that updates a div on click:</p>
+      <p>Here is a div with a header tag near the bottom that issues a request once it is scrolled into view:</p>
 
       <pre>
   &lt;h2>Scroll Down To Load &lt;i class="fa fa-arrow-down" style="margin-bottom:150%">&lt;/i> &lt;/h2>
@@ -42,14 +42,12 @@ nav: attributes > ic-trigger-on
   &lt;/h2>
 </pre>
 
-      <p>Note that the response to the button click is the content to swap in for the <em>div</em>, not the button.</p>
-
       <div class="live-demo">
         <script>
           (function () {
-            var clicks = 0;
             $.mockjax({
               url: '/get_it',
+              responseTime: 1000,
               responseText: "Loaded!!!"
             });
           })();

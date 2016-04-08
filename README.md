@@ -9,25 +9,27 @@ HTML attributes.
 
 Here is an example:
 
-    // When this button is clicked an AJAX POST request is sent to /example and the response content is
-    // swapped in to the body of the button
+```html
+    <!-- When this button is clicked an AJAX POST request is sent to /example and the 
+         response content is swapped in to the body of the button -->
     <button ic-post-to="/example">
         Click Me!
     </button>
+```
 
-Despite its small size, intercooler supports quite a bit of functionality:
+Despite this simplicity, intercooler supports quite a bit of functionality:
 
-* Specifying the UI event that causes an AJAX request
-* A rich event model
-* Custom HTTP response headers for meta directives
-* A REST-ful dependency mechanism
-* Simple AJAX history/back-button support
-* And [much more...](http://intercoolerjs.org/docs.html)
+* It allows you to [specify the UI event](http://intercoolerjs.org/docs.html#triggers) that triggers the AJAX request
+* It makes [progress indicators](http://intercoolerjs.org/docs.html#progress) very simple to add
+* It supports many [custom HTTP response headers](http://intercoolerjs.org/docs.html#responses) for things like client-side redirection
+* It has a [REST-ful dependency mechanism](http://intercoolerjs.org/docs.html#dependencies)
+* It has simple [AJAX history & back-button support](http://intercoolerjs.org/docs.html#history)
+* It provides a [rich event model](http://intercoolerjs.org/docs.html#events)
+* [And much more...](http://intercoolerjs.org/docs.html)
 
-These features allow you to build a modern web application with minimal fuss, following are REST-ful architecture
-that ensures good performance and a minimum of complexity.
+These features allow you to build modern web applications with little fuss, using a simple and intuitive REST-ful architecture that ensures good performance, excellent user experience and a minimum of complexity.
 
-It also is very easy to incrementally retrofit intercooler into existing applications to add AJAX functionality where
+It also is very easy to incrementally retrofit intercooler into existing web applications to add AJAX functionality where
 it is most valuable.
 
 Full documentation is available on the [main intercooler website](http://intercoolerjs.org/)
@@ -41,6 +43,8 @@ Or installed via bower:
      "dependencies": {
         "intercooler-js" : "0.9.5"
       }
+
+Intercooler depends on [jQuery](https://jquery.com/) v1.10.0 or higher.
 
 ## License
 

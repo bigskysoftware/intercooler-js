@@ -93,7 +93,7 @@ var Intercooler = Intercooler || (function() {
     try {
       parent.prepend(responseContent);
     } catch (e) {
-      log(elt, formatError(e), "ERROR");
+      log(parent, formatError(e), "ERROR");
     }
     if (getICAttribute(parent, 'ic-limit-children')) {
       var limit = parseInt(getICAttribute(parent, 'ic-limit-children'));
@@ -107,7 +107,7 @@ var Intercooler = Intercooler || (function() {
     try {
       parent.append(responseContent);
     } catch (e) {
-      log(elt, formatError(e), "ERROR");
+      log(parent, formatError(e), "ERROR");
     }
     if (getICAttribute(parent, 'ic-limit-children')) {
       var limit = parseInt(getICAttribute(parent, 'ic-limit-children'));
