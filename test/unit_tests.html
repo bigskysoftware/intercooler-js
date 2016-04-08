@@ -171,22 +171,16 @@
     <script>
       QUnit.test("IC attributes are set on elements", function (assert) {
         assert.ok($('#ic-src-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
-        assert.ok($('#ic-src-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
         assert.ok($('#ic-post-to-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
-        assert.ok($('#ic-post-to-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
         assert.ok($('#ic-append-from-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
-        assert.ok($('#ic-append-from-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
         assert.ok($('#ic-prepend-from-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
-        assert.ok($('#ic-prepend-from-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
         assert.ok($('#ic-style-src-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
-        assert.ok($('#ic-style-src-div1').data('ic-last-refresh') != null, "Has Last Refresh");
 
         assert.ok($('#ic-attr-src-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
-        assert.ok($('#ic-attr-src-div1').data('ic-last-refresh') != null, "Has Last Refresh");
       });
     </script>
   </div>
