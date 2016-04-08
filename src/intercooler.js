@@ -545,9 +545,6 @@ var Intercooler = Intercooler || (function() {
     if (triggerOrigin && triggerOrigin.attr('name')) {
       data = appendData(data, 'ic-trigger-name', triggerOrigin.attr('name'));
     }
-    if (target.data('ic-last-refresh')) {
-      data = appendData(data, 'ic-last-refresh', target.data('ic-last-refresh'));
-    }
     var includeAttr = closestAttrValue(elt, 'ic-include');
     if (includeAttr) {
       data = processIncludes(data, includeAttr);
@@ -565,19 +562,10 @@ var Intercooler = Intercooler || (function() {
   function maybeSetIntercoolerInfo(elt) {
     var target = getTarget(elt);
     getIntercoolerId(target);
-    maybeSetIntercoolerMetadata(target);
     if (elt.data('elementAdded.ic') != true) {
       elt.data('elementAdded.ic', true);
       elt.trigger("elementAdded.ic");
     }
-  }
-
-  function updateIntercoolerMetaData(elt) {
-    elt.data('ic-last-refresh', new Date().getTime());
-  }
-
-  function maybeSetIntercoolerMetadata(elt) {
-    elt.data('ic-last-refresh', new Date().getTime());
   }
 
   function getIntercoolerId(elt) {
@@ -1056,7 +1044,6 @@ var Intercooler = Intercooler || (function() {
             });
             fireReadyStuff($(target));
           }
-          updateIntercoolerMetaData(target);
           if (forHistory != true) {
             maybeScrollToTarget(elt, target);
           }
