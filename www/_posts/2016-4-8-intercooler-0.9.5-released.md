@@ -3,7 +3,7 @@ layout: blog_post
 nav: blog
 ---
 
-I have released intercooler v0.9.4, available on the main site, as well as through bower.
+I have released intercooler v0.9.5, available on the main site, as well as through bower.
 
 <http://intercoolerjs.org/download.html>
 
