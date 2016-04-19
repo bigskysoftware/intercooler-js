@@ -1597,8 +1597,13 @@
 <button id="ica-btn-5" ic-action="addClass:ic-apply1;delay:0ms;addClass:ic-apply2;delay:0ms;addClass:ic-apply3">ic-apply-button</button>
 <button id="ica-btn-6" ic-action=";addClass:ic-apply1;">ic-apply-button</button>
 <button id="ica-btn-7" ic-action="delay:10ms;addClass:ic-apply1;">ic-apply-button</button>
+<button id="ica-btn-8" ic-action="delay:10ms;globalFuncForAction:1, 2, 3;">ic-apply-button</button>
 
   <script>
+    var globalVarForAction = 0;
+    function globalFuncForAction(a, b, c) {
+      globalVarForAction = a + b + c;
+    }
   QUnit.test('Test ic-action', function (assert) {
     var done = assert.async();
 
@@ -1611,6 +1616,7 @@
     $('#ica-btn-5').click();
     $('#ica-btn-6').click();
     $('#ica-btn-7').click();
+    $('#ica-btn-8').click();
 
     setTimeout(function () {
       assert.ok($('#ica-btn-1').is(".ic-apply1"));
@@ -1636,6 +1642,7 @@
 
     setTimeout(function () {
       assert.ok($('#ica-btn-7').is(".ic-apply1"));
+      assert.equal(globalVarForAction, 6);
     }, 12);
 
     setTimeout(function () {

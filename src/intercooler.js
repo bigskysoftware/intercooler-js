@@ -422,7 +422,7 @@ var Intercooler = Intercooler || (function() {
         if (onError) {
           globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
         }
-        log(elt, "AJAX request " + requestId + " to " + url + " experienced an error: " + str, "ERROR");
+        log(elt, "AJAX request " + requestId + " to" + url + " experienced an error: " + str, "ERROR");
       },
       complete: function(xhr, status) {
         log(elt, "AJAX request " + requestId + " completed in " + (new Date() - requestStart) + "ms", "DEBUG");
@@ -1220,7 +1220,7 @@ var Intercooler = Intercooler || (function() {
 
   function makeApplyAction(target, action, args) {
     return function() {
-      var func = target[action];
+      var func = target[action] || window[action];
       if (func) {
         func.apply(target, args);
       } else {
