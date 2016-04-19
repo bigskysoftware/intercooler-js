@@ -315,6 +315,14 @@ nav: attributes > all
               <td>By setting this meta-tag value, you will be able to use the <code>data-*</code> prefix for all
               intercooler attributes, making your HTML validatable.</td>
             </tr>
+            <tr>
+              <td><code>&lt;meta name="intercoolerjs:use-actual-http-method" content="true"/></code></td>
+              <td>By default intercooler uses the <code>POST</code> HTTP method for all non-<code>GET</code> actions,
+              passing the actual method up with the <code>_method</code> parameter as well as the <code>X-HTTP-Method-Override</code>
+              header, in order to support browsers with incomplete AJAX implementations.  If you wish to use the actual
+              HTTP method in the AJAX call (e.g. <code>DELETE</code>) and not worry about legacy browswers, you can set
+              this meta-tag value to "true".</td>
+            </tr>
           </tbody>
         </table>
       </section>

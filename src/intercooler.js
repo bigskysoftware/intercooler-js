@@ -10,6 +10,7 @@ var Intercooler = Intercooler || (function() {
   // Vars
   //--------------------------------------------------
   var USE_DATA = $('meta[name="intercoolerjs:use-data-prefix"]').attr("content") == "true";
+  var USE_ACTUAL_HTTP_METHOD = $('meta[name="intercoolerjs:use-actual-http-method"]').attr("content") == "true";
 
   var _MACROS = $.map(['ic-get-from', 'ic-post-to', 'ic-put-to', 'ic-patch-to', 'ic-delete-from',
                        'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from', 'ic-action'],
@@ -361,7 +362,12 @@ var Intercooler = Intercooler || (function() {
 
     var requestId = uuid();
     var requestStart = new Date();
-    var actualRequestType = type == 'GET' ? 'GET' : 'POST';
+    var actualRequestType;
+    if(USE_ACTUAL_HTTP_METHOD) {
+      actualRequestType = type;
+    } else {
+      actualRequestType = type == 'GET' ? 'GET' : 'POST';
+    }
 
     var ajaxSetup = {
       type: actualRequestType,
