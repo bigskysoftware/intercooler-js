@@ -11,15 +11,16 @@ visible: false
   which has no special knowledge about the data.  
 * This simple but powerful idea has been lost because it is typically examined in terms of machines and APIs, rather 
   than in terms of humans and HTML. 
-* Humans are uniquely positioned to take advantage of the power of HATEOAS in a way that machines are not (yet). 
+* Humans are uniquely positioned to take advantage of the power of HATEOAS in a way that machines are not (yet) because
+  they have agency. 
 
 ## HATEOAS - Wat?
 
 [HATEOAS](https://en.wikipedia.org/wiki/HATEOAS) is perhaps the least understood aspect of
 [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) and is often an object of outright
 [hatred](https://jeffknupp.com/blog/2014/06/03/why-i-hate-hateoas/) for perfectly reasonable, competent developers. 
-This is too bad, and it mainly due to the fact that the HATEOAS and REST concepts have been applied to APIs 
-(originally XML, then JSON) rather than to where they originally arose: humans and HTML.
+This is too bad, and it is mainly due to the fact that the HATEOAS and REST concepts have been applied to APIs 
+(originally XML, then JSON) rather than to where they originally arose: humans and HTML on the web.
 
 Let's see if I can give a simple (if incomplete) explanation of what HATEOAS is and then explain why it works
 so well with humans and HTML and why it works poorly for machines and JSON.
@@ -72,8 +73,9 @@ certainly not the most efficient encoding of this data, and it is intermixed wit
 OK.  That other junk has proven to be pretty useful on the client side, so let's let it slide for now.
 
 This means that a web application that communicates in terms of HTML, naturally satisfies the HATEOAS constraint of
-REST, without anyone needing to think very hard about it.  If you have ever built a traditional web app, congrats,
-you have implemented HATEOAS better than 99% of all API developers.
+REST, without anyone needing to think very hard about it.  
+
+If you have ever built a traditional web app, congrats, you have implemented HATEOAS better than 99% of all API developers.
 
 It must be noted that, unfortunately, traditional HTML itself is somewhat limited in the number of HTTP methods 
 (mainly GET and POST) and user actions (clicks and form submissions) that it allows, which made it difficult to 
@@ -91,7 +93,7 @@ You should use it.  😉
 Anyway, we can see that, despite all the fancy verbiage, HATEOAS is almost idiotically easy to implement by just using 
 HTML.  
 
-Why all the hate and confusion around it, then?
+Why all the hate and confusion around i, then?
 
 To understand why, let's look at the example from the [HATEOAS Wikipage](https://en.wikipedia.org/wiki/HATEOAS):
 
@@ -117,11 +119,11 @@ What can it do with all those actions?  The actions, note, are dynamic, but the 
 isn't: it needs to either handle all possible actions or forward them along to a human to deal with, right?
 
 And that gets to crux of the issue: the code doesn't (yet) have <a href="https://en.wikipedia.org/wiki/Agency_(philosophy)">agency</a>.  
-It can't reasonably decide what to do in the face of new and unexpected actions.  The coder writing the code could have the 
-it handle all possible actions (tough) or pass them along to a human somewhere (also tough).
+It can't reasonably decide what to do in the face of new and unexpected actions.  The coder writing the code could have
+it handle all possible actions (tough) or pass them along to a human somewhere else (also tough).
 
 Realistically, the code will likely handle a few of the actions and just ignore the rest, so all that work for a Gold 
-REST Star is, tragically, wasted.
+REST Star is, unfortunately, wasted.
 
 ## Agency As A Service (AAAS)
 
@@ -141,10 +143,10 @@ that the humans find pleasant, or at least tolerable.
 
 And that language is HTML.
 
-So, you can see: a system satisfying HATEOAS is wasted if the hypermedia isn't being consumed by something with agency.  
+So, you can see: a system satisfying HATEOAS is wasted if the hypermedia isn't being consumed by something with agency. 
 Humans are that thing, and, therefore for HATEOAS to be effective, the hypermedia needs to be humane.  
 
-Again, that's HTML.  I didn't realize just how special it was until just in the last few years.
+Again, that's HTML.  I didn't realize just how special it was until year 20 of writing web apps.
 
 Once we have strong AI, maybe the situation changes.  But that's what we've got today.
 
@@ -156,7 +158,7 @@ written, and they all need to talk to servers as well, right?
 That's of course correct and, I'm not ashamed to admit, **I'm not sure what the right answer is here, of if there is a
 single one**.
 
-REST-minus-HATEOAS seems like it works OK in many cases.  More RPC-style end points were once popular and appear to be
+REST-minus-HATEOAS seems like it works OK in many cases.  RPC-style end points were once popular and appear to be
 getting popular again.  They all seem reasonably workable to me.
 
 But what I am convinced of, and what I hope to convince you of, is that HATEOAS is largely wasted on machines.
