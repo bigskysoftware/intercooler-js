@@ -2,7 +2,6 @@
 layout: blog_post
 nav: blog
 title: HATEOAS is for Humans
-visible: false
 ---
 
 ##TLDR##
