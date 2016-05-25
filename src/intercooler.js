@@ -219,6 +219,11 @@ var Intercooler = Intercooler || (function() {
     elt.trigger("beforeHeaders.ic", [elt, xhr]);
     log(elt, "response headers: " + xhr.getAllResponseHeaders(), "DEBUG");
     var target = null;
+    
+    // set page title by header
+    if (xhr.getResponseHeader("X-IC-Title")) {
+      document.title = xhr.getResponseHeader("X-IC-Title");
+    }
 
     if (xhr.getResponseHeader("X-IC-Refresh")) {
       var pathsToRefresh = xhr.getResponseHeader("X-IC-Refresh").split(",");
