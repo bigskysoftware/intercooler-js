@@ -14,7 +14,11 @@
   <meta property="og:site_name" content="Intercooler.js"/>
   <meta property="og:image" content="http://intercoolerjs.org/images/Intercooler_CMYK_noType_ico.png" />
 
+  {% if page.title %}
+  <title>{{page.title}}</title>
+  {% else %}
   <title>intercooler.js - Simple AJAX using HTML attributes</title>
+  {% endif %}
 
   <!-- Bootstrap core CSS -->
   <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
