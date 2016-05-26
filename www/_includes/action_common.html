@@ -16,3 +16,14 @@
   <li><code>form</code> - A form submission.</li>
   <li>Everything else - A click.</li>
 </ul>
+
+<h3>Using Real HTTP Methods</h3>
+
+<p>By default, intercooler uses <code>POST</code>'s for all non-<code>GET</code> requests, due to older browser
+limitations.  It includes the <code>_method</code> parameter and the <code>X-HTTP-Method-Override</code> headers
+that indicate the intended HTTP method, but some server-side infrastructure might not understand these conventions.</p>
+
+<p>If you wish to use the actual HTTP method and forgo older browser support, you can use the following meta tag
+in your head tag:</p>
+
+<pre>&lt;meta name="intercoolerjs:use-actual-http-method" content="true"/></pre>

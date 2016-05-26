@@ -1,11 +1,16 @@
 ---
 layout: blog_post
 nav: blog
-title: Twelve, er, Ten HTML Attributes Explained...
+title: Twelve, er, Ten, er, Eight HTML Attributes Explained...
 ---
 
+<p>
+  <strong>UPDATE:</strong> Jiri made the point that using <code>ic-poll</code> I can simplify the example even more.
+  Thanks Jiri!
+</p>
+
 <p>In my last post I mentioned a nifty little live stock quote app that I built using only twelve intercooler attributes
-and a couple of lines of javascript.  I restructured things a bit and managed to knock it down to <em>just ten attributes</em>.
+and a couple of lines of javascript.  I restructured things a bit and managed to knock it down to <em><strike>just ten attributes</strike></em> <em>just eight</em>!
 Even better.</p>
 
 <p>Again, here is the demo:</p>
@@ -78,22 +83,17 @@ flashing effect you see above.</p>
 
 <h2>Making The Table "Live"</h2>
 
-<p>Now the tricky part, making the table update.  To do this, we add the following intercooler attributes to the
-table head element:</p>
+<p>Now the tricky part, making the table update.  To do this, we add the following intercooler attributes a div
+  surrounding the table:</p>
 
 <pre>
-  &lt;thead ic-trigger-on="load" ic-trigger-delay="5s"
-            ic-src="/" ic-target="#table-container">
+  &lt;div ic-poll="5s" ic-src="/">
 </pre>
 
-<p>The head will wait for five seconds after the load event is fired, and then issue a GET request to <code>/</code> and
-replace the <code>#table-container</code> div with the returned content.  The returned content is going to be just the
+<p>This div will hit the <code>/</code> URL every five seconds.  The returned content is going to be just the
 table of updated ticker information.</p>
 
-<p>This new table will include another header with intercooler attributes setting it up to refresh again in another
-five seconds, which sets up the continuous updating of the table.</p>
-
-<p>You may notice that we use <code>/</code> to serve both the top level page as well as this request.  How do we do that?</p>
+<p>We use <code>/</code> to serve both the top level page as well as this request.  How do we do that?</p>
 
 <p>Intercooler includes a parameter, <code>ic-request</code>, when it issues an AJAX request, so we can test for that
 parameter when determining what to render to the client:</p>
