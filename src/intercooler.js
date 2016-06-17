@@ -284,6 +284,13 @@ var Intercooler = Intercooler || (function() {
       }
     }
 
+    var localVars = xhr.getResponseHeader("X-IC-Set-Local-Vars");
+    if (localVars) {
+      $.each($.parseJSON(localVars), function(key, val) {
+        localStorage.setItem(key, val);
+      });
+    }
+
     if (xhr.getResponseHeader("X-IC-Remove")) {
       if (elt) {
         target = getTarget(elt);
@@ -501,6 +508,17 @@ var Intercooler = Intercooler || (function() {
     return data;
   }
 
+  function processLocalVars(data, str) {
+    $(str.split(",")).each(function() {
+      var key = $.trim(this);
+      var item = localStorage.getItem(key);
+      if(item) {
+        data = appendData(data, key, item);
+      }
+    });
+    return data;
+  }
+
   function appendData(data, string, value) {
     if ($.type(data) === "string") {
       return data + "&" + string + "=" + encodeURIComponent(value);
@@ -559,6 +577,10 @@ var Intercooler = Intercooler || (function() {
     var includeAttr = closestAttrValue(elt, 'ic-include');
     if (includeAttr) {
       data = processIncludes(data, includeAttr);
+    }
+    var localVars = closestAttrValue(elt, 'ic-local-vars');
+    if (localVars) {
+      data = processLocalVars(data, localVars);
     }
     $(getICAttributeSelector('ic-global-include')).each(function() {
       data = processIncludes(data, getICAttribute($(this), 'ic-global-include'));

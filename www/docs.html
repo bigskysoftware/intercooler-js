@@ -140,10 +140,10 @@ nav: docs
         </p>
 
         <p>
-          Arguably even more core to intercooler is the <code>ic-src</code> attribute, which can be thought of as the
-          same as <code>ic-get-from</code>, but does it not have an event trigger.  (It can be triggered manually or
-          via dependencies, see below.)  The attributes above are actually defined in terms of <code>ic-src</code>,
-          and you will not find a need to use this attribute often.
+          Underlying all these attributes is the <code>ic-src</code> attribute, which can be thought of as the
+          same as <code>ic-get-from</code>, but with no event trigger.  (It can be triggered manually or
+          via dependencies, see below.)  The attributes above are defined in terms of <code>ic-src</code>,
+          you will not find a need to use this attribute directly very often.
         </p>
 
         <p>Here is an example button that issues a <code>PUT</code>:</p>
@@ -368,6 +368,12 @@ nav: docs
           </form>
           <span id="form-target">Submit the form above...</span>
         </div>
+
+        <p>
+          You can also include values stored persistently in the <code>localStorage</code> object by using the
+          <code>ic-local-vars</code> attribute, which takes a comma separated list of keys to include in the request.
+          (You can set localStorage values using the <code>X-IC-Set-Local-Vars</code> header, mentioned below.)
+        </p>
 
         <h3>File Uploads</h3>
 

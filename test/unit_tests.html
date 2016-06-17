@@ -1751,6 +1751,56 @@
       });
   </script>
 
+  <a id="local-var-set" ic-post-to="/local_vars_set">Local Var Set</a>
+  <script>
+    intercoolerTest("Local vars set test",
+      function (assert) {
+
+        localStorage.removeItem("foo");
+        localStorage.removeItem("bar");
+        localStorage.removeItem("do");
+
+        $.mockjax({
+          url: "/local_vars_set",
+          headers: {
+            "X-IC-Set-Local-Vars": '{"foo":"a", "bar":"b"}'
+          }
+        });
+        $("#local-var-set").click();
+      },
+      function (assert) {
+        assert.equal(localStorage.getItem("foo"), "a");
+        assert.equal(localStorage.getItem("bar"), "b");
+        assert.equal(localStorage.getItem("do"), null);
+      });
+  </script>
+
+  <a ic-local-vars="foo, bar, do" id="local-var-include" ic-post-to="/local_vars_include">Local Var Include</a>
+  <script>
+    intercoolerTest("Local vars include test",
+      function (assert) {
+
+        localStorage.setItem("foo", "a");
+        localStorage.setItem("bar", "b");
+        localStorage.removeItem("do");
+
+        $.mockjax({
+          url: "/local_vars_include",
+          response: function (settings) {
+            var params = parseParams(settings.data);
+            assert.equal(params["foo"], "a");
+            assert.equal(params["bar"], "b");
+            assert.equal(params["do"], null);
+          }
+        });
+        $("#local-var-include").click();
+      },
+      function (assert) {
+        localStorage.removeItem("foo");
+        localStorage.removeItem("bar");
+        localStorage.removeItem("do");
+      });
+  </script>
 
 </div>
 </body>
