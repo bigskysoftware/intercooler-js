@@ -639,6 +639,10 @@ var Intercooler = Intercooler || (function() {
     });
   }
 
+  function autoFocus(elt) {
+    elt.find('[autofocus]:last').focus();
+  }
+
   function processMacros(elt) {
     $.each(_MACROS, function(i, macro) {
       if ($(elt).closest('.ic-ignore').length == 0) {
@@ -1059,15 +1063,18 @@ var Intercooler = Intercooler || (function() {
           }
           processNodes(contentToSwap);
           fireReadyStuff($(target));
+          autoFocus($(target));
         } else {
           if (elt.is(getICAttributeSelector('ic-prepend-from'))) {
             prepend(target, contentToSwap);
             processNodes(contentToSwap);
             fireReadyStuff($(target));
+            autoFocus($(target));
           } else if (elt.is(getICAttributeSelector('ic-append-from'))) {
             append(target, contentToSwap);
             processNodes(contentToSwap);
             fireReadyStuff($(target));
+            autoFocus($(target));
           } else {
             try {
               target.empty().append(contentToSwap);
@@ -1078,6 +1085,7 @@ var Intercooler = Intercooler || (function() {
               processNodes($(this));
             });
             fireReadyStuff($(target));
+            autoFocus($(target));
           }
           if (forHistory != true) {
             maybeScrollToTarget(elt, target);

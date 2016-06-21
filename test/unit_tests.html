@@ -1802,6 +1802,22 @@
       });
   </script>
 
+  <div id="auto-focus-div" ic-post-to="/autofocus">Autofocus</div>
+  <script>
+    intercoolerTest("Autofocus works",
+      function (assert) {
+
+        $.mockjax({
+          url: "/autofocus",
+          responseText: "<input id='auto-focus-input' autofocus>"
+        });
+        $("#auto-focus-div").click();
+      },
+      function (assert) {
+        assert.ok($('#auto-focus-input').is(":focus"));
+      });
+  </script>
+
 </div>
 </body>
 </html>
