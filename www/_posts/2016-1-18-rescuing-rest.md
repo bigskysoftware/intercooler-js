@@ -53,7 +53,7 @@ agree that, given a reasonably competent application, REST can provide help in e
 
 Early on, REST was simply a description of the web, and despite the [relatively few HTTP actions](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods)
 available in the HTML/HTTP implementations of most browsers, developers built very successful and scaleable 
-web applications using this style.  [Rails](http://rubyonrails.org/), in particular, emphasized this architectual style
+web applications using this style.  [Rails](http://rubyonrails.org/), in particular, emphasized this architectural style
  when building a web application, and it became, if not the gold standard, at least a silver standard for building
  web applications.
 
