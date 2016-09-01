@@ -419,7 +419,11 @@ var Intercooler = Intercooler || (function() {
               try {
                 requestCleanup(indicator, elt); // clean up before snap-shotting HTML
                 var newUrl = xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-src');
-                _history.snapshotForHistory(newUrl);
+                if(_history) {
+                  _history.snapshotForHistory(newUrl);
+                } else {
+                  throw "History support not enabled";
+                }
               } catch (e) {
                 log(elt, "Error during history snapshot for " + requestId + ": " + formatError(e), "ERROR");
               }
@@ -1110,7 +1114,9 @@ var Intercooler = Intercooler || (function() {
         setTimeout(function() {
           try {
             target.removeClass('ic-transitioning');
-            _history.updateHistory();
+            if(_history) {
+              _history.updateHistory();
+            }
             target.trigger("complete_transition.ic", [target]);
           } catch (e) {
             log(elt, "Error during transition complete : " + formatError(e), "ERROR");
@@ -1504,7 +1510,12 @@ var Intercooler = Intercooler || (function() {
     return Intercooler;
   }
 
-  var _history = newIntercoolerHistory(localStorage, window.history, getSlotLimit(), .1);
+  var _history = null;
+  try {
+    _history = newIntercoolerHistory(localStorage, window.history, getSlotLimit(), .1);
+  } catch(e) {
+    log($('body'), "Could not initialize history", "WARN");
+  }
 
   //============================================================
   // Local references transport
@@ -1558,7 +1569,9 @@ var Intercooler = Intercooler || (function() {
     var elt = $('body');
     processNodes(elt);
     fireReadyStuff(elt);
-    _history.addPopStateHandler(window);
+    if(_history) {
+      _history.addPopStateHandler(window);
+    }
     if (location.search && location.search.indexOf("ic-launch-debugger=true") >= 0) {
       Intercooler.debug();
     }
