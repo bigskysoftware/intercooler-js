@@ -5,25 +5,25 @@ nav: blog
 
 ## A Long Road
 
-I'm very happy to announce the release of intercooler v1.0.0, available from the [downloads](/download.html)
+At long last, I'm very happy to announce the release of intercooler v1.0, available from the [downloads](/download.html)
 page, as well as Bower and NPM.
 
 I created intercooler almost [three years ago](https://github.com/LeadDyno/intercooler-js/commit/62d3dbdb5c056ee866aba3575e148de649fc3efe),
 inspired by the [turbolinks](https://github.com/turbolinks/turbolinks) and [pjax](https://github.com/defunkt/jquery-pjax)
 projects.  I wanted a general, client-side library that opened up all the functionality of the web, based on the 
-following idea:
+following core idea:
 
 > Many, perhaps most, web applications are better written using a declarative, HTML-driven approach
 > that keeps business logic and HTML rendering on the server side.
 
-Since the original release, having used intercooler now in large, complex web applications, I've become more convinced of 
-the [validity of this idea](/2016/02/17/api-churn-vs-security.html).  I've also come to see the deep relationship between 
+Since the original release, having used intercooler now in large, complex web applications, I've become ever more convinced of 
+the [validity and advantages of this idea](/2016/02/17/api-churn-vs-security.html).  I've also come to understand the deep relationship between 
 [REST](/2016/01/18/rescuing-rest.html), [HATEOS](/2016/05/08/hatoeas-is-for-humans.html) and HTML, and how intercooler 
-facilitates this style of development far better than JSON APIs can.
+facilitates this style of development, far better than JSON APIs can.
 
-## Features
+## My Favorite Features
 
-Of the many [features](/docs.html) that intercooler has, here are a few of my favorites:
+Looking back at the many [features](/docs.html) have been introduced in intercooler, here are a few of my favorites:
 
 ### Request Indicators
 
@@ -33,20 +33,21 @@ is perhaps one of the most important.
 
 ### Server-side triggering of client-side events
 
-One of my ideas in developing intercooler was that there were going to be cases where the intercooler 
-approach *wasn't* the best way to handle things, and I would need to kick out to javascript.  I tried a few
-different approaches to this problem, before finally introducing the `X-IC-Trigger` [response header](/docs.html#responses), allowing
-the server to trigger client-side javascript events.  
+I try not to be doctrinaire on technical matters and I knew from experience that there were going to be times when 
+HTML DOM swaps *wasn't* going to be the best way to handle things: I would need to kick be able to kick out to javascript.  
+I tried a few different approaches to this problem, before finally introducing the 
+`X-IC-Trigger` [response header](/docs.html#responses), allowing the server to trigger client-side javascript events.  
 
-This was a revelation: it allowed me to introduce client side code where the UI demanded it, but keep it
-clean and compartmentalized from the business logic of my application.
+It was a revelation: it allowed me to introduce client side code where the UI demanded it, but keep it
+clean and compartmentalized from the business logic of my application.  It takes a huge amount of feature pressure off 
+the main intercooler library to have this mechanism, allowing me to keep the library focused.
 
 ### History support
 
 The history API in browsers is [pretty terrible](https://developer.mozilla.org/en-US/docs/Web/API/History_API/Example) to 
-work with.  Intercooler makes it only (a few attributes)[/docs.html#history].
+work with.  Intercooler makes using it only [a few attributes](/docs.html#history), so easy even *I* can used it.
 
-That's really cool.
+That's very cool.
 
 ## The Future &amp; Spirit of Intercooler
 
@@ -67,6 +68,8 @@ your code will continue to work a decade (or more) from now.
 
 A sturdy, quiet alternative in a web development world of noise and complexity.  I'm happy with that.
 
-Hope you find it useful. 🍺
+I hope that you will give it a try and, if you do, I hope that you find it useful.
+ 
+🍺
 
 Carson / [@carson_gross](https://twitter.com/carson_gross)
