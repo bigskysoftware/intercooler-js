@@ -22,7 +22,7 @@ nav: docs
           <li><a href="#progress">Progress Indicators</a></li>
           <li><a href="#transitions">CSS Element Transitions</a></li>
           <li><a href="#client-side">Client Side Tools</a></li>
-          <li><a href="#history">History<sub>BETA</sub></a></li>
+          <li><a href="#history">History</a></li>
           <li><a href="#requests">Anatomy of an Intercooler Request</a></li>
           <li><a href="#responses">Anatomy of an Intercooler Response</a></li>
           <li><a href="#dependencies">Dependencies In Intercooler</a></li>
@@ -112,7 +112,7 @@ nav: docs
 
       <pre style="width:90%">
   &lt;script src="https://code.jquery.com/jquery-1.10.2.min.js">&lt;/script>
-  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-0.9.7.min.js">&lt;/script>
+  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-1.0.0.min.js">&lt;/script>
       </pre>
 
         <p>If you are using <a href="http://bower.io/">Bower</a>, the package name for Intercooler is
@@ -189,6 +189,11 @@ nav: docs
           </li>
           <li>For all other elements, including buttons, issue the request on the <code>click</code> event.</li>
         </ul>
+
+        <p>
+          If you wish to listen for an event on another element in the DOM, or the document or window object,
+          you can use the <code>ic-trigger-from</code> attribute.
+        </p>
 
         <p>
           For any element you can override the event that triggers an intercooler response by using the
@@ -813,7 +818,7 @@ nav: docs
       <section>
         <a class="anchor" id="history"></a>
 
-        <h2>History Support <i class=""><sub>BETA</sub></i></h2>
+        <h2>History Support <i class=""></i></h2>
 
         <p>Intercooler provides simple history support for AJAX calls. This functionality is currently experimental, but
           is usable and unlikely to change dramatically going forward.</p>
