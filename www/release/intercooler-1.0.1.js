@@ -1,3 +1,19 @@
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define('intercooler', ["jquery"], function (a0) {
+      return (root['Intercooler'] = factory(a0));
+    });
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require("jquery"));
+  } else {
+    root['Intercooler'] = factory(jQuery);
+  }
+}(this, function ($) {
+
 ////////////////////////////////////
 
 /**
@@ -1627,3 +1643,7 @@ var Intercooler = Intercooler || (function() {
     }
   }
 })();
+
+return Intercooler;
+
+}));

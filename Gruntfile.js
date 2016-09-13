@@ -3,12 +3,29 @@ module.exports = function (grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    umd: {
+      intercooler: {
+        options: {
+          src: 'src/intercooler.js',
+          dest: 'www/release/intercooler-<%= pkg.version %>.js',
+          amdModuleId: 'intercooler', // The `require('intercooler')` id used to import, lower-case name is traditional
+          objectToExport: 'Intercooler',
+          globalAlias: 'Intercooler', // Always force an Intercooler object
+          deps: {
+              'default': [{jquery: '$'}],
+              amd: [{jquery: '$'}],
+              cjs: [{jquery: '$'}],
+              global: [{jQuery: '$'}] // Capital Q because that is how jQuery is in the global scope unlike the others
+          }
+        }
+      }
+    },
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %>  <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
       build: {
-        src: 'src/intercooler.js',
+        src: 'www/release/intercooler-<%= pkg.version %>.js',
         dest: 'www/release/intercooler-<%= pkg.version %>.min.js'
       }
     },
@@ -30,15 +47,22 @@ module.exports = function (grunt) {
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-regex-replace');
+  grunt.loadNpmTasks('grunt-umd');
+
+  grunt.registerTask('dist', "Copy Distribution files", function () {
+    grunt.file.copy('www/release/intercooler-' + grunt.config.get('pkg').version + '.js', 'dist/intercooler.js');
+    grunt.file.copy('www/release/intercooler-' + grunt.config.get('pkg').version + '.min.js', 'dist/intercooler.min.js');
+  });
 
   grunt.registerTask('release', "Releases a new version of the library", function () {
-    grunt.file.copy("src/intercooler.js", 'www/release/intercooler-' + grunt.config.get('pkg').version + '.js');
     grunt.file.copy("src/intercooler-debugger.js", 'www/release/intercooler-debugger.js');
     grunt.file.copy("test/blanket.min.js", 'www/release/blanket.min.js');
     grunt.file.copy("test/jquery.mockjax.js", 'www/release/jquery.mockjax.js');
     grunt.file.copy("test/unit_tests.html", 'www/release/unit-tests-' + grunt.config.get('pkg').version + '.html');
+    grunt.task.run('umd:intercooler');
     grunt.task.run('uglify');
     grunt.task.run('regex-replace');
+    grunt.task.run('dist');
   });
 
   // Default task(s).

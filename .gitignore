@@ -5,3 +5,7 @@ www/.last_published
 www/_site/
 node_modules
 rails-demo
+
+# Dist folder is only for deployment to bower/npm/etc...
+# Dist should contain unversioned files as bower/npm/etc is what does the versioning for these files
+/dist/*
