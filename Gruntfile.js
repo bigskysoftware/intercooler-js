@@ -8,7 +8,7 @@ module.exports = function (grunt) {
         options: {
           src: 'src/intercooler.js',
           dest: 'www/release/intercooler-<%= pkg.version %>.js',
-          amdModuleId: 'intercooler', // The `require('intercooler')` id used to import, lower-case name is traditional
+          // amdModuleId: 'intercooler', // The `require('intercooler')` id used to import, lower-case name is traditional
           objectToExport: 'Intercooler',
           globalAlias: 'Intercooler', // Always force an Intercooler object
           deps: {
