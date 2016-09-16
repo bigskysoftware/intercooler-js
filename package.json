@@ -1,27 +1,28 @@
 {
   "name": "intercooler",
-  "version": "1.0.0",
-  "description": "Making AJAX as easy as anchor tags",                                                                                   
-  "homepage": "http://intercoolerjs.org",                                                                                               
-  "author": {                                                                                                                           
-    "name": "LeadDyno, LLC",                                                                                                            
-    "url": "http://www.leaddyno.com"                                                                                                    
-  },                                                                                                                                    
-  "keywords": [                                                                                                                         
-    "ajax",                                                                                                                             
-    "anchor",                                                                                                                           
-    "attribute"                                                                                                                         
-  ],                                                                                                                              
-  "license": "MIT",                                                                                                                     
-  "repository": {                                                                                                                       
-    "type": "git",                                                                                                                      
-    "url": "git://github.com/LeadDyno/intercooler-js"                                                                                   
+  "version": "1.0.1",
+  "description": "Making AJAX as easy as anchor tags",
+  "homepage": "http://intercoolerjs.org",
+  "author": {
+    "name": "LeadDyno, LLC",
+    "url": "http://www.leaddyno.com"
+  },
+  "keywords": [
+    "ajax",
+    "anchor",
+    "attribute"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/LeadDyno/intercooler-js"
   },
   "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-contrib-jshint": "~0.6.3",
-    "grunt-contrib-nodeunit": "~0.2.0",
-    "grunt-contrib-uglify": "~0.2.2",
-    "grunt-regex-replace": "~0.2.7"
+    "grunt": "^1.0.0",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-nodeunit": "^1.0.0",
+    "grunt-contrib-uglify": "^2.0.0",
+    "grunt-regex-replace": "^0.3.0",
+    "grunt-umd": "^2.3.6"
   }
 }
