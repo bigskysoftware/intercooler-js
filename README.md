@@ -4,6 +4,8 @@
 
 ## Introduction
 
+[![Join the chat at https://gitter.im/intercooler-js/Lobby](https://badges.gitter.im/intercooler-js/Lobby.svg)](https://gitter.im/intercooler-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Intercooler is a small (6.74KB gzipped) [jQuery](https://jquery.com/)-based library that allows you to add AJAX to your application using
 HTML attributes.
 
