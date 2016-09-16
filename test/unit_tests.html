@@ -1837,6 +1837,30 @@
       });
   </script>
 
+  <form ic-post-to='/btn_val_included'>
+    <button id="btn_val_button" name="foo" value="bar">click button</button>
+    <button id="btn_val_button2" name="foo" value="doh">click button</button>
+    <button id="btn_val_button3" name="bar" value="doh">click button</button>
+  </form>
+  <script>
+    intercoolerTest("Button value is included in request",
+      function (assert) {
+        $.mockjax({
+          url: "/btn_val_included",
+          response: function(settings) {
+            var params = parseParams(settings.data);
+            assert.equal(params["foo"], "bar");
+            assert.equal(params["bar"], null);
+            return "";
+          }
+        });
+        $("#btn_val_button").focus().click();
+      },
+      function (assert) {
+        // nothing to do here
+      });
+  </script>
+
 </div>
 </body>
 </html>
