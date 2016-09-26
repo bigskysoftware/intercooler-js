@@ -41,7 +41,7 @@ Intercooler can be downloaded or hot-linked [from the downloads page](http://int
 Or installed via bower:
 
      "dependencies": {
-        "intercooler-js" : "0.9.7"
+        "intercooler-js" : "1.0.0"
       }
 
 Intercooler depends on [jQuery](https://jquery.com/) v1.10.0 or higher.
@@ -61,3 +61,5 @@ To contribute a change to intercooler:
 * Create a pull request for that branch against `development` in the main repository
 
 Thank you to [all the contributors](https://github.com/LeadDyno/intercooler-js/graphs/contributors)!
+
+[![Join the chat at https://gitter.im/intercooler-js/Lobby](https://badges.gitter.im/intercooler-js/Lobby.svg)](https://gitter.im/intercooler-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
