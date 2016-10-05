@@ -9,7 +9,8 @@ layout: default
       </div>
       <div class="col-md-11">
         <h1>
-          <img src="/images/Intercooler_CMYK_noType_64.png" id="icon2"> intercooler<span class="intercooler-dot">.</span><span class="intercooler-js">js</span>
+          <img src="/images/Intercooler_CMYK_noType_64.png" id="icon2"> intercooler<span
+          class="intercooler-dot">.</span><span class="intercooler-js">js</span>
         </h1>
 
         <p>
@@ -25,7 +26,8 @@ layout: default
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
       <div class="alert alert-info text-center">
-        <i class="fa fa-exclamation-circle fa-lg"></i> Intercooler v1.0.1 has been <a href="/download.html">released</a>!  Join <a href="https://groups.google.com/forum/#!forum/intercooler-js">our newsgroup</a> to stay up to date.
+        <i class="fa fa-exclamation-circle fa-lg"></i> Intercooler v1.0.1 has been <a href="/download.html">released</a>!
+        Join <a href="https://groups.google.com/forum/#!forum/intercooler-js">our newsgroup</a> to stay up to date.
       </div>
 	        <pre>
   &lt;-- This anchor tag posts to '/click' when it is clicked -->
@@ -36,14 +38,14 @@ layout: default
 
       <div class="index-demo live-demo text-center">
         <script>
-          (function(){
+          (function() {
             var clicks = 0;
             $.mockjax({
-              url : "/click",
-              response: function (settings) {
+              url: "/click",
+              response: function(settings) {
                 clicks++;
                 if (clicks >= 5) {
-                  this.headers = {'X-IC-Redirect' : "/docs.html"};
+                  this.headers = {'X-IC-Redirect': "/docs.html"};
                   this.responseText = "";
                 } else if (clicks == 4) {
                   this.responseText = "<span>OK, enough clicking...  Go to the docs?</span>";
@@ -58,12 +60,14 @@ layout: default
           #intro-btn span {
             transition: all .15s;
           }
+
           #intro-btn.ic-transitioning span {
             opacity: 0;
             font-size: 2px;
           }
         </style>
-        <a id="intro-btn" class="btn btn-primary" ic-transition-duration="250ms" ic-post-to="/click"><span>Click Me!</span></a>
+        <a id="intro-btn" class="btn btn-primary" ic-transition-duration="250ms"
+           ic-post-to="/click"><span>Click Me!</span></a>
       </div>
 
       <hr/>
@@ -78,15 +82,15 @@ layout: default
     <div class="col-md-4">
       <h2>Simple</h2>
 
-      <p>Use familiar, declarative HTML attributes to add AJAX to your application.  Use web standards like CSS, REST
-      and Javascript events to enhance your app.</p>
+      <p>Use familiar, declarative HTML attributes to add AJAX to your application. Use web standards like CSS, REST
+        and Javascript events to enhance your app.</p>
 
     </div>
 
     <div class="col-md-4">
       <h2>Incremental</h2>
 
-      <p>Use Intercooler for as much or as little of your application as you would like.  If you have an existing app,
+      <p>Use Intercooler for as much or as little of your application as you would like. If you have an existing app,
         AJAX can be added incrementally without rewriting everything.</p>
 
     </div>
@@ -100,5 +104,4 @@ layout: default
 
   </div>
 </div>
-
 
