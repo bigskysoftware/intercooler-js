@@ -50,6 +50,10 @@ Intercooler depends on [jQuery](https://jquery.com/) v1.10.0 or higher.
 
 Intercooler is licenced under the [MIT License](https://raw.githubusercontent.com/LeadDyno/intercooler-js/master/LICENSE)
 
+## Official Programming Music
+
+[Rober Parker](https://robertparkerofficial.bandcamp.com/)
+
 ## Contributing
 
 To contribute a change to intercooler:
@@ -61,9 +65,5 @@ To contribute a change to intercooler:
 * Create a pull request for that branch against `development` in the main repository
 
 Thank you to [all the contributors](https://github.com/LeadDyno/intercooler-js/graphs/contributors)!
-
-## Official Programming Music
-
-[Rober Parker](https://robertparkerofficial.bandcamp.com/)
 
 [![Join the chat at https://gitter.im/intercooler-js/Lobby](https://badges.gitter.im/intercooler-js/Lobby.svg)](https://gitter.im/intercooler-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
