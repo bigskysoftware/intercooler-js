@@ -50,7 +50,7 @@ Intercooler depends on [jQuery](https://jquery.com/) v1.10.0 or higher.
 
 Intercooler is licenced under the [MIT License](https://raw.githubusercontent.com/LeadDyno/intercooler-js/master/LICENSE)
 
-## Official Programming Music
+## Official Theme Music
 
 [Rober Parker](https://robertparkerofficial.bandcamp.com/)
 
