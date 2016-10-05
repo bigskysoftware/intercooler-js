@@ -62,4 +62,8 @@ To contribute a change to intercooler:
 
 Thank you to [all the contributors](https://github.com/LeadDyno/intercooler-js/graphs/contributors)!
 
+## Official Programming Music
+
+[Rober Parker](https://robertparkerofficial.bandcamp.com/)
+
 [![Join the chat at https://gitter.im/intercooler-js/Lobby](https://badges.gitter.im/intercooler-js/Lobby.svg)](https://gitter.im/intercooler-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
