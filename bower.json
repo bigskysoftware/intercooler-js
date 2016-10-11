@@ -12,7 +12,8 @@
     "*.md",
     "AUTHORS.txt",
     "Gruntfile.js",
-    "package.json"
+    "package.json",
+    "www"
   ],
   "keywords": [
     "intercooler",
