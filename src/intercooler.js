@@ -548,7 +548,7 @@ var Intercooler = Intercooler || (function() {
         // include data from a focused button (to capture clicked button value)
         var button = closestForm.find('button:focus').first();
         if(button.length > 0) {
-          data += appendData(data, button.attr('name'), button.attr('value'));
+          data = appendData(data, button.attr('name'), button.attr('value'));
         }
       } else { // otherwise include the element
         data += "&" + elt.serialize();

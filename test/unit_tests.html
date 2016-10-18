@@ -1861,6 +1861,31 @@
       });
   </script>
 
+  <form id="addCategoryForm" ic-post-to="/categories/create" style="">
+    <div class="form-group">
+      <input type="text" class="form-control" name="Name" placeholder="Category Name - 'Apparel', 'Drinkware', etc..." required="" value="asdr">
+    </div>
+    <button id="addCategoryFormBtn" type="submit" class="btn btn-default">Save</button>
+    &nbsp;
+    <a id="cancelAddCategory" href="javascript:;">Cancel</a>
+  </form>
+  <script>
+    intercoolerTest("Regression form submission",
+      function (assert) {
+        $.mockjax({
+          url: "/categories/create",
+          response: function(settings) {
+            assert.equal(settings.data.lastIndexOf('ic-request'), 0);
+            return "";
+          }
+        });
+        $("#addCategoryFormBtn").focus().click();
+      },
+      function (assert) {
+        // nothing to do here
+      });
+  </script>
+
 </div>
 </body>
 </html>
