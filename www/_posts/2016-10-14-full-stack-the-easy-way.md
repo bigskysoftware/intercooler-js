@@ -5,27 +5,29 @@ nav: blog
 
 At a recent tech talk I gave, as is common, a recruiter spoke beforehand.  He said that the #1 thing that his clients
 were looking for were "full stack" developers, that is, developers who can conceive and deliver an entire application
-or feature within an application, from the front end all the way through to the data store.
+or an entire feature within an application, from the front end all the way through to the data store.
 
 It used to be that being a full-stack developer wasn't that bad.  You had to know a bit of SQL, how HTML worked and
-a bit of server side glue to get from point A to point B.  It wasn't easy to produce a *good* web application, but 
+a bit of server side glue to get from point A to point B.  It wasn't necessarily easy to produce a *good* web application, but 
 the basic technology stack was easy enough to understand.
 
-These days, [just the front end technologies](https://hackernoon.com/how-it-feels-to-learn-javascript-in-2016-d3a717dd577f#.dwh66ycs0) can be a huge learning curve
-and that doesn't even get you everything!  You still need to understand CSS and HTML on top of all that!
+These days, [just the front end technologies](https://hackernoon.com/how-it-feels-to-learn-javascript-in-2016-d3a717dd577f#.dwh66ycs0) can be a
+ huge learning curve.  And that doesn't even get you everything: you still need to understand CSS and HTML on top of all 
+ of that.  Yikes.
 
 There is a shortcut, though, that you can use to build modern web applications.  It takes a bit more effort than 
-the good old days, but only a bit.
+the good old days, but only just a bit.
  
 Here is the easy two-step process:
 
 ## Step 1: Learn Bootstrap &amp; CSS
 
-Putting in a bit of time with bootstrap and CSS tutorials will go a long way.  CSS should be used sparingly: don't get
-fancy with it and, if something is hard to do, don't do it.  Use the defaults as much as possible and add your personalized
-look around the frame of the application, rather than in the main content.  Keep the HTML as stripped down as possible.
+Put in a bit of time with [Bootstrap](http://getbootstrap.com/) and CSS tutorials.  Rely mostly on Bootstrap's core
+features: CSS should be used sparingly beyond the basics.  If something is hard to do, just don't do it.  
+Use the Bootstrap defaults as much as possible and add your personalized look around the frame of the application, rather 
+than in the main content pane of the application.  Keep the HTML as stripped down and simple as possible.
 
-There is vocal group of people is critical of bootstrap, and I understand the concern that everything can end up looking the same 
+A vocal group of people is critical of Bootstrap, and I understand the concern that all our applications can end up looking the same 
 (although I think that it is ambiguous that this is a bad thing, from a UX perspective).  Regardless, the default bootstrap
 look and feel, with a bit of CSS on top of it, is going to be better than what *you*, aspiring full stack developer, can do 
 and it is far better than the default browser look and feel.
