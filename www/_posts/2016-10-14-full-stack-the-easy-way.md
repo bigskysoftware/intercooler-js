@@ -17,10 +17,10 @@ front end: you still need to understand CSS and HTML on top of all of that.
 
 Yikes.
 
-There is a shortcut, though.  You can build modern web applications on your own with a lot less effort than that.  It 
-takes a bit more effort than the good old days of web developement, but only just a bit.
+There is a shortcut, though.  Doing full-stack development still takes a bit more effort than the good old days, but only
+just a bit.
  
-Here is the easy, two-step process:
+Assuming you know a bit of basic web programming, here is the easy, two-step process:
 
 ## Step 1: Learn Bootstrap &amp; CSS
 
