@@ -30,6 +30,7 @@ nav: docs
           <li><a href="#server_side_techniques">Server-Side Techniques</a></li>
           <li><a href="#debugging">Error Handling &amp; Debugging</a></li>
           <li><a href="#javascript">Using Intercooler from Javascript</a></li>
+          <li><a href="#cross-domain">Cross-Domain AJAX</a></li>
           <li><a href="#philosophy">Some Philosophy</a></li>
           <li><a href="#conclusion">Conclusion</a></li>
         </ul>
@@ -1259,6 +1260,96 @@ nav: docs
 
         {% include javascript_api.html %}
 
+      </section>
+
+      <section>
+        <a class="anchor" id="cross-domain"></a>
+
+        <h2>Cross-Domain AJAX</h2>
+
+        <p>Below are some basic guidelines for getting cross-domain AJAX requests working with
+          Intercooler. For an authoritative resource on cross-domain HTTP requests refer to the
+          <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS">MDN CORS documentation</a>.</p>
+
+        <h3>Response Headers</h3>
+
+        <p>For responses to cross-domain requests you will need to set the
+          <code>Access-Control-Allow-Origin</code> header to the domain which will be making
+          requests. For example:</p>
+
+        <pre>
+          res.header('Access-Control-Allow-Origin', 'http://example.com');
+        </pre>
+
+        <p>And if you want to use any of the Intercooler response headers you will need to
+          set the <code>Access-Control-Expose-Headers</code> to include the headers you want to use.
+          For example:</p>
+
+        <pre>
+          res.header('Access-Control-Expose-Headers', 'X-IC-Trigger, X-IC-Script');
+        </pre>
+
+        <h3>Cross-Domain Credentials (Cookies and HTTP Auth)</h3>
+
+        <p>If you want to send cookies with cross-domain AJAX requests you'll need to set the
+          <code>Access-Control-Allow-Credentials</code> header to <code>true</code> on the server.
+          For example:</p>
+
+        <pre>
+          res.header("Access-Control-Allow-Credentials", "true");
+        </pre>
+
+        <p>And also set <code>withCredentials</code> to <code>true</code> on the <code>xhrFields</code>
+          property of the AJAX settings in the browser. For example:</p>
+
+        <pre>
+          $(document).on("beforeAjaxSend.ic", function (evt, settings) {
+              settings.xhrFields = {withCredentials: true};
+          });
+        </pre>
+
+        <p>For more information on cross-domain AJAX requests and credentials refer to the
+          <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials">MDN XHR documentation</a>.</p>
+
+        <h3>Preflighted <code>OPTIONS</code> Requests</h3>
+
+        <p>Based on the
+          <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Preflighted_requests">MDN documentation on preflighted requests</a>,
+          a request is preflighted if:</p>
+
+        <blockquote>
+          <ul>
+            <li>It uses methods other than <code>GET</code>, <code>HEAD</code> or <code>POST</code>.
+              Also, if <code>POST</code> is used to send request data with a Content-Type other than
+              <code>application/x-www-form-urlencoded</code>, <code>multipart/form-data</code>, or
+              <code>text/plain</code>, e.g. if the <code>POST</code> request sends an XML payload to
+              the server using <code>application/xml</code> or <code>text/xml</code>, then the
+              request is preflighted.</li>
+            <li>It sets custom headers in the request (e.g. the request uses a header such as X-PINGOTHER)</li>
+          </ul>
+        </blockquote>
+
+        <p>To avoid preflighted <code>OPTIONS</code> requests for Intercooler requests you can do
+          the following:</p>
+
+        <pre>
+          $(document).on("beforeAjaxSend.ic", function (evt, settings) {
+              delete settings.headers['X-IC-Request'];
+              delete settings.headers['X-HTTP-Method-Override'];
+          });
+        </pre>
+
+        <p>Of course, this means that you won't have access to these headers on the server.</p>
+
+        <h3>jQuery and Cross-Domain AJAX</h3>
+
+        <p>Based on the <a href="http://api.jquery.com/jquery.ajax/">jQuery AJAX settings documentation</a>,
+          the following additional points should be noted about cross-domain AJAX:</p>
+
+        <ul>
+          <li>Synchronous operations are not supported.</li>
+          <li>The error handler is not called.</li>
+        </ul>
       </section>
 
       <section>
