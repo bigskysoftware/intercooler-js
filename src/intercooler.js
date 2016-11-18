@@ -787,7 +787,7 @@ var Intercooler = Intercooler || (function() {
     log(src, "refreshing dependencies for path " + dest, "DEBUG");
     $(getICAttributeSelector('ic-src')).each(function() {
       var fired = false;
-      if (verbFor($(this)) == "GET" && getICAttribute($(this), 'ic-deps') != 'ignore' && typeof(getICAttribute($(this), 'ic-poll')) == 'undefined') {
+      if (verbFor($(this)) == "GET" && getICAttribute($(this), 'ic-deps') != 'ignore') {
         if (isDependent(dest, getICAttribute($(this), 'ic-src'))) {
           if (src == null || $(src)[0] != $(this)[0]) {
             fireICRequest($(this));
