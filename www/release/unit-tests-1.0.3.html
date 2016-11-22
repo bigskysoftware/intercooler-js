@@ -121,6 +121,29 @@
       $.mockjaxSettings['responseTime'] = 1;
     });
 
+    // server sent events mock
+    Intercooler._internal.initEventSource = function(url) {
+      var eventHandlers = {};
+      var that = {
+        close : function(){},
+        fireMessage : function(msg){
+          that.onmessage({'data' : msg})
+        },
+        fireEvent : function(evt, data) {
+          var handlers = eventHandlers[evt];
+          for (var i = 0; i < handlers.length; i++) {
+            handlers[i]({'data' : data});
+          }
+        },
+        addEventListener : function(event, func) {
+          var handlers = eventHandlers[event] || [];
+          handlers.push(func);
+          eventHandlers[event] = handlers;
+        }
+      };
+      return that;
+    };
+
   </script>
 </head>
 <body>
@@ -1910,17 +1933,72 @@
   <div id="action-target-div-2"></div>
   <a id="action-target-div-btn" ic-action="toggleClass:foo" ic-action-target="#action-target-div" ic-target="#action-target-div-2"></a>
   <script>
-    QUnit.test("ic-action-target attribute works", function (assert) {
-        assert.equal(false, $("#action-target-div").is(".foo"));
+    intercoolerTest("ic-action-target attribute works", function (assert) {
+      assert.equal(false, $("#action-target-div").is(".foo"));
+      assert.equal(false, $("#action-target-div-2").is(".foo"));
+      assert.equal(false, $("#action-target-div-btn").is(".foo"));
+      $("#action-target-div-btn").click();
+    },
+      function (assert) {
+        assert.equal(true, $("#action-target-div").is(".foo"));
         assert.equal(false, $("#action-target-div-2").is(".foo"));
         assert.equal(false, $("#action-target-div-btn").is(".foo"));
-        $("#action-target-div-btn").click();
+      }, 500);
+  </script>
 
-      setTimeout(function () {
-          assert.equal(true, $("#action-target-div").is(".foo"));
-          assert.equal(false, $("#action-target-div-2").is(".foo"));
-          assert.equal(false, $("#action-target-div-btn").is(".foo"));
-        }, 20);
+
+  <div id='sse-1' ic-sse-src="/foo"></div>
+  <script>
+    intercoolerTest("Server Sent Event Source Works", function (assert) {
+      var mockSource = $("#sse-1").data("ic-event-sse-source");
+      assert.equal("", $("#sse-1").html());
+      mockSource.fireMessage("foo");
+    },
+    function(assert) {
+      assert.equal("foo", $("#sse-1").html());
+    });
+  </script>
+
+  <div id='sse-2' ic-sse-src="/foo" ic-swap-style="append">foo</div>
+  <script>
+    intercoolerTest("Server Sent Event Source Works w/ Append", function (assert) {
+      var mockSource = $("#sse-2").data("ic-event-sse-source");
+      assert.equal("foo", $("#sse-2").html());
+      mockSource.fireMessage("bar");
+    },
+    function(assert) {
+      assert.equal("foobar", $("#sse-2").html());
+    });
+  </script>
+
+  <div id='sse-3' ic-sse-src="/foo" ic-swap-style="prepend">foo</div>
+  <script>
+    intercoolerTest("Server Sent Event Source Works w/ Prepend", function (assert) {
+      var mockSource = $("#sse-3").data("ic-event-sse-source");
+      assert.equal("foo", $("#sse-3").html());
+      mockSource.fireMessage("bar");
+    },
+    function(assert) {
+      assert.equal("barfoo", $("#sse-3").html());
+    });
+  </script>
+
+  <div id='sse-4' ic-sse-src="/foo">
+    <span id='sse-4-inner' ic-get-from="/sse_triggered_req" ic-trigger-on="sse:foo"></span>
+  </div>
+
+  <script>
+    intercoolerTest("Server Sent Event Source Works As A Trigger", function(assert) {
+        $.mockjax({
+          url: "/sse_triggered_req",
+          responseText: "foo"
+        });
+        var mockSource = $("#sse-4").data("ic-event-sse-source");
+        assert.equal("", $("#sse-4-inner").html());
+        mockSource.fireEvent("foo", "bar");
+      },
+      function(assert) {
+        assert.equal("foo", $("#sse-4-inner").html());
       });
   </script>
 
