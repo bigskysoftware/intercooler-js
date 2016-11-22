@@ -139,6 +139,9 @@
           var handlers = eventHandlers[event] || [];
           handlers.push(func);
           eventHandlers[event] = handlers;
+        },
+        close : function () {
+          that.closed = true;
         }
       };
       return that;
@@ -1986,7 +1989,6 @@
   <div id='sse-4' ic-sse-src="/foo">
     <span id='sse-4-inner' ic-get-from="/sse_triggered_req" ic-trigger-on="sse:foo"></span>
   </div>
-
   <script>
     intercoolerTest("Server Sent Event Source Works As A Trigger", function(assert) {
         $.mockjax({
@@ -1999,6 +2001,25 @@
       },
       function(assert) {
         assert.equal("foo", $("#sse-4-inner").html());
+      });
+  </script>
+
+  <div id='sse-5' ic-get-from="/sse5" >
+    <span ic-sse-src="/foo" id='sse-5-inner'></span>
+  </div>
+  <script>
+    var closedMockSource = null;
+    intercoolerTest("Server Sent Events Sources are closed when element is swapped out", function(assert) {
+        $.mockjax({
+          url: "/sse5",
+          responseText: "foo"
+        });
+        closedMockSource = $("#sse-5-inner").data("ic-event-sse-source");
+        $("#sse-5").click();
+        assert.ok(closedMockSource.closed != true);
+      },
+      function(assert) {
+        assert.ok(closedMockSource.closed);
       });
   </script>
 
