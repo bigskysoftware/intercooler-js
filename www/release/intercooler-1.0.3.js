@@ -35,8 +35,6 @@ var Intercooler = Intercooler || (function() {
   var _scrollHandler = null;
   var _UUID = 1;
   var _readyHandlers = [];
-  var _window = $(window);
-  var _body = $('body');
 
   var _isDependentFunction = function(src, dest) {
     if (!src || !dest) {
@@ -142,14 +140,14 @@ var Intercooler = Intercooler || (function() {
   //============================================================
   function log(elt, msg, level) {
     if (elt == null) {
-      elt = _body;
+      elt = $('body');
     }
     elt.trigger("log.ic", [msg, level, elt]);
     if (level == "ERROR") {
       if (window.console) {
         window.console.log("Intercooler Error : " + msg);
       }
-      var errorUrl = closestAttrValue(_body, 'ic-post-errors-to');
+      var errorUrl = closestAttrValue($('body'), 'ic-post-errors-to');
       if (errorUrl) {
         $.post(errorUrl, {'error': msg});
       }
@@ -192,7 +190,7 @@ var Intercooler = Intercooler || (function() {
           }
         });
       };
-      _window.scroll(_scrollHandler);
+      $(window).scroll(_scrollHandler);
     }
   }
 
@@ -477,7 +475,7 @@ var Intercooler = Intercooler || (function() {
           if ($.contains(document, elt[0])) {
             elt.trigger("complete.ic", [elt, data, status, xhr, requestId]);
           } else {
-            _body.trigger("complete.ic", [elt, data, status, xhr, requestId]);
+            $('body').trigger("complete.ic", [elt, data, status, xhr, requestId]);
           }
         } catch (e) {
           log(elt, "Error during complete.ic event for " + requestId + " : " + formatError(e), "ERROR");
@@ -988,7 +986,7 @@ var Intercooler = Intercooler || (function() {
       } else if (getICAttribute(elt, 'ic-trigger-on') == 'scrolled-into-view') {
         initScrollHandler();
         setTimeout(function() {
-          _window.trigger('scroll');
+          $(window).trigger('scroll');
         }, 100); // Trigger a scroll in case element is already viewable
       } else {
         var triggerOn = getICAttribute(elt, 'ic-trigger-on').split(" ");
@@ -1112,8 +1110,8 @@ var Intercooler = Intercooler || (function() {
 
   function isScrolledIntoView(elem) {
     elem = $(elem);
-    var docViewTop = _window.scrollTop();
-    var docViewBottom = docViewTop + _window.height();
+    var docViewTop = $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
 
     var elemTop = elem.offset().top;
     var elemBottom = elemTop + elem.height();
@@ -1133,7 +1131,7 @@ var Intercooler = Intercooler || (function() {
         offset = parseInt(closestAttrValue(target, 'ic-scroll-offset'));
       }
       var currentPosition = target.offset().top;
-      var portalTop = _window.scrollTop();
+      var portalTop = $(window).scrollTop();
       var portalEnd = portalTop + window.innerHeight;
       //if the current top of this element is not visible, scroll it to the top position
       if (currentPosition < portalTop || currentPosition > portalEnd) {
@@ -1436,7 +1434,7 @@ var Intercooler = Intercooler || (function() {
 
     // Reset history if the history config has changed
     if (historyConfigHasChanged(historySupportData)) {
-      log(getTargetForHistory(_body), "Intercooler History configuration changed, clearing history", "INFO");
+      log(getTargetForHistory($('body')), "Intercooler History configuration changed, clearing history", "INFO");
       clearHistory();
     }
 
@@ -1477,7 +1475,7 @@ var Intercooler = Intercooler || (function() {
     function updateLRUList(url) {
       var lruList = historySupportData.lruList;
       var currentIndex = lruList.indexOf(url);
-      var t = getTargetForHistory(_body);
+      var t = getTargetForHistory($('body'));
       // found in current list, shift it to the end
       if (currentIndex >= 0) {
         log(t, "URL found in LRU list, moving to end", "INFO");
@@ -1509,7 +1507,7 @@ var Intercooler = Intercooler || (function() {
           clearHistory();
           storage.setItem(restorationData.id, content);
         } catch (e) {
-          log(getTargetForHistory(_body), "Unable to save intercooler history with entire history cleared, is something else eating " +
+          log(getTargetForHistory($('body')), "Unable to save intercooler history with entire history cleared, is something else eating " +
           "local storage? History Limit:" + slotLimit, "ERROR");
         }
       }
@@ -1533,13 +1531,13 @@ var Intercooler = Intercooler || (function() {
       if (windowToAdd.onpopstate == null || windowToAdd.onpopstate['ic-on-pop-state-handler'] != true) {
         var currentOnPopState = windowToAdd.onpopstate;
         windowToAdd.onpopstate = function(event) {
-          getTargetForHistory(_body).trigger('handle.onpopstate.ic');
+          getTargetForHistory($('body')).trigger('handle.onpopstate.ic');
           if (!handleHistoryNavigation(event)) {
             if (currentOnPopState) {
               currentOnPopState(event);
             }
           }
-          getTargetForHistory(_body).trigger('pageLoad.ic');
+          getTargetForHistory($('body')).trigger('pageLoad.ic');
         };
         windowToAdd.onpopstate['ic-on-pop-state-handler'] = true;
       }
@@ -1557,7 +1555,7 @@ var Intercooler = Intercooler || (function() {
       var historyEntry = makeHistoryEntry(originalHtml, yOffset, originalUrl);
       history.replaceState({"ic-id": historyEntry.id}, "", "");
 
-      var t = getTargetForHistory(_body);
+      var t = getTargetForHistory($('body'));
       var restorationData = makeHistoryEntry(t.html(), window.pageYOffset, newUrl);
       history.pushState({'ic-id': restorationData.id}, "", newUrl);
 
@@ -1569,7 +1567,7 @@ var Intercooler = Intercooler || (function() {
       if (data && data['ic-id']) {
         var historyData = JSON.parse(storage.getItem(data['ic-id']));
         if (historyData) {
-          processICResponse(historyData["content"], getTargetForHistory(_body), true);
+          processICResponse(historyData["content"], getTargetForHistory($('body')), true);
           if (historyData["yOffset"]) {
             window.scrollTo(0, historyData["yOffset"])
           }
@@ -1578,7 +1576,7 @@ var Intercooler = Intercooler || (function() {
           $.get(currentUrl(), {'ic-restore-history': true}, function(data, status) {
             var newDoc = createDocument(data);
             var replacementHtml = getTargetForHistory(newDoc).html();
-            processICResponse(replacementHtml, getTargetForHistory(_body), true);
+            processICResponse(replacementHtml, getTargetForHistory($('body')), true);
           });
         }
       }
@@ -1595,7 +1593,7 @@ var Intercooler = Intercooler || (function() {
     }
 
     function snapshotForHistory(newUrl) {
-      var t = getTargetForHistory(_body);
+      var t = getTargetForHistory($('body'));
       t.trigger("beforeHistorySnapshot.ic", [t]);
       _snapshot = {
         newUrl: newUrl,
@@ -1634,10 +1632,7 @@ var Intercooler = Intercooler || (function() {
         addPopStateHandler: addPopStateHandler,
         supportData: supportData,
         dumpLocalStorage: dumpLocalStorage,
-        updateLRUList: updateLRUList,
-        initEventSource: function(url) {
-          return new EventSource(url);
-        }
+        updateLRUList: updateLRUList
       }
     };
   }
@@ -1659,7 +1654,7 @@ var Intercooler = Intercooler || (function() {
   try {
     _history = newIntercoolerHistory(localStorage, window.history, getSlotLimit(), .1);
   } catch(e) {
-    log(_body, "Could not initialize history", "WARN");
+    log($('body'), "Could not initialize history", "WARN");
   }
 
   //============================================================
@@ -1755,7 +1750,10 @@ var Intercooler = Intercooler || (function() {
     },
     _internal: {
       init: init,
-      replaceOrAddMethod: replaceOrAddMethod
+      replaceOrAddMethod: replaceOrAddMethod,
+      initEventSource: function(url) {
+        return new EventSource(url);
+      }
     }
   };
 })();
