@@ -1931,7 +1931,7 @@
 
   <div id="action-target-div"></div>
   <div id="action-target-div-2"></div>
-  <a id="action-target-div-btn" ic-action="toggleClass:foo" ic-action-target="#action-target-div" ic-target="#action-target-div-2"></a>
+  <a id="action-target-div-btn" ic-action="addClass:foo" ic-action-target="#action-target-div" ic-target="#action-target-div-2"></a>
   <script>
     intercoolerTest("ic-action-target attribute works", function (assert) {
       assert.equal(false, $("#action-target-div").is(".foo"));
@@ -1943,7 +1943,7 @@
         assert.equal(true, $("#action-target-div").is(".foo"));
         assert.equal(false, $("#action-target-div-2").is(".foo"));
         assert.equal(false, $("#action-target-div-btn").is(".foo"));
-      }, 500);
+    });
   </script>
 
 
