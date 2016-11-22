@@ -1186,12 +1186,12 @@ var Intercooler = Intercooler || (function() {
           fireReadyStuff(target);
           autoFocus(target);
         } else {
-          if (closestAttrValue(elt, 'ic-swap-style') == "prepend") {
+          if (getICAttribute(elt, 'ic-swap-style') == "prepend") {
             prepend(target, contentToSwap);
             processNodes(contentToSwap);
             fireReadyStuff(target);
             autoFocus(target);
-          } else if (closestAttrValue(elt, 'ic-swap-style') == "append") {
+          } else if (getICAttribute(elt, 'ic-swap-style') == "append") {
             append(target, contentToSwap);
             processNodes(contentToSwap);
             fireReadyStuff(target);
