@@ -23,6 +23,7 @@ nav: docs
           <li><a href="#transitions">CSS Element Transitions</a></li>
           <li><a href="#client-side">Client Side Tools</a></li>
           <li><a href="#history">History</a></li>
+          <li><a href="#sse">Server Sent Events <sub>BETA</sub></a></li>
           <li><a href="#requests">Anatomy of an Intercooler Request</a></li>
           <li><a href="#responses">Anatomy of an Intercooler Response</a></li>
           <li><a href="#dependencies">Dependencies In Intercooler</a></li>
@@ -887,7 +888,59 @@ nav: docs
 
       </section>
 
-      <section>
+        <section>
+          <a class="anchor" id="sse"></a>
+
+          <h2>Server Sent Events <sub>BETA</sub></h2>
+
+          <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events">Server Sent Events</a> are an HTML5
+          technology allowing for a server to push content to an HTML client.  They simpler than WebSockets but are
+          unidirectional, allowing a server to send push content to a browser only.</p>
+
+          <p>Browser support for Sever Sent Events is <a href="http://caniuse.com/#search=server-sent">widespread</a>, and
+            there are <a href="https://github.com/Yaffle/EventSource">polyfills available</a> for browsers that do not support them natively.
+          </p>
+
+          <p>Intercooler supports Server Sent Events with the <a href="/attributes/ic-sse-src.html"><code>ic-sse-src</code></a>
+          attribute.  This tells intercooler to establish a Server Sent Event connection with the given URL and listen for
+          both messages and events.</p>
+
+  <pre>
+    &lt;div ic-sse-src="/sse_endpoint">A Server-Sent Event Element&lt;/div>
+  </pre>
+
+          <h3>Server Sent Event Sources</h3>
+
+          <p>The simplest way to use Server Sent Events is via messages.  Server Sent Messages will simply have the
+          content of the message swapped in as the body of the target that the attribute is on.  This can be used as an alternative
+          to the more common client-side polling behavior.</p>
+
+          <p>If you wish to append or prepend, rather than replace the content, you can use the
+            <a href="/attributes/ic-swap-type.html"><code>ic-swap-type</code></a> attribute to
+            specify so.</p>
+
+          <h3>Server Sent Event Triggers</h3>
+
+          <p>Another technique with Server Side Events is to use events (rather than messages) to trigger a request, rather
+            than replace content directly.  This can be done by specifying a Server Side Event source with the
+            <code>ic-sse-src</code>
+          tag on a parent element, and then specifying the Server Side Event that triggers a given child using the
+          special <code>sse:</code> prefix.</p>
+
+          <pre>
+  &lt;div ic-sse-src="/sse_endpoint">
+    &lt;span ic-trigger-on="sse:contact_updated" ic-src="/contact/1">&lt;/span>
+  &lt;/div>
+         </pre>
+
+          <p>For the HTML above, the span HTML will be updated from the <code>/contact/1</code> URL when a
+          Server Side Event of the name <code>contact_updated</code> is fired.</p>
+
+          <p><strong>Note:</strong> Server Sent Events are relatively new and are a beta feature of both intercooler
+          and the web in general.  They should be used with caution.</p>
+        </section>
+
+        <section>
         <a class="anchor" id="requests"></a>
 
         <h2>Anatomy Of An Intercooler Request</h2>
