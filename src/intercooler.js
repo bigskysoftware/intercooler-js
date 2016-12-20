@@ -1226,6 +1226,7 @@ var Intercooler = Intercooler || (function() {
       setTimeout(function() {
         try {
           doSwap();
+          target.trigger('afterSwap.ic');
         } catch (e) {
           log(elt, "Error during content swaop : " + formatError(e), "ERROR");
         }
