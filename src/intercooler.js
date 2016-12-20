@@ -1003,7 +1003,6 @@ var Intercooler = Intercooler || (function() {
             }
             if (preventDefault(elt, e)) {
               e.preventDefault();
-              return false;
             }
             return true;
           });
