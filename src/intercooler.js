@@ -1094,7 +1094,7 @@ var Intercooler = Intercooler || (function() {
 
   function isScrolledIntoView(elem) {
     elem = $(elem);
-    if (elem.height() == 0) {
+    if (elem.height() == 0 && elem.width() == 0) {
        return false;
     }
     var docViewTop = $(window).scrollTop();
