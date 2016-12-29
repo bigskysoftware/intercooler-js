@@ -2023,6 +2023,33 @@
       });
   </script>
 
+  <div id="anchor-regression-div">
+      <a id="anchor-regression-a" class="button button--primary" ic-post-to="/anchor_regression?issue=1" ic-replace-target="true">
+          <span>Click Me!</span>
+      </a>
+  </div>
+  <script>
+      intercoolerTest("replace-target anchor regression test", function(assert) {
+          $.mockjax({
+              url: /\/anchor_regression.*/,
+              response: function (settings) {
+                  var queryStr = settings.url.substring(settings.url.lastIndexOf('?'));
+                  var params = parseParams(queryStr);
+                  var issue = parseInt(params['issue']);
+                  this.responseText = '\
+<a id="anchor-regression-a" class="button button--primary" ic-post-to="/anchor_regression?issue=' + (issue + 1) + '" ic-replace-target="true">\
+    <span>You clicked me ' + issue + ' times...</span>\
+</a>';
+              }
+          });
+          $("#anchor-regression-a").click();
+      },
+      function(assert) {
+          assert.equal("You clicked me 1 times...", $("#anchor-regression-a").find('span').text());
+          assert.equal(1, $("#anchor-regression-div").find('a').length);
+      });
+  </script>
+
 </div>
 </body>
 </html>
