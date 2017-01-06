@@ -42,8 +42,14 @@ nav: tutorial
         <i class="fa fa-spinner fa-spin"></i> Saving...
       </span>
   </span>
+
   <form>
     <ul id="sortable-list" ic-put-to="/colors" ic-trigger-on="sort" ic-indicator="#indicator">
+      <li>Blue <input type="hidden" name="colors" value="Blue"></li>
+      <li>Red <input type="hidden" name="colors" value="Red"></li>
+      <li>Green <input type="hidden" name="colors" value="Green"></li>
+      <li>Yellow <input type="hidden" name="colors" value="Yellow"></li>
+      <li>Purple <input type="hidden" name="colors" value="Purple"></li>
     </ul>
   </form>
 
@@ -55,9 +61,6 @@ nav: tutorial
     $(function(){
         var list = document.getElementById("sortable-list");
         Sortable.create(list); // That's all.
-
-        // initialize the list (this would be rendered inline if we were using a server rather than mockjax)
-        $(list).html(colorListTemplate(colors));
     });
 
     //========================================================================
