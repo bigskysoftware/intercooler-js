@@ -46,10 +46,11 @@ nav: tutorial
     <ul id="sortable-list" ic-put-to="/colors" ic-trigger-on="sort" ic-indicator="#indicator">
     </ul>
   </form>
+
   <script>
 
     //========================================================================
-    // Hook the typeahead api into the widget, using intercooler for the source callback
+    // Initialize the sortable list using SortableJS
     //========================================================================
     $(function(){
         var list = document.getElementById("sortable-list");
