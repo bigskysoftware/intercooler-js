@@ -245,8 +245,3 @@ section {
 .blog-summary em {
   border-bottom: 1px solid whitesmoke;
 }
-
-.consulting .row:not(:first-child) {
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
