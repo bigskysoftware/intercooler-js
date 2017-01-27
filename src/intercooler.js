@@ -450,6 +450,7 @@ var Intercooler = Intercooler || (function() {
         if (onError) {
           globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
         }
+        processHeaders(elt, xhr);
         log(elt, "AJAX request " + requestId + " to " + url + " experienced an error: " + str, "ERROR");
       },
       complete: function(xhr, status) {
