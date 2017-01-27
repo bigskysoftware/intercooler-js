@@ -315,9 +315,18 @@ var Intercooler = Intercooler || (function() {
 
     if (xhr.getResponseHeader("X-IC-Remove")) {
       if (elt) {
-        target = getTarget(elt);
+        var removeVal = xhr.getResponseHeader("X-IC-Remove");
+        var removeValAsInterval = parseInterval(removeVal);
         log(elt, "X-IC-Remove header found.", "DEBUG");
-        remove(target);
+        target = getTarget(elt);
+        if(removeVal == "true" || removeValAsInterval == null) {
+          remove(target);
+        } else {
+          target.addClass('ic-removing');
+          setTimeout(function () {
+            remove(target);
+          }, removeValAsInterval);
+        }
       }
     }
 
@@ -466,6 +475,7 @@ var Intercooler = Intercooler || (function() {
         if (onError) {
           globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
         }
+        processHeaders(elt, xhr);
         log(elt, "AJAX request " + requestId + " to " + url + " experienced an error: " + str, "ERROR");
       },
       complete: function(xhr, status) {

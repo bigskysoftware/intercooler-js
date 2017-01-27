@@ -33,7 +33,8 @@ nav: tutorial
         </li>
         <li>
           The server side returns an empty response, with the special header <code>X-IC-Remove</code> set to
-          <code>true</code>, which tells intercooler to remove the target (in this case, the closest row.)
+          <code>1s</code>, which tells intercooler to remove the target (in this case, the closest row) after
+          1 second, allowing for a CSS3 transition to fade the row out.
         </li>
       </ul>
 
@@ -100,7 +101,6 @@ nav: tutorial
       </tr>
       </tbody>
     </table>
-  </form>
 
   <script>
 
@@ -110,10 +110,18 @@ nav: tutorial
     $.mockjax({
       url: /\/contacts\/.*/,
       responseTime: 750,
-      headers : { 'X-IC-Remove' : "true" }
+      headers : { 'X-IC-Remove' : "1s" }
     });
-
   </script>
+
+
+  <style>
+    tr.ic-removing td {
+      opacity: 0;
+      transition: all 1s ease;
+    }
+  </style>
+
   </div>
         <div role="tabpanel" class="tab-pane" id="code">
           <pre id="src-pre"></pre>

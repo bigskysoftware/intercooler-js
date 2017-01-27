@@ -86,7 +86,10 @@
         <code>X-IC-Remove</code>
       </td>
       <td>
-        Removes the target element.
+        Removes the target element.  The value of this header can either be <code>true</code> in which case the
+        element is removed immediately or a numeric time delay (e.g. <code>750ms</code> or <code>2s</code>) in which case
+        it will be removed after the given amount of time.  If there is a delay the <code>ic-removing</code> class
+        will be added to the element, allowing for a CSS3 animation to be applied prior to the elements removal.
       </td>
     </tr>
     <tr>

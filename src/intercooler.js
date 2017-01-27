@@ -299,9 +299,18 @@ var Intercooler = Intercooler || (function() {
 
     if (xhr.getResponseHeader("X-IC-Remove")) {
       if (elt) {
-        target = getTarget(elt);
+        var removeVal = xhr.getResponseHeader("X-IC-Remove");
+        var removeValAsInterval = parseInterval(removeVal);
         log(elt, "X-IC-Remove header found.", "DEBUG");
-        remove(target);
+        target = getTarget(elt);
+        if(removeVal == "true" || removeValAsInterval == null) {
+          remove(target);
+        } else {
+          target.addClass('ic-removing');
+          setTimeout(function () {
+            remove(target);
+          }, removeValAsInterval);
+        }
       }
     }
 
