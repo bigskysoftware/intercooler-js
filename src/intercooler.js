@@ -542,6 +542,9 @@ var Intercooler = Intercooler || (function() {
 
   function appendData(data, string, value) {
     if ($.type(data) === "string") {
+      if($.type(value) !== "string") {
+        value = JSON.stringify(value);
+      }
       return data + "&" + string + "=" + encodeURIComponent(value);
     } else {
       data.append(string, value);

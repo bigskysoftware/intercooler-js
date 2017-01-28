@@ -1363,15 +1363,18 @@
     }, 500);
 </script>
 
-<div id="test-include-with-json" ic-post-to="/include_with_json" ic-include='{"foo":"bar", "doh" : "rey"}'></div>
+<div id="test-include-with-json" ic-post-to="/include_with_json" ic-include='{"foo":"bar", "doh" : "rey", "obj" : {"a" : "b"}, "bool" : true, "int" : 42}'></div>
 <script>
   intercoolerTest("ic-include works with JSON content", function (assert) {
       $.mockjax({
         url: "/include_with_json",
         response: function(settings) {
           var params = parseParams(settings.data);
-          assert.ok(params['foo'] != null);
-          assert.ok(params['doh'] != null);
+          assert.equal(params['foo'], "bar");
+          assert.equal(params['doh'], "rey");
+          assert.equal(params['bool'], "true");
+          assert.equal(params['int'], "42");
+          assert.equal(params['obj'], '{"a":"b"}');
         }
       });
       $("#test-include-with-json").click();
