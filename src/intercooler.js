@@ -241,7 +241,7 @@ var Intercooler = Intercooler || (function() {
 
     if (xhr.getResponseHeader("X-IC-Script")) {
       log(elt, "X-IC-Script: evaling " + xhr.getResponseHeader("X-IC-Script"), "DEBUG");
-      globalEval(xhr.getResponseHeader("X-IC-Script"));
+      globalEval(xhr.getResponseHeader("X-IC-Script"), [["elt", elt]]);
     }
 
     if (xhr.getResponseHeader("X-IC-Redirect")) {
@@ -446,7 +446,7 @@ var Intercooler = Intercooler || (function() {
         log(elt, "before AJAX request " + requestId + ": " + type + " to " + url, "DEBUG");
         var onBeforeSend = closestAttrValue(elt, 'ic-on-beforeSend');
         if (onBeforeSend) {
-          globalEval(onBeforeSend, [["data", data], ["settings", settings], ["xhr", xhr]]);
+          globalEval(onBeforeSend, [["elt", elt], ["data", data], ["settings", settings], ["xhr", xhr]]);
         }
       },
       success: function(data, textStatus, xhr) {
@@ -454,7 +454,7 @@ var Intercooler = Intercooler || (function() {
         log(elt, "AJAX request " + requestId + " was successful.", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
         if (onSuccess) {
-          if (globalEval(onSuccess, [["data", data], ["textStatus", textStatus], ["xhr", xhr]]) == false) {
+          if (globalEval(onSuccess, [["elt", elt], ["data", data], ["textStatus", textStatus], ["xhr", xhr]]) == false) {
             return;
           }
         }
@@ -492,7 +492,7 @@ var Intercooler = Intercooler || (function() {
         elt.trigger("error.ic", [elt, status, str, xhr]);
         var onError = closestAttrValue(elt, 'ic-on-error');
         if (onError) {
-          globalEval(onError, [["status", status], ["str", str], ["xhr", xhr]]);
+          globalEval(onError, [["elt", elt], ["status", status], ["str", str], ["xhr", xhr]]);
         }
         processHeaders(elt, xhr);
         log(elt, "AJAX request " + requestId + " to " + url + " experienced an error: " + str, "ERROR");
@@ -511,7 +511,7 @@ var Intercooler = Intercooler || (function() {
         }
         var onComplete = closestAttrValue(elt, 'ic-on-complete');
         if (onComplete) {
-          globalEval(onError, [["xhr", xhr], ["status", status]]);
+          globalEval(onError, [["elt", elt], ["xhr", xhr], ["status", status]]);
         }
       }
     };
@@ -1035,7 +1035,7 @@ var Intercooler = Intercooler || (function() {
 
             var onBeforeTrigger = closestAttrValue(elt, 'ic-on-beforeTrigger');
             if (onBeforeTrigger) {
-              if (globalEval(onError, [["evt", e], ["elt", elt]]) == false) {
+              if (globalEval(onError, [["elt", elt], ["evt", e], ["elt", elt]]) == false) {
                 log(elt, "ic-trigger cancelled by ic-on-beforeTrigger", "DEBUG");
                 return false;
               }
