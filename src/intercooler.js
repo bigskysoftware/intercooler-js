@@ -867,7 +867,7 @@ var Intercooler = Intercooler || (function() {
         return 'click';
       } else if (elt.is('form')) {
         return 'submit';
-      } else if (elt.is(':input')) {
+      } else if (elt.is('input, textarea, select, button')) {
         return 'change';
       } else {
         return 'click';
@@ -951,7 +951,7 @@ var Intercooler = Intercooler || (function() {
   function registerSSE(sourceElement, event) {
     var source = sourceElement.data('ic-event-sse-source');
     var eventMap = sourceElement.data('ic-event-sse-map');
-    if(eventMap[event] != true) {
+    if(source.addEventListener && eventMap[event] != true) {
       source.addEventListener(event, function(){
         sourceElement.find(getICAttributeSelector('ic-trigger-on')).each(function(){
           var _that = $(this);
@@ -1661,45 +1661,48 @@ var Intercooler = Intercooler || (function() {
   // Local references transport
   //============================================================
 
-  $.ajaxTransport("text", function(options, origOptions) {
-    if (origOptions.url[0] == "#") {
-      var ltAttr = fixICAttributeName("ic-local-");
-      var src = $(origOptions.url);
-      var rsphdr = [];
-      var status = 200;
-      var statusText = "OK";
-      src.each(function(i, el) {
-        $.each(el.attributes, function(j, attr) {
-          if (attr.name.substr(0, ltAttr.length) == ltAttr) {
-            var lhName = attr.name.substring(ltAttr.length);
-            if (lhName == "status") {
-              var statusLine = attr.value.match(/(\d+)\s?(.*)/);
-              if (statusLine != null) {
-                status = statusLine[1];
-                statusText = statusLine[2];
-              } else {
-                status = "500";
-                statusText = "Attribute Error";
+  if($.ajaxTransport) {
+    $.ajaxTransport("text", function(options, origOptions) {
+        if (origOptions.url[0] == "#") {
+          var ltAttr = fixICAttributeName("ic-local-");
+          var src = $(origOptions.url);
+          var rsphdr = [];
+          var status = 200;
+          var statusText = "OK";
+          src.each(function(i, el) {
+            $.each(el.attributes, function(j, attr) {
+              if (attr.name.substr(0, ltAttr.length) == ltAttr) {
+                var lhName = attr.name.substring(ltAttr.length);
+                if (lhName == "status") {
+                  var statusLine = attr.value.match(/(\d+)\s?(.*)/);
+                  if (statusLine != null) {
+                    status = statusLine[1];
+                    statusText = statusLine[2];
+                  } else {
+                    status = "500";
+                    statusText = "Attribute Error";
+                  }
+                } else {
+                  rsphdr.push(lhName + ": " + attr.value);
+                }
               }
-            } else {
-              rsphdr.push(lhName + ": " + attr.value);
+            });
+          });
+          var rsp = src.length > 0 ? src.html() : "";
+          return {
+            send: function(reqhdr, completeCallback) {
+              completeCallback(status, statusText, {html: rsp}, rsphdr.join("\n"));
+            },
+            abort: function() {
             }
-          }
-        });
-      });
-      var rsp = src.length > 0 ? src.html() : "";
-      return {
-        send: function(reqhdr, completeCallback) {
-          completeCallback(status, statusText, {html: rsp}, rsphdr.join("\n"));
-        },
-        abort: function() {
+          };
+        } else {
+          return null;
         }
-      };
-    } else {
-      return null;
-    }
+      }
+    );
+
   }
-  );
 
   //============================================================
   // Bootstrap
