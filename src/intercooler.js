@@ -300,6 +300,7 @@ var Intercooler = Intercooler || (function() {
     if (xhr.getResponseHeader("X-IC-Remove")) {
       if (elt) {
         var removeVal = xhr.getResponseHeader("X-IC-Remove");
+        removeVal += ''; // normalize as string for zapto
         var removeValAsInterval = parseInterval(removeVal);
         log(elt, "X-IC-Remove header found.", "DEBUG");
         target = getTarget(elt);
@@ -672,7 +673,7 @@ var Intercooler = Intercooler || (function() {
   }
 
   function autoFocus(elt) {
-    elt.find('[autofocus]:last').focus();
+    elt.find('[autofocus]').last().focus();
   }
 
   function processMacros(elt) {
@@ -879,7 +880,7 @@ var Intercooler = Intercooler || (function() {
 
   function preventDefault(elt, evt) {
     return elt.is('form') ||
-          (elt.is(':submit') && elt.closest('form').length == 1) ||
+          (elt.is('input[type="submit"], button[type="submit"]') && elt.closest('form').length == 1) ||
           (elt.is('a') && elt.is('[href]') && elt.attr('href').indexOf('#') != 0);
   }
 
@@ -1263,7 +1264,13 @@ var Intercooler = Intercooler || (function() {
   }
 
   function maybeFilter(newContent, filter) {
-    var asQuery = $($.parseHTML(newContent, null, true));
+    var asQuery;
+    if ($.zepto) {
+      var newDoc = createDocument(newContent);
+      asQuery = $(newDoc).find('body').contents();
+    } else {
+      asQuery = $($.parseHTML(newContent, null, true));
+    }
     if (filter) {
       return asQuery.filter(filter).add(asQuery.find(filter)).contents();
     } else {
