@@ -333,7 +333,7 @@ var Intercooler = Intercooler || (function() {
     elt.removeClass('disabled');
     elt.data('ic-request-in-flight', false);
     if (elt.data('ic-next-request')) {
-      elt.data('ic-next-request')();
+      elt.data('ic-next-request')["req"]();
       elt.data('ic-next-request', null);
     }
   }
@@ -1318,7 +1318,7 @@ var Intercooler = Intercooler || (function() {
 
         // if an existing request is in flight for this element, push this request as the next to be executed
         if (elt.data('ic-request-in-flight') == true) {
-          elt.data('ic-next-request', invokeRequest);
+          elt.data('ic-next-request', {"req" : invokeRequest});
           return;
         }
 
@@ -1721,6 +1721,12 @@ var Intercooler = Intercooler || (function() {
     fireReadyStuff(elt);
     if(_history) {
       _history.addPopStateHandler(window);
+    }
+    if($.zepto) {
+      $('body').data('zeptoDataTest', {});
+      if(typeof($('body').data('zeptoDataTest')) == "string") {
+        console.log("!!!! Please include the data module with Zepto!  Intercooler requires full data support to function !!!!")
+      }
     }
     if (location.search && location.search.indexOf("ic-launch-debugger=true") >= 0) {
       Intercooler.debug();
