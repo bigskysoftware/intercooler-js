@@ -122,11 +122,18 @@ var Intercooler = Intercooler || (function() {
   //============================================================
   // Utility Methods
   //============================================================
+  function triggerEvent(elt, event, args){
+    if($.zepto) {
+      event = event.split(".").reverse().join(":");
+    }
+    elt.trigger(event, args);
+  }
+
   function log(elt, msg, level) {
     if (elt == null) {
       elt = $('body');
     }
-    elt.trigger("log.ic", [msg, level, elt]);
+    triggerEvent(elt, "log.ic", [msg, level, elt]);
     if (level == "ERROR") {
       if (window.console) {
         window.console.log("Intercooler Error : " + msg);
@@ -222,7 +229,7 @@ var Intercooler = Intercooler || (function() {
 
   function processHeaders(elt, xhr) {
     elt = $(elt);
-    elt.trigger("beforeHeaders.ic", [elt, xhr]);
+    triggerEvent(elt, "beforeHeaders.ic", [elt, xhr]);
     log(elt, "response headers: " + xhr.getAllResponseHeaders(), "DEBUG");
     var target = null;
 
@@ -278,14 +285,14 @@ var Intercooler = Intercooler || (function() {
       // Deprecated API
       if (xhr.getResponseHeader("X-IC-Trigger-Data")) {
         var triggerArgs = $.parseJSON(xhr.getResponseHeader("X-IC-Trigger-Data"));
-        target.trigger(triggerValue, triggerArgs);
+        triggerEvent(target, triggerValue, triggerArgs);
       } else {
         if (triggerValue.indexOf("{") >= 0) {
           $.each($.parseJSON(triggerValue), function(event, args) {
-            target.trigger(event, args);
+            triggerEvent(target, event, args);
           });
         } else {
-          target.trigger(triggerValue, []);
+          triggerEvent(target, triggerValue, []);
         }
       }
     }
@@ -315,7 +322,7 @@ var Intercooler = Intercooler || (function() {
       }
     }
 
-    elt.trigger("afterHeaders.ic", [elt, xhr]);
+    triggerEvent(elt, "afterHeaders.ic", [elt, xhr]);
 
     return true;
   }
@@ -408,7 +415,7 @@ var Intercooler = Intercooler || (function() {
         "X-HTTP-Method-Override": type
       },
       beforeSend: function(xhr, settings) {
-        elt.trigger("beforeSend.ic", [elt, data, settings, xhr, requestId]);
+        triggerEvent(elt, "beforeSend.ic", [elt, data, settings, xhr, requestId]);
         log(elt, "before AJAX request " + requestId + ": " + type + " to " + url, "DEBUG");
         var onBeforeSend = closestAttrValue(elt, 'ic-on-beforeSend');
         if (onBeforeSend) {
@@ -416,7 +423,7 @@ var Intercooler = Intercooler || (function() {
         }
       },
       success: function(data, textStatus, xhr) {
-        elt.trigger("success.ic", [elt, data, textStatus, xhr, requestId]);
+        triggerEvent(elt, "success.ic", [elt, data, textStatus, xhr, requestId]);
         log(elt, "AJAX request " + requestId + " was successful.", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
         if (onSuccess) {
@@ -449,13 +456,13 @@ var Intercooler = Intercooler || (function() {
 
             log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
           }
-          elt.trigger("after.success.ic", [elt, data, textStatus, xhr, requestId]);
+          triggerEvent(elt, "after.success.ic", [elt, data, textStatus, xhr, requestId]);
         } catch (e) {
           log(elt, "Error processing successful request " + requestId + " : " + formatError(e), "ERROR");
         }
       },
       error: function(xhr, status, str) {
-        elt.trigger("error.ic", [elt, status, str, xhr]);
+        triggerEvent(elt, "error.ic", [elt, status, str, xhr]);
         var onError = closestAttrValue(elt, 'ic-on-error');
         if (onError) {
           globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
@@ -468,9 +475,9 @@ var Intercooler = Intercooler || (function() {
         requestCleanup(indicator, elt);
         try {
           if ($.contains(document, elt[0])) {
-            elt.trigger("complete.ic", [elt, data, status, xhr, requestId]);
+            triggerEvent(elt, "complete.ic", [elt, data, status, xhr, requestId]);
           } else {
-            $('body').trigger("complete.ic", [elt, data, status, xhr, requestId]);
+            triggerEvent($('body'), "complete.ic", [elt, data, status, xhr, requestId]);
           }
         } catch (e) {
           log(elt, "Error during complete.ic event for " + requestId + " : " + formatError(e), "ERROR");
@@ -487,7 +494,7 @@ var Intercooler = Intercooler || (function() {
       ajaxSetup.contentType = false;
     }
 
-    $(document).trigger("beforeAjaxSend.ic", ajaxSetup);
+    triggerEvent($(document), "beforeAjaxSend.ic", ajaxSetup);
 
     $.ajax(ajaxSetup)
   }
@@ -628,7 +635,7 @@ var Intercooler = Intercooler || (function() {
     getIntercoolerId(target);
     if (elt.data('elementAdded.ic') != true) {
       elt.data('elementAdded.ic', true);
-      elt.trigger("elementAdded.ic");
+      triggerEvent(elt, "elementAdded.ic");
     }
   }
 
@@ -662,7 +669,7 @@ var Intercooler = Intercooler || (function() {
   }
 
   function fireReadyStuff(elt) {
-    elt.trigger('nodesProcessed.ic');
+    triggerEvent(elt, 'nodesProcessed.ic');
     $.each(_readyHandlers, function(i, handler) {
       try {
         handler(elt);
@@ -796,7 +803,7 @@ var Intercooler = Intercooler || (function() {
         log(elt, "POLL: Starting poll for element " + selector, "DEBUG");
         var timerId = setInterval(function() {
           var target = $(selector);
-          elt.trigger("onPoll.ic", target);
+          triggerEvent(elt, "onPoll.ic", target);
           if ((target.length == 0) || (currentIteration == repeats) || elt.data('ic-poll-interval-id') != timerId) {
             log(elt, "POLL: Clearing poll for element " + selector, "DEBUG");
             clearTimeout(timerId);
@@ -984,7 +991,7 @@ var Intercooler = Intercooler || (function() {
       } else if (getICAttribute(elt, 'ic-trigger-on') == 'scrolled-into-view') {
         initScrollHandler();
         setTimeout(function() {
-          $(window).trigger('scroll');
+          triggerEvent($(window), 'scroll');
         }, 100); // Trigger a scroll in case element is already viewable
       } else {
         var triggerOn = getICAttribute(elt, 'ic-trigger-on').split(" ");
@@ -1179,7 +1186,7 @@ var Intercooler = Intercooler || (function() {
     target.find(getICAttributeSelector('ic-sse-src')).each(function() {
       closeSSESource($(this));
     });
-    target.trigger('beforeSwap.ic');
+    triggerEvent(target, 'beforeSwap.ic');
   }
 
   function processICResponse(responseContent, elt, forHistory) {
@@ -1252,7 +1259,7 @@ var Intercooler = Intercooler || (function() {
             if(_history) {
               _history.updateHistory();
             }
-            target.trigger("complete_transition.ic", [target]);
+            triggerEvent(target, "complete_transition.ic", [target]);
           } catch (e) {
             log(elt, "Error during transition complete : " + formatError(e), "ERROR");
           }
@@ -1538,13 +1545,13 @@ var Intercooler = Intercooler || (function() {
       if (windowToAdd.onpopstate == null || windowToAdd.onpopstate['ic-on-pop-state-handler'] != true) {
         var currentOnPopState = windowToAdd.onpopstate;
         windowToAdd.onpopstate = function(event) {
-          getTargetForHistory($('body')).trigger('handle.onpopstate.ic');
+          triggerEvent(getTargetForHistory($('body')), 'handle.onpopstate.ic');
           if (!handleHistoryNavigation(event)) {
             if (currentOnPopState) {
               currentOnPopState(event);
             }
           }
-          getTargetForHistory($('body')).trigger('pageLoad.ic');
+          triggerEvent(getTargetForHistory($('body')), 'pageLoad.ic');
         };
         windowToAdd.onpopstate['ic-on-pop-state-handler'] = true;
       }
@@ -1566,7 +1573,7 @@ var Intercooler = Intercooler || (function() {
       var restorationData = makeHistoryEntry(t.html(), window.pageYOffset, newUrl);
       history.pushState({'ic-id': restorationData.id}, "", newUrl);
 
-      t.trigger("pushUrl.ic", [t, restorationData]);
+      triggerEvent(t, "pushUrl.ic", [t, restorationData]);
     }
 
     function handleHistoryNavigation(event) {
@@ -1601,7 +1608,7 @@ var Intercooler = Intercooler || (function() {
 
     function snapshotForHistory(newUrl) {
       var t = getTargetForHistory($('body'));
-      t.trigger("beforeHistorySnapshot.ic", [t]);
+      triggerEvent(t, "beforeHistorySnapshot.ic", [t]);
       _snapshot = {
         newUrl: newUrl,
         oldHtml: t.html(),

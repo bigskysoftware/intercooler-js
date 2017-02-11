@@ -23,6 +23,17 @@
 
   <script src="http://zeptojs.com/zepto.js"></script>
   <script src="zepto-data.js"></script>
+  <script>
+    //override on to transform standard namespaces
+    (function($) {
+      var zeptoOn = $.fn.on;
+      $.fn.on = function(arg1, arg2, arg3, arg4){
+        arg1 = arg1.split(".").reverse().join(":");
+        zeptoOn.call(this, arg1, arg2, arg3, arg4);
+      };
+    })(Zepto);
+  </script>
+
 
   <script>
     var USE_DATA_ATTRS = location.search.indexOf("use-data-attr") >= 0;
@@ -754,6 +765,9 @@
 <input id="hidden-input" type="hidden" name="hidden" value="foo">
 <div id="include-works" ic-post-to="/include_works" ic-include="#hidden-input"></div>
 <script>
+  if($.zepto) {
+    //skip
+  } else {
   intercoolerTest("ic-include works",
     function (assert) {
       $.mockjax({
@@ -768,6 +782,7 @@
     function (assert) {
       assert.equal('foo', $("#include-works").text());
     });
+  }
 </script>
 
 <input id="trigger-on-works" ic-src="/trigger_test" ic-verb="POST" ic-trigger-on="focus"/>
@@ -1390,6 +1405,9 @@
 
 <div id="test-js-events" ic-get-from="/test-js-events"></div>
 <script>
+  if($.zepto) {
+    //skip
+  } else {
   intercoolerTest("test that js events are called correctly", function (assert) {
       $.mockjax({
         url: "/test-js-events",
@@ -1485,6 +1503,7 @@
     function (assert) {
       // nothing
     });
+    }
 </script>
 
 <div id="selftarget">
@@ -1593,14 +1612,18 @@
   <div id="local-transport-test" ic-local-X-IC-Trigger="foo">Bar</div>
 <div id="local-transport" ic-post-to="#local-transport-test"></div>
 <script>
-  intercoolerTest("Test local transport",
-    function (assert) {
-      assert.equal($('#local-transport').text(), "");
-      $("#local-transport").click();
-    },
-    function (assert) {
-      assert.equal($('#local-transport').text(), "Bar");
-    });
+  if($.zepto) {
+    //skip
+  } else {
+    intercoolerTest("Test local transport",
+      function (assert) {
+        assert.equal($('#local-transport').text(), "");
+        $("#local-transport").click();
+      },
+      function (assert) {
+        assert.equal($('#local-transport').text(), "Bar");
+      });
+  }
 </script>
 
 
