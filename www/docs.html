@@ -32,7 +32,8 @@ nav: docs
           <li><a href="#debugging">Error Handling &amp; Debugging</a></li>
           <li><a href="#javascript">Using Intercooler from Javascript</a></li>
           <li><a href="#cross-domain">Cross-Domain AJAX</a></li>
-          <li><a href="#philosophy">Some Philosophy</a></li>
+          <li><a href="#zepto">zepto.js Compatibility<sub>BETA</sub></a></li>
+          <li><a href="#philosophy">Philosophy</a></li>
           <li><a href="#conclusion">Conclusion</a></li>
         </ul>
       </div>
@@ -1406,12 +1407,50 @@ nav: docs
       </section>
 
       <section>
+        <a class="anchor" id="zepto"></a>
+
+        <h2>zepto.js Compatibility</h2>
+
+        <p><a href="http://zeptojs.com/"> zepto.js</a> is a minimalist, largely jQuery-compatible API for use with
+        modern browsers, that is focused on staying small (<10kB when gzipped, compared with 32kB for the latest versions
+          of jQuery) while providing most of the familiar jQuery APIs.</p>
+
+        <p>As of version <code>1.1.0</code>, intercooler offers zepto.js compatibility in place of jQuery.  To use
+          zepto, rather than jQuery:
+        </p>
+
+        <ul>
+          <li>Include the latest <a href="http://zeptojs.com/">zepto.js</a> release.</li>
+          <li>Include the <code>data</code> module from the <a href="http://zeptojs.com/#modules">zepto modules section</a></li>
+        </ul>
+
+        <p>Using zepto with intercooler.js brings the entire support payload for an intercooler-based web application
+          down to 18kB, which compares favorably with <a href="https://gist.github.com/Restuta/cda69e50a853aa64912d">many JS frameworks</a>
+          (Vue.js, the smallest by a long shot, comes in at 23kB)
+        </p>
+
+        <h3>Differences with jQuery + intercooler.js</h3>
+
+        <p>There are a few differences in behavior when using <code>zepto.js</code> with intercooler:<p>
+
+        <ul>
+          <li>Local HTML fragments (e.g. <code>ic-get-from="#some_div"</code> will not work)</li>
+          <li>Event namespacing is reversed and uses a colon separator, so the <code>beforeSend.ic</code> event becomes
+          the <code>ic:beforeSend</code> event.</li>
+          <li>zepto does not serialize non-form elements, so <code>ic-include</code> must point to a form if you wish
+            to include a value from an input.  The JSON form is not affected.
+          </li>
+        </ul>
+
+      </section>
+
+      <section>
         <a class="anchor" id="philosophy"></a>
 
-        <h2>Some Underlying Philosophy</h2>
+        <h2>Philosophy</h2>
 
         <p>It can be easy for some developers to dismiss intercooler as overly simple and an archaic way of
-        building web applications.  This is lazy.
+        building web applications.  This is intellectually lazy.
         </p>
 
         <p>Intercooler is a tool for returning to the original
@@ -1444,11 +1483,10 @@ nav: docs
           relationship: the main goal now is to not screw it up.  The documentation will be improved, tests will be
           added, small new delarative features will be added around the edges, but there will be no massive rewrite
           or constant updating. This is in contrast with the software industry in general and the front end world in
-          particular, which has almost comical levels of churn.
+          particular, which has comical levels of churn.
         </p>
 
-        <p>Intercooler is a sturdy, quiet alternative in a web development world of noise and complexity.  I'm happy
-          with that.</p>
+        <p>Intercooler is a sturdy, reliable tool for web development.</p>
 
       </section>
 
