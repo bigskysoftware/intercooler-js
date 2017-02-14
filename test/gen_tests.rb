@@ -15,8 +15,8 @@ VARIANTS =
   </script>
   <script type="text/javascript" src="lib/zepto.mockjax-1.2.0.js"></script>',
 
-    'jQuery3' =>
- '<script src="lib/jquery-3.1.1.js"></script>
+    'jQuery1' =>
+ '<script src="lib/jquery-1.10.2.js"></script>
   <script type="text/javascript" src="lib/jquery.mockjax-2.2.1.js"></script>',
 
     'jQuery2' =>
