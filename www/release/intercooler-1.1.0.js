@@ -510,9 +510,13 @@ var Intercooler = Intercooler || (function() {
       ajaxSetup.contentType = false;
     }
 
-    triggerEvent($(document), "beforeAjaxSend.ic", ajaxSetup);
+    triggerEvent($(document), "beforeAjaxSend.ic", [ajaxSetup, elt]);
 
-    $.ajax(ajaxSetup)
+    if(ajaxSetup.cancel) {
+      requestCleanup(indicator, elt);
+    } else {
+      $.ajax(ajaxSetup)
+    }
   }
 
   function findIndicator(elt) {

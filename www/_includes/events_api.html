@@ -17,11 +17,12 @@
     </tr>
     <tr>
       <td>
-        <code>beforeAjaxSend.ic(evt, settings)</code>
+        <code>beforeAjaxSend.ic(evt, ajaxSetting, elt)</code>
       </td>
       <td>
         Fired on the document before every AJAX request, allowing you to modify the settings object (e.g. to add
-        or remove parameter or headers, change content types, etc.)
+        or remove parameter or headers, change content types, etc.)  You can cancel the request by setting the
+        <code>cancel</code> property of the ajaxSettings object to <code>true</code>.
       </td>
     </tr>
     <tr>
