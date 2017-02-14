@@ -58,9 +58,18 @@ module.exports = function (grunt) {
 
   grunt.registerTask('release', "Releases a new version of the library", function () {
     grunt.file.copy("src/intercooler-debugger.js", 'www/release/intercooler-debugger.js');
-    grunt.file.copy("test/blanket.min.js", 'www/release/blanket.min.js');
-    grunt.file.copy("test/jquery.mockjax.js", 'www/release/jquery.mockjax.js');
+
+    grunt.file.copy("test/lib/blanket.min.js", 'www/release/blanket.min.js');
+    grunt.file.copy("test/lib/jquery.mockjax-1.10.2.js", 'www/release/lib/jquery.mockjax-1.10.2.js');
+    grunt.file.copy("test/lib/jquery-1.10.2.js", 'www/release/lib/jquery-1.10.2.js');
+
+    grunt.file.copy("test/lib/zepto.mockjax-1.2.0.js", 'www/release/lib/zepto.mockjax-1.2.0.js');
+    grunt.file.copy("test/lib/zepto.data-1.2.0.js", 'www/release/lib/zepto.data-1.2.0.js');
+    grunt.file.copy("test/lib/zepto-1.2.0.min.js", 'www/release/lib/zepto-1.2.0.min.js');
+
     grunt.file.copy("test/unit_tests.html", 'www/release/unit-tests-' + grunt.config.get('pkg').version + '.html');
+    grunt.file.copy("test/zepto_unit_tests.html", 'www/release/zepto_unit-tests-' + grunt.config.get('pkg').version + '.html');
+
     grunt.task.run('umd:intercooler');
     grunt.task.run('uglify');
     grunt.task.run('regex-replace');
