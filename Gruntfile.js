@@ -60,8 +60,11 @@ module.exports = function (grunt) {
     grunt.file.copy("src/intercooler-debugger.js", 'www/release/intercooler-debugger.js');
 
     grunt.file.copy("test/lib/blanket.min.js", 'www/release/blanket.min.js');
-    grunt.file.copy("test/lib/jquery.mockjax-1.10.2.js", 'www/release/lib/jquery.mockjax-1.10.2.js');
+
+    grunt.file.copy("test/lib/jquery.mockjax-2.2.1.js", 'www/release/lib/jquery.mockjax-2.2.1.js');
     grunt.file.copy("test/lib/jquery-1.10.2.js", 'www/release/lib/jquery-1.10.2.js');
+    grunt.file.copy("test/lib/jquery-2.2.4.js", 'www/release/lib/jquery-2.2.4.js');
+    grunt.file.copy("test/lib/jquery-3.1.1.js", 'www/release/lib/jquery-3.1.1.js');
 
     grunt.file.copy("test/lib/zepto.mockjax-1.2.0.js", 'www/release/lib/zepto.mockjax-1.2.0.js');
     grunt.file.copy("test/lib/zepto.data-1.2.0.js", 'www/release/lib/zepto.data-1.2.0.js');
@@ -69,6 +72,8 @@ module.exports = function (grunt) {
 
     grunt.file.copy("test/unit_tests.html", 'www/release/unit-tests-' + grunt.config.get('pkg').version + '.html');
     grunt.file.copy("test/zepto_unit_tests.html", 'www/release/zepto_unit-tests-' + grunt.config.get('pkg').version + '.html');
+    grunt.file.copy("test/jQuery2_unit_tests.html", 'www/release/jQuery2_unit-tests-' + grunt.config.get('pkg').version + '.html');
+    grunt.file.copy("test/jQuery3_unit_tests.html", 'www/release/jQuery3_unit-tests-' + grunt.config.get('pkg').version + '.html');
 
     grunt.task.run('umd:intercooler');
     grunt.task.run('uglify');
