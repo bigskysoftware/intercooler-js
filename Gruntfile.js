@@ -33,7 +33,10 @@ module.exports = function (grunt) {
     },
     "regex-replace": {
       "update-test-ref": { //specify a target with any name
-        src: ['www/release/unit-tests-<%= pkg.version %>.html'],
+        src: ['www/release/unit-tests-<%= pkg.version %>.html',
+              'www/release/jQuery1_unit-tests-<%= pkg.version %>.html',
+              'www/release/jQuery2_unit-tests-<%= pkg.version %>.html',
+              'www/release/zepto_unit-tests-<%= pkg.version %>.html'],
         actions: [
           {
             name: 'lib ref',

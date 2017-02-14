@@ -21,7 +21,7 @@
   {% endif %}
 
   <!-- Bootstrap core CSS -->
-  <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
   <link
@@ -35,17 +35,10 @@
   <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
   <![endif]-->
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-  <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-  <script src="/js/google-code-prettify/run_prettify.js?lang=css&skin=desert"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/release/lib/jquery.mockjax-2.2.1.js"></script>
   <script>
     $.mockjaxSettings['responseTime'] = 100;
-
-    $(document).ready(function () {
-      // Add prettyprint class to pre elements
-      $('pre').addClass('prettyprint');
-    }); // end document.ready
-
     // Taken from https://gist.github.com/kares/956897
     function parseParams(str) {
       var re = /([^&=]+)=?([^&]*)/g;
@@ -136,5 +129,9 @@
   ga('create', 'UA-20364649-2', 'intercoolerjs.org');
   ga('send', 'pageview');
 </script>
+<script>
+  $('pre').addClass('prettyprint');
+</script>
+<script src="/js/google-code-prettify/run_prettify.js?lang=css&skin=desert"></script>
 </body>
 </html>
