@@ -4,8 +4,8 @@
 
 ## Introduction
 
-Intercooler is a small (6.74KB gzipped) [jQuery](https://jquery.com/)-based library that allows you to add AJAX to your application using
-HTML attributes.
+Intercooler is a small (6.74KB gzipped) [jQuery](https://jquery.com/) or [zepto.js](http://intercoolerjs.org/docs.html#zepto) based library that allows you to add AJAX to 
+your application using HTML attributes.
 
 Here is an example:
 
