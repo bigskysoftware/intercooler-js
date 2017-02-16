@@ -2067,6 +2067,29 @@
       });
   </script>
 
+  <div>
+      <form id="form-get-test" ic-get-from="/form_get">
+          <button id="form-get-test-btn" name="bar" value="foo">bar</button>
+      </form>
+  </div>
+  <script>
+    intercoolerTest("Dependency update w/ PATCH",
+      function (assert) {
+        $.mockjax({
+          url: "/form_get",
+          response: function (settings) {
+            var params = parseParams(settings.data);
+            console.log(params);
+            assert.equal(params['bar'], "foo", "Updated");
+            this.responseText = "";
+          }
+        });
+        $("#form-get-test-btn").focus().click();
+      },
+      function (assert) {
+      });
+  </script>
+
 </div>
 </body>
 </html>

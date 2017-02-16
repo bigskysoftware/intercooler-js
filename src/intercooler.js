@@ -575,7 +575,7 @@ var Intercooler = Intercooler || (function() {
       data = "ic-request=true";
       // if the element is in a form, include the entire form
       var closestForm = elt.closest('form');
-      if (verb != "GET" && closestForm.length > 0) {
+      if (elt.is('form') || (verb != "GET" && closestForm.length > 0)) {
         data += "&" + closestForm.serialize();
         // include data from a focused button (to capture clicked button value)
         var button = closestForm.find('button:focus').first();
