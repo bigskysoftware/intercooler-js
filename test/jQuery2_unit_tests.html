@@ -2070,17 +2070,19 @@
   <div>
       <form id="form-get-test" ic-get-from="/form_get">
           <button id="form-get-test-btn" name="bar" value="foo">bar</button>
+        <input type="hidden" name="hidden" value="blam"/>
       </form>
   </div>
   <script>
-    intercoolerTest("Dependency update w/ PATCH",
+    intercoolerTest("Include form values on GET if the form is the source of the request",
       function (assert) {
         $.mockjax({
           url: "/form_get",
           response: function (settings) {
             var params = parseParams(settings.data);
             console.log(params);
-            assert.equal(params['bar'], "foo", "Updated");
+            assert.equal(params['bar'], "foo", "Included");
+            assert.equal(params['hidden'], "blam", "Included");
             this.responseText = "";
           }
         });
