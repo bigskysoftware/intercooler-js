@@ -5,6 +5,34 @@ nav: dependencies
 
 <div class="container">
 
+  <a class="anchor" id="1_1_0"></a>
+  <h2>
+    Intercooler 1.1.0 - February 17th, 2017
+  </h2>
+  <ul>
+    <li>
+      Respect intercooler response headers even when error response codes are sent to the client (e.g. X-IC-Redirect on a 401 response)
+    </li>
+    <li>
+      Support a timed value (e.g. "200ms") for the X-IC-Remove header, to allow a CSS transition
+    </li>
+    <li>
+      Serialize javascript objects used in ic-include JSON form, allowing for more complex data to be included in requests
+    </li>
+    <li>
+      Support zepto as an alternative to jQuery
+    </li>
+    <li>
+      Include form values when a form causes a GET
+    </li>
+    <li>
+      Unit tests running against jQuery v1, v2 and v3
+    </li>
+    <li>
+      jQuery 3 is now the documented option
+    </li>
+  </ul>
+
   <a class="anchor" id="1_0_3"></a>
   <h2>
     Intercooler 1.0.3 - November 22th, 2016
