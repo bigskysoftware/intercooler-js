@@ -12,7 +12,9 @@ I have released intercooler v1.1.0, available on the main site, as well as throu
 
 The biggest change in this release is that we now support [zepto](https://zeptojs.org) as an alternative to jQuery
 as a base library.  Zepto + intercooler comes in at ~18kB total, allowing you to build intercooler-based applications
-with a smaller javascript infrastructure than [almost all the other major javascript libraries](https://gist.github.com/Restuta/cda69e50a853aa64912d) out there,
+with a smaller javascript infrastructure than [almost all the other major javascript libraries](https://gist.github.com/Restuta/cda69e50a853aa64912d) 
+out there (vue.js is 23kB), and, of course, you won't need to write much additional javascript at all, so your total
+javascript footprint can be quite small while still providing the user experience modern web sites require.
 
 Other changes in this release are:
 
