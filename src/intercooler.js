@@ -583,9 +583,9 @@ var Intercooler = Intercooler || (function() {
       if (elt.is('form') || (verb != "GET" && closestForm.length > 0)) {
         data += "&" + closestForm.serialize();
         // include data from a focused button (to capture clicked button value)
-        var button = closestForm.find('button:focus').first();
-        if(button.length > 0 && button.attr('name')) {
-          data = appendData(data, button.attr('name'), button.attr('value'));
+        var buttonData = elt.data('ic-last-clicked-button');
+        if(buttonData) {
+          data = appendData(data, buttonData.name, buttonData.value);
         }
       } else { // otherwise include the element
         data += "&" + elt.serialize();
@@ -995,6 +995,16 @@ var Intercooler = Intercooler || (function() {
 
   function handleTriggerOn(elt) {
     if (getICAttribute(elt, 'ic-trigger-on')) {
+      // record button or submit input click info
+      if(elt.is('form')) {
+        elt.find('input, button').on('click focus', function(e){
+          if($(this).is('input[type="submit"], button') && $(this).is("[name]")) {
+            elt.data('ic-last-clicked-button', {name:$(this).attr("name"), value:$(this).val()})
+          } else {
+            elt.data('ic-last-clicked-button', null)
+          }
+        });
+      }
       if (getICAttribute(elt, 'ic-trigger-on') == 'load') {
         fireICRequest(elt);
       } else if (getICAttribute(elt, 'ic-trigger-on') == 'scrolled-into-view') {
