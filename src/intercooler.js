@@ -634,6 +634,11 @@ var Intercooler = Intercooler || (function() {
     });
     data = appendData(data, 'ic-current-url', currentUrl());
 
+    var selectFromResp = closestAttrValue(elt, 'ic-select-from-response');
+    if(selectFromResp) {
+      data = appendData(data, 'ic-select-from-response', selectFromResp);
+    }
+
     log(elt, "request parameters " + data, "DEBUG");
 
     return data;
