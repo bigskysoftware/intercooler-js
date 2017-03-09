@@ -7,7 +7,7 @@ var Intercooler = Intercooler || (function() {
   'use strict'; // inside function for better merging
 
   // work around zepto build issue TODO - fix me
-  if((typeof Zepto) && ($ == null)) {
+  if((typeof Zepto === "undefined") && ($ == null)) {
     $ = Zepto
   }
 
