@@ -1227,6 +1227,7 @@ var Intercooler = Intercooler || (function() {
             beforeSwapCleanup(target);
             closeSSESource(target);
             target.replaceWith(contentToSwap);
+            target = contentToSwap;
           } catch (e) {
             log(elt, formatError(e), "ERROR");
           }
