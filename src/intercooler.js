@@ -1260,7 +1260,7 @@ var Intercooler = Intercooler || (function() {
         try {
           doSwap();
         } catch (e) {
-          log(elt, "Error during content swaop : " + formatError(e), "ERROR");
+          log(elt, "Error during content swap : " + formatError(e), "ERROR");
         }
         setTimeout(function() {
           try {
