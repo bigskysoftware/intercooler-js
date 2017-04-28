@@ -7,7 +7,7 @@ var Intercooler = Intercooler || (function() {
   'use strict'; // inside function for better merging
 
   // work around zepto build issue TODO - fix me
-  if((typeof Zepto) && ($ == null)) {
+  if((typeof Zepto !== "undefined") && ($ == null)) {
     $ = Zepto
   }
 
@@ -1275,7 +1275,7 @@ var Intercooler = Intercooler || (function() {
         try {
           doSwap();
         } catch (e) {
-          log(elt, "Error during content swaop : " + formatError(e), "ERROR");
+          log(elt, "Error during content swap : " + formatError(e), "ERROR");
         }
         setTimeout(function() {
           try {
