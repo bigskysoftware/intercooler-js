@@ -1,3 +1,19 @@
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define(["jquery"], function (a0) {
+      return (root['Intercooler'] = factory(a0));
+    });
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require("jquery"));
+  } else {
+    root['Intercooler'] = factory(root["jQuery"]);
+  }
+}(this, function ($) {
+
 ////////////////////////////////////
 
 /**
@@ -583,9 +599,9 @@ var Intercooler = Intercooler || (function() {
       if (elt.is('form') || (verb != "GET" && closestForm.length > 0)) {
         data += "&" + closestForm.serialize();
         // include data from a focused button (to capture clicked button value)
-        var buttonData = elt.data('ic-last-clicked-button');
-        if(buttonData) {
-          data = appendData(data, buttonData.name, buttonData.value);
+        var button = closestForm.find('button:focus').first();
+        if(button.length > 0 && button.attr('name')) {
+          data = appendData(data, button.attr('name'), button.attr('value'));
         }
       } else { // otherwise include the element
         data += "&" + elt.serialize();
@@ -633,11 +649,6 @@ var Intercooler = Intercooler || (function() {
       data = processIncludes(data, getICAttribute($(this), 'ic-global-include'));
     });
     data = appendData(data, 'ic-current-url', currentUrl());
-
-    var selectFromResp = closestAttrValue(elt, 'ic-select-from-response');
-    if(selectFromResp) {
-      data = appendData(data, 'ic-select-from-response', selectFromResp);
-    }
 
     log(elt, "request parameters " + data, "DEBUG");
 
@@ -1000,16 +1011,6 @@ var Intercooler = Intercooler || (function() {
 
   function handleTriggerOn(elt) {
     if (getICAttribute(elt, 'ic-trigger-on')) {
-      // record button or submit input click info
-      if(elt.is('form')) {
-        elt.find('input, button').on('click focus', function(e){
-          if($(this).is('input[type="submit"], button') && $(this).is("[name]")) {
-            elt.data('ic-last-clicked-button', {name:$(this).attr("name"), value:$(this).val()})
-          } else {
-            elt.data('ic-last-clicked-button', null)
-          }
-        });
-      }
       if (getICAttribute(elt, 'ic-trigger-on') == 'load') {
         fireICRequest(elt);
       } else if (getICAttribute(elt, 'ic-trigger-on') == 'scrolled-into-view') {
@@ -1804,3 +1805,7 @@ var Intercooler = Intercooler || (function() {
     }
   };
 })();
+
+return Intercooler;
+
+}));
