@@ -1065,15 +1065,22 @@
 
 <span id="ic_replace_target_test" ic-post-to="/ic_replace_target_test" ic-replace-target="true"></span>
 <script>
-  intercoolerTest("ic-replace-target replaces itself", function (assert) {
+  Intercooler.ready(function(elt) {
+    if (elt.is('#ic_replace_target_test_replaced')) {
+      elt.addClass('processed');
+    }
+  });
+  intercoolerTest("ic-replace-target replaces itself and Intercooler.ready event handler takes replaced element", function (assert) {
       $.mockjax({
         url: "/ic_replace_target_test",
-        responseText: "<span>asdf</span>"
+        responseText: '<span id="ic_replace_target_test_replaced">asdf</span>'
       });
       assert.equal($("#ic_replace_target_test").click().length, 1);
     },
     function (assert) {
       assert.equal($("#ic_replace_target_test").length, 0);
+      assert.equal($("#ic_replace_target_test_replaced").hasClass('processed'), true,
+        'Replaced element should have class "processed"');
     });
 </script>
 
