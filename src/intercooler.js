@@ -853,7 +853,7 @@ var Intercooler = Intercooler || (function() {
             fireICRequest(_this);
             fired = true;
           }
-        } else if (isDependent(dest, getICAttribute(_this, 'ic-deps')) || getICAttribute(_this, 'ic-deps') == "*") {
+        } else if (isICDepsDependent(dest, getICAttribute(_this, 'ic-deps')) || getICAttribute(_this, 'ic-deps') == "*") {
           if (src == null || $(src)[0] != _this[0]) {
             fireICRequest(_this);
             fired = true;
@@ -864,6 +864,19 @@ var Intercooler = Intercooler || (function() {
         log(_this, "depends on path " + dest + ", refreshing...", "DEBUG")
       }
     });
+  }
+
+  function isICDepsDependent(src, dest) {
+    if(dest) {
+      var paths = dest.split(",");
+      for (var i = 0; i < paths.length; i++) {
+        var str = paths[i].trim();
+        if(isDependent(src, str)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   function isDependent(src, dest) {
