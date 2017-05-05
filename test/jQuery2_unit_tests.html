@@ -464,6 +464,26 @@
     });
 </script>
 
+<div id="ic-deps-div2" ic-src="/deps_test6" ic-deps="/deps_test7, /deps_test8">Foo</div>
+<button id="ic-deps-btn2" ic-post-to="/deps_test8">Clicked</button>
+<script>
+  intercoolerTest("Comma separated deps work", function (assert) {
+      var text = "Foo";
+      $.mockjax({
+        url: "/deps_test8"
+      });
+      $.mockjax({
+        url: "/deps_test6",
+        responseText :"Bar"
+      });
+      assert.equal($('#ic-deps-div2').text(), "Foo", "Updated");
+      $("#ic-deps-btn2").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-deps-div2').text(), "Bar", "Updated");
+    });
+</script>
+
 <ul id="ic-prepend-from-div2" ic-prepend-from="/prepend_from1">
   <li>bar</li>
 </ul>
