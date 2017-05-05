@@ -1239,7 +1239,7 @@
     });
 </script>
 
-<div>
+<div ic-select-from-response="#foo">
   <form ic-post-to="/child_trigger">
     <input id="child-trigger-input" name="child-trigger-input" type="text" ic-trigger-on="keyup"/>
   </form>
@@ -1252,6 +1252,7 @@
           var params = parseParams(settings.data);
           assert.equal(params['ic-trigger-id'], "child-trigger-input");
           assert.equal(params['ic-trigger-name'], "child-trigger-input");
+          assert.equal(params['ic-select-from-response'], "#foo");
           this.responseText = "<!-- nothing -->";
         }
       });
@@ -1892,6 +1893,7 @@
     <button id="btn_val_button2" name="foo" value="doh">click button</button>
     <button id="btn_val_button3" name="bar" value="doh">click button</button>
   </form>
+
   <script>
     intercoolerTest("Button value is included in request",
       function (assert) {
@@ -1904,7 +1906,60 @@
             return "";
           }
         });
-        $("#btn_val_button").focus().click();
+        $("#btn_val_button").click();
+      },
+      function (assert) {
+        // nothing to do here
+      });
+  </script>
+
+  <form ic-post-to='/submit_val_included'>
+    <input type="submit" id="submit_val_button" name="foo" value="bar">
+    <input type="submit"  id="submit_val_button2" name="foo" value="doh">
+    <input type="submit"  id="submit_val_button3" name="bar" value="doh">
+  </form>
+
+  <script>
+    intercoolerTest("Submit input value is included in request",
+      function (assert) {
+        $.mockjax({
+          url: "/submit_val_included",
+          response: function(settings) {
+            var params = parseParams(settings.data);
+            assert.equal(params["foo"], "bar");
+            assert.equal(params["bar"], null);
+            return "";
+          }
+        });
+        $("#submit_val_button").click();
+      },
+      function (assert) {
+        // nothing to do here
+      });
+  </script>
+
+
+  <form ic-post-to='/no_button_val_on_lose_focus'>
+    <button id="lose_focus_1" onclick="return false" name="foo" value="bar">click button</button>
+    <button id="lose_focus_2" name="foo" value="doh">click button</button>
+    <button id="lose_focus_3" name="bar" value="doh">click button</button>
+    <input id="lose_focus_4">
+  </form>
+
+  <script>
+    intercoolerTest("No value included for button after loss of focus",
+      function (assert) {
+        $.mockjax({
+          url: "/no_button_val_on_lose_focus",
+          response: function(settings) {
+            var params = parseParams(settings.data);
+            assert.equal(params["foo"], null);
+            assert.equal(params["bar"], null);
+            return "";
+          }
+        });
+        $("#lose_focus_1").click();
+        $("#lose_focus_4").focus().closest('form').submit();
       },
       function (assert) {
         // nothing to do here

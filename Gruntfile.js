@@ -45,6 +45,17 @@ module.exports = function (grunt) {
             flags: 'g'
           }
         ]
+      },
+      "update-test-ref-2": { //specify a target with any name
+        src: ['www/release/unit-tests-<%= pkg.version %>.min.html'],
+        actions: [
+          {
+            name: 'lib ref',
+            search: "../src/intercooler.js",
+            replace: './intercooler-<%= pkg.version %>.min.js',
+            flags: 'g'
+          }
+        ]
       }
     }
   });
@@ -74,6 +85,7 @@ module.exports = function (grunt) {
     grunt.file.copy("test/lib/zepto-1.2.0.min.js", 'www/release/lib/zepto-1.2.0.min.js');
 
     grunt.file.copy("test/unit_tests.html", 'www/release/unit-tests-' + grunt.config.get('pkg').version + '.html');
+    grunt.file.copy("test/unit_tests.html", 'www/release/unit-tests-' + grunt.config.get('pkg').version + '.min.html');
     grunt.file.copy("test/jQuery2_unit_tests.html", 'www/release/jQuery2_unit-tests-' + grunt.config.get('pkg').version + '.html');
     grunt.file.copy("test/jQuery1_unit_tests.html", 'www/release/jQuery1_unit-tests-' + grunt.config.get('pkg').version + '.html');
     grunt.file.copy("test/zepto_unit_tests.html", 'www/release/zepto_unit-tests-' + grunt.config.get('pkg').version + '.html');
