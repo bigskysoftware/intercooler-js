@@ -253,7 +253,7 @@ var Intercooler = Intercooler || (function() {
 
     if (xhr.getResponseHeader("X-IC-Script")) {
       log(elt, "X-IC-Script: evaling " + xhr.getResponseHeader("X-IC-Script"), "DEBUG");
-      eval(xhr.getResponseHeader("X-IC-Script"));
+      globalEval(xhr.getResponseHeader("X-IC-Script"), [["elt", elt]]);
     }
 
     if (xhr.getResponseHeader("X-IC-Redirect")) {
@@ -365,8 +365,43 @@ var Intercooler = Intercooler || (function() {
     }
   }
 
-  function globalEval(script) {
-    return window["eval"].call(window, script);
+  /*
+    Is the provided text a valid JavaScript identifier path?
+
+    We should also probably check if an identifier is a JavaScript keyword here.
+  */
+  function isIdentifier(txt) {
+    return /^[$A-Z_][0-9A-Z_$]*$/i.test(txt);
+  }
+
+  /*
+    Evaluate a script snippet provided by the user.
+
+    script: A string. If this is an identifier, it is assumed to be a callable, retrieved from the
+    global namespace, and called. If it is a compound statement, it is evaluated using eval.
+    args: A list of [name, value] tuples. These will be injected into the namespace of evaluated
+    scripts, and be passed as arguments to safe evaluations.
+  */
+  // It would be nice to use the spread operator here globalEval(script, ...args) - but it breaks
+  // uglify and isn't supported in some older browsers.
+  function globalEval(script, args) {
+    var names = [];
+    var values = [];
+    if (args) {
+        for (var i = 0; i < args.length; i++) {
+            names.push(args[i][0]);
+            values.push(args[i][1]);
+        }
+    }
+    if (isIdentifier(script)) {
+        return window[script].apply(this, values);
+    } else {
+        var outerfunc  = window["eval"].call(
+            window,
+            '(function (' + names.join(", ") + ') {' + script + '})'
+        );
+        return outerfunc.apply(this, values);
+    }
   }
 
   function closestAttrValue(elt, attr) {
@@ -424,7 +459,7 @@ var Intercooler = Intercooler || (function() {
         log(elt, "before AJAX request " + requestId + ": " + type + " to " + url, "DEBUG");
         var onBeforeSend = closestAttrValue(elt, 'ic-on-beforeSend');
         if (onBeforeSend) {
-          globalEval('(function (data, settings, xhr) {' + onBeforeSend + '})')(data, settings, xhr);
+          globalEval(onBeforeSend, [["elt", elt], ["data", data], ["settings", settings], ["xhr", xhr]]);
         }
       },
       success: function(data, textStatus, xhr) {
@@ -432,7 +467,7 @@ var Intercooler = Intercooler || (function() {
         log(elt, "AJAX request " + requestId + " was successful.", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
         if (onSuccess) {
-          if (globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr) == false) {
+          if (globalEval(onSuccess, [["elt", elt], ["data", data], ["textStatus", textStatus], ["xhr", xhr]]) == false) {
             return;
           }
         }
@@ -470,7 +505,7 @@ var Intercooler = Intercooler || (function() {
         triggerEvent(elt, "error.ic", [elt, status, str, xhr]);
         var onError = closestAttrValue(elt, 'ic-on-error');
         if (onError) {
-          globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
+          globalEval(onError, [["elt", elt], ["status", status], ["str", str], ["xhr", xhr]]);
         }
         processHeaders(elt, xhr);
         log(elt, "AJAX request " + requestId + " to " + url + " experienced an error: " + str, "ERROR");
@@ -489,7 +524,7 @@ var Intercooler = Intercooler || (function() {
         }
         var onComplete = closestAttrValue(elt, 'ic-on-complete');
         if (onComplete) {
-          globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
+          globalEval(onComplete, [["elt", elt], ["xhr", xhr], ["status", status]]);
         }
       }
     };
@@ -1001,8 +1036,10 @@ var Intercooler = Intercooler || (function() {
   function getTriggeredElement(elt) {
     var triggerFrom = getICAttribute(elt, 'ic-trigger-from');
     if(triggerFrom) {
-      if($.inArray(triggerFrom, ['document', 'window']) >= 0){
-        return $(eval(triggerFrom));
+      if (triggerFrom == "document") {
+        return $(document);
+      } else if (triggerFrom == "window") {
+        return $(window);
       } else {
         return $(triggerFrom);
       }
@@ -1044,7 +1081,7 @@ var Intercooler = Intercooler || (function() {
         $(getTriggeredElement(elt)).on(event, function(e) {
             var onBeforeTrigger = closestAttrValue(elt, 'ic-on-beforeTrigger');
             if (onBeforeTrigger) {
-              if (globalEval('(function (evt, elt) {' + onBeforeTrigger + '})')(e, elt) == false) {
+              if (globalEval(onError, [["elt", elt], ["evt", e], ["elt", elt]]) == false) {
                 log(elt, "ic-trigger cancelled by ic-on-beforeTrigger", "DEBUG");
                 return false;
               }
@@ -1820,7 +1857,8 @@ var Intercooler = Intercooler || (function() {
       replaceOrAddMethod: replaceOrAddMethod,
       initEventSource: function(url) {
         return new EventSource(url);
-      }
+      },
+      globalEval: globalEval
     }
   };
 })();
