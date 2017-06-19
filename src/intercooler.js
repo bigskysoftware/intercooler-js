@@ -1039,8 +1039,9 @@ var Intercooler = Intercooler || (function() {
             registerSSE(sourceElt, triggerOn[0].substr(4))
           }
         } else {
-          $(getTriggeredElement(elt)).on(eventFor(triggerOn[0], elt), function(e) {
-
+        var triggerOn = getICAttribute($(elt), 'ic-trigger-on').split(" ");
+        var event = eventFor(triggerOn[0], $(elt));
+        $(getTriggeredElement(elt)).on(event, function(e) {
             var onBeforeTrigger = closestAttrValue(elt, 'ic-on-beforeTrigger');
             if (onBeforeTrigger) {
               if (globalEval('(function (evt, elt) {' + onBeforeTrigger + '})')(e, elt) == false) {
@@ -1065,6 +1066,11 @@ var Intercooler = Intercooler || (function() {
             }
             return true;
           });
+          if(event && (event.indexOf("timeout:") == 0)) {
+            setTimeout(function () {
+            $(getTriggeredElement(elt)).trigger(event);
+            }, parseInterval(event.split(":")[1]));
+          }
         }
       }
     }
