@@ -461,6 +461,7 @@ var Intercooler = Intercooler || (function() {
         if (onBeforeSend) {
           globalEval(onBeforeSend, [["elt", elt], ["data", data], ["settings", settings], ["xhr", xhr]]);
         }
+        maybeInvokeLocalAction(elt, "-beforeSend");
       },
       success: function(data, textStatus, xhr) {
         triggerEvent(elt, "success.ic", [elt, data, textStatus, xhr, requestId]);
@@ -497,6 +498,7 @@ var Intercooler = Intercooler || (function() {
             log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
           }
           triggerEvent(elt, "after.success.ic", [elt, data, textStatus, xhr, requestId]);
+          maybeInvokeLocalAction(elt, "-success");
         } catch (e) {
           log(elt, "Error processing successful request " + requestId + " : " + formatError(e), "ERROR");
         }
@@ -508,6 +510,7 @@ var Intercooler = Intercooler || (function() {
           globalEval(onError, [["elt", elt], ["status", status], ["str", str], ["xhr", xhr]]);
         }
         processHeaders(elt, xhr);
+        maybeInvokeLocalAction(elt, "-error");
         log(elt, "AJAX request " + requestId + " to " + url + " experienced an error: " + str, "ERROR");
       },
       complete: function(xhr, status) {
@@ -526,6 +529,7 @@ var Intercooler = Intercooler || (function() {
         if (onComplete) {
           globalEval(onComplete, [["elt", elt], ["xhr", xhr], ["status", status]]);
         }
+        maybeInvokeLocalAction(elt, "-complete");
       }
     };
     if ($.type(data) != "string") {
@@ -1384,7 +1388,7 @@ var Intercooler = Intercooler || (function() {
     }
   }
 
-  function fireICRequest(elt, alternateHandler) {
+    function fireICRequest(elt, alternateHandler) {
     elt = $(elt);
 
     var triggerOrigin = elt;
@@ -1433,11 +1437,7 @@ var Intercooler = Intercooler || (function() {
               handleRemoteRequest(elt, verb, url, data, success);
             }
           }
-
-          var actions = getICAttribute(elt, 'ic-action');
-          if (actions) {
-            invokeLocalAction(elt, actions);
-          }
+          maybeInvokeLocalAction(elt, "");
         }
       };
 
@@ -1450,8 +1450,19 @@ var Intercooler = Intercooler || (function() {
     }
   }
 
-  function invokeLocalAction(elt, actions) {
-    var actionTargetVal = closestAttrValue(elt, 'ic-action-target');
+  function maybeInvokeLocalAction(elt, modifier) {
+    var actions = getICAttribute(elt, 'ic' + modifier + '-action');
+    if (actions) {
+      invokeLocalAction(elt, actions, modifier);
+    }
+  }
+
+  function invokeLocalAction(elt, actions, modifier) {
+    var actionTargetVal = closestAttrValue(elt, 'ic' + modifier + '-action-target');
+    if(actionTargetVal === null && modifier !== "") {
+      actionTargetVal = closestAttrValue(elt, 'ic-action-target');
+    }
+
     var target = null;
     if(actionTargetVal) {
       target = getTargetImpl(elt, 'ic-action-target');
