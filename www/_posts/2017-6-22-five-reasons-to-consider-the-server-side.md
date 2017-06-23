@@ -5,12 +5,12 @@ nav: blog
 
 For the last decade web development has been moving away from the original server-side model to a client-side programming
  model, driven by the adoption of javascript and, in the last few years, the explosion of front-end SPA and component 
- frameworks.  Most new web projects starting today are going to a least entertain the idea of using client-side rendering
+ frameworks.  Most new web projects starting today are going to at least entertain the idea of using client-side rendering
  coupled with some sort of JSON API.
  
 In this article I'd like to give you a few reasons to consider sticking with a server-side architecture.  As with all
 technical decisions there are a near infinite number of things to consider and each application is different, but I think that
-these areas in particular are worth considering, even if you decide to not to go with a server side approach.
+these areas in particular are worth considering, even if you decide not to go with a server side approach.
  
 ### #1 - Simplicity
  
@@ -67,7 +67,7 @@ front-end developers you are also giving to potentially hostile users.
 
 This is not a concern on the server side, where the typical situation is a completely open and expressive data API (e.g. SQL
 or a data store's native client.)  Giving a tool to your server-side developers does not have the same security ramifications
-that givinig it to your client-side developers does.
+that giving it to your client-side developers does.
  
 ### #4 - Decouple your UI and Data APIs
 
@@ -104,7 +104,7 @@ general network architecture which had, and still has, [a bunch of benefits](htt
 to it.
 
 Fortunately there is a [good, solid way to implement smooth, modern UIs](/) that stays true to the original description of
-REST and, in fact, expands your ability to work with a lot of aspects of it (e.g. HTTP method support)  By using the
+REST and, in fact, expands your ability to work with a lot of aspects of it (e.g. HTTP method support).  By using the
 server side for your application logic and HTML for your UI API network transport, you can implement REST and HATEOAS without
 even really thinking about it, and enjoy all the benefits described in Roy Fielding's dissertation.
 
