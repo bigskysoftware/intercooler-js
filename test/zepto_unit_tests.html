@@ -2030,6 +2030,35 @@ QUnit.test("Script evaluation", function (assert) {
       });
   </script>
 
+  <form id="no_button_val_on_select" ic-post-to="/no_button_val_on_select">
+    <button id="button_to_lose_focus" onclick="return false" name="button_to_lose_focus" value="button_val">click button</button>
+    <select id="select_to_clear_button_val" name="select_to_clear_button_val">
+      <option value="select_val_1">select 1</option>
+      <option value="select_val_2">select 2</option>
+    </select>
+  </form>
+
+  <script>
+    intercoolerTest("No value included for button after select",
+      function (assert) {
+        $.mockjax({
+          url: "/no_button_val_on_select",
+          response: function(settings) {
+            var params = parseParams(settings.data);
+            assert.equal(params["button_to_lose_focus"], null);
+            assert.equal(params["select_to_clear_button_val"], "select_val_2");
+            return "";
+          }
+        });
+        $("#button_to_lose_focus").click();
+        $("#select_to_clear_button_val").val("select_val_2").click();
+        $("#no_button_val_on_select").submit();
+      },
+      function (assert) {
+        // nothing to do here
+      });
+  </script>
+
   <form id="addCategoryForm" ic-post-to="/categories/create" style="">
     <div class="form-group">
       <input type="text" class="form-control" name="Name" placeholder="Category Name - 'Apparel', 'Drinkware', etc..." required="" value="asdr">

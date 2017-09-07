@@ -1056,7 +1056,7 @@ var Intercooler = Intercooler || (function() {
     if (getICAttribute(elt, 'ic-trigger-on')) {
       // record button or submit input click info
       if(elt.is('form')) {
-        elt.find('input, button').on('click focus', function(e){
+        elt.on('click focus', 'input, button, select', function(e){
           if($(this).is('input[type="submit"], button') && $(this).is("[name]")) {
             elt.data('ic-last-clicked-button', {name:$(this).attr("name"), value:$(this).val()})
           } else {
