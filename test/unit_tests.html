@@ -2247,11 +2247,11 @@ QUnit.test("Script evaluation", function (assert) {
         assert.strictEqual($("#" + firstFixedId)[0], children[0]);
         assert.strictEqual($("#" + secondFixedId).parent()[0], children[3]);
         assert.equal($(children[1]).attr("href"), "#" + firstFixedId);
-        assert.equal($(children[2]).attr("ic-get-from"), "#" + firstFixedId);
+        assert.equal($(children[2]).attr(fixAttrName("ic-get-from")), "#" + firstFixedId);
         assert.equal($(children[3]).find("label").attr("for"), secondFixedId);
         assert.equal($(children[4]).attr("data-fix-ids-here-too"), "bla bla#" + firstFixedId + "#" + secondFixedId + ";etc");
         assert.equal($(children[5]).attr("data-not-here-because-longer-id"), "#second-id-to-fix-not");
-        assert.equal($(children[6]).attr("ic-get-from"), "#id-of-something-outside");
+        assert.equal($(children[6]).attr(fixAttrName("ic-get-from")), "#id-of-something-outside");
       });
   </script>
 

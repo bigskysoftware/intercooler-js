@@ -1375,7 +1375,7 @@ var Intercooler = Intercooler || (function() {
   }
 
   function walkTree(elt, filter) {
-    return $(elt).filter(filter).add(elt.find(filter));
+    return elt.filter(filter).add(elt.find(filter));
   }
 
   function fixIDs(contentToSwap) {
