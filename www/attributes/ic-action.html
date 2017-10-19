@@ -72,6 +72,21 @@ nav: attributes > ic-action
       <p>It does not handle all UX cases, of course, but does allow you to capture many common UI/UX needs using a small
       and simple syntax.</p>
 
+      <h3>AJAX Lifecycle Integrated Actions</h3>
+
+      There are four additional <code>action</code> attributes:
+
+      <ul>
+        <li>
+          <code>ic-action-beforeSend</code>
+          <code>ic-action-success</code>
+          <code>ic-action-error</code>
+          <code>ic-action-complete</code>
+        </li>
+      </ul>
+
+      These actions are fired during the jQuery AJAX life cycle.
+
       <h3>Dependencies</h3>
 
       <p><code>ic-action</code> has no effect on dependencies.</p>

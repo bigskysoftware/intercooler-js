@@ -5,13 +5,39 @@ nav: dependencies
 
 <div class="container">
 
-  <a class="anchor" id="1_1_2"></a>
+  <a class="anchor" id="1_2_0"></a>
   <h2>
     Intercooler 1.2.0 - ??
   </h2>
   <ul>
     <li>
+      Added <code><a href="/attributes/ic-disable-when-doc-hidden.html">ic-disable-when-doc-hidden</a></code> and
+      <code><a href="/attributes/ic-disable-when-doc-inactive.html">ic-disable-when-doc-inactive</a></code>
+      attributes to allow short-circuiting polling when a document isn't focused or active
+    </li>
+    <li>
+      Added <code><a href="/attributes/ic-fix-ids.html">ic-fix-ids</a></code> attribute to replace the IDs of any added elements
+      with globally unique IDs so that they don't conflict with any existing IDs on the page.
+    </li>
+    <li>
+      Better support for last-clicked elements in forms
+    </li>
+    <li>
       Added <code>timeout:</code> syntax for <code>ic-trigger-on</code> attribute
+    </li>
+    <li>
+      Added four additional local <code>action</code> attributes:
+
+      <ul>
+        <li>
+          <code>ic-action-beforeSend</code>
+          <code>ic-action-success</code>
+          <code>ic-action-error</code>
+          <code>ic-action-complete</code>
+        </li>
+      </ul>
+
+      These actions are fired during the jQuery AJAX life cycle.
     </li>
     <li>
       Bug fixes

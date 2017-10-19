@@ -1437,6 +1437,18 @@ var Intercooler = Intercooler || (function() {
       }
     }
 
+    if("true" == closestAttrValue(elt, 'ic-disable-when-doc-hidden')) {
+      if(document['hidden']) {
+        return;
+      }
+    }
+
+    if("true" == closestAttrValue(elt, 'ic-disable-when-doc-inactive')) {
+      if(!document.hasFocus()) {
+        return;
+      }
+    }
+
     if (elt.length > 0) {
       var icEventId = uuid();
       elt.data('ic-event-id', icEventId);
