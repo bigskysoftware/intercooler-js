@@ -2185,6 +2185,51 @@
       });
   </script>
 
+  <div id="prototype-with-ids-to-fix" class="ic-ignore">
+    <div id="first-id-to-fix"></div>
+    <a href="#first-id-to-fix"></a>
+    <div ic-get-from="#first-id-to-fix"></div>
+    <div>
+      <input id="second-id-to-fix"/>
+      <label for="second-id-to-fix"></label>
+    </div>
+    <div data-fix-ids-here-too="bla bla#first-id-to-fix#second-id-to-fix;etc"></div>
+    <div data-not-here-because-longer-id="#second-id-to-fix-not"></div>
+    <div ic-get-from="#id-of-something-outside"></div>
+  </div>
+  <div id="id-of-something-outside"></div>
+  <div id="target-for-fixed-ids" ic-get-from="#prototype-with-ids-to-fix" ic-fix-ids="true"></div>
+  <script>
+    intercoolerTest("Fix IDs in swapped content if ic-fix-ids is specified",
+      function (assert) {
+        if ($.zepto) {
+          $.mockjax({
+            url: "#prototype-with-ids-to-fix",
+            response: function (settings) {
+              this.responseText = $("#prototype-with-ids-to-fix").html();
+            }
+          });
+        }
+        $("#target-for-fixed-ids").click();
+      },
+      function (assert) {
+        var children = $("#target-for-fixed-ids").children();
+        var firstFixedId = $(children[0]).attr("id");
+        var secondFixedId = $(children[3]).find("input").attr("id");
+        assert.notEqual(firstFixedId, "first-id-to-fix");
+        assert.notEqual(secondFixedId, "second-id-to-fix");
+        assert.notEqual(firstFixedId, secondFixedId);
+        assert.strictEqual($("#" + firstFixedId)[0], children[0]);
+        assert.strictEqual($("#" + secondFixedId).parent()[0], children[3]);
+        assert.equal($(children[1]).attr("href"), "#" + firstFixedId);
+        assert.equal($(children[2]).attr(fixAttrName("ic-get-from")), "#" + firstFixedId);
+        assert.equal($(children[3]).find("label").attr("for"), secondFixedId);
+        assert.equal($(children[4]).attr("data-fix-ids-here-too"), "bla bla#" + firstFixedId + "#" + secondFixedId + ";etc");
+        assert.equal($(children[5]).attr("data-not-here-because-longer-id"), "#second-id-to-fix-not");
+        assert.equal($(children[6]).attr(fixAttrName("ic-get-from")), "#id-of-something-outside");
+      });
+  </script>
+
 </div>
 </body>
 </html>

@@ -1281,6 +1281,10 @@ var Intercooler = Intercooler || (function() {
 
       var contentToSwap = maybeFilter(responseContent, closestAttrValue(elt, 'ic-select-from-response'));
 
+      if (closestAttrValue(elt, 'ic-fix-ids') == "true") {
+        fixIDs(contentToSwap);
+      }
+
       var doSwap = function() {
         if (closestAttrValue(elt, 'ic-replace-target') == "true") {
           try {
@@ -1364,10 +1368,40 @@ var Intercooler = Intercooler || (function() {
       asQuery = $($.parseHTML(newContent, null, true));
     }
     if (filter) {
-      return asQuery.filter(filter).add(asQuery.find(filter)).contents();
+      return walkTree(asQuery, filter).contents();
     } else {
       return asQuery;
     }
+  }
+
+  function walkTree(elt, filter) {
+    return elt.filter(filter).add(elt.find(filter));
+  }
+
+  function fixIDs(contentToSwap) {
+    var fixedIDs = {};
+    walkTree(contentToSwap, "[id]").each(function() {
+      var originalID = $(this).attr("id");
+      var fixedID;
+      do {
+        fixedID = "ic-fixed-id-" + uuid();
+      } while ($("#" + fixedID).length > 0);
+      fixedIDs[originalID] = fixedID;
+      $(this).attr("id", fixedID);
+    });
+    walkTree(contentToSwap, "label[for]").each(function () {
+      var originalID = $(this).attr("for");
+      $(this).attr("for", fixedIDs[originalID] || originalID);
+    });
+    walkTree(contentToSwap, "*").each(function () {
+      $.each(this.attributes, function () {
+        if (this.value.indexOf("#") !== -1) {
+          this.value = this.value.replace(/#([-_A-Za-z0-9]+)/g, function(match, originalID) {
+            return "#" + (fixedIDs[originalID] || originalID);
+          });
+        }
+      })
+    });
   }
 
   function getStyleTarget(elt) {
