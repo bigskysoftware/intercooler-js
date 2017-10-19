@@ -214,6 +214,38 @@
   </div>
 </div>
 
+<script>
+function eval_test(...args) {
+    return args;
+}
+QUnit.test("Script evaluation", function (assert) {
+  var geval = Intercooler._internal.globalEval;
+  assert.deepEqual(geval("return eval_test()"), [], "Unsafe basic: empty return");
+  assert.deepEqual(geval("return eval_test('a')"), ['a'], "Unsafe basic: return");
+  assert.deepEqual(
+    geval("return a", [['a', 'b']]),
+    "b",
+    "Unsafe args: single return"
+  );
+  assert.deepEqual(
+    geval("return [a, c]", [['a', 'b'], ['c', 'd']]),
+    ["b", "d"],
+    "Unsafe args: multiple return"
+  );
+  assert.deepEqual(geval("eval_test"), [], "Safe: empty return");
+  assert.deepEqual(
+    geval("eval_test", [['a', 'b']]),
+    ["b"],
+    "Safe args: single return"
+  );
+  assert.deepEqual(
+    geval("eval_test", [['a', 'b'], ['c', 'd']]),
+    ["b", "d"],
+    "Safe args: single return"
+  );
+});
+</script>
+
 <div class="row">
   <div class="col-md-12">
     <hr/>
@@ -225,6 +257,7 @@
     </script>
   </div>
 </div>
+
 
 <div id="ic-src-div2" ic-src="/basic_update">Foo</div>
 <script>
@@ -1980,6 +2013,35 @@
         });
         $("#lose_focus_1").click();
         $("#lose_focus_4").focus().closest('form').submit();
+      },
+      function (assert) {
+        // nothing to do here
+      });
+  </script>
+
+  <form id="no_button_val_on_select" ic-post-to="/no_button_val_on_select">
+    <button id="button_to_lose_focus" onclick="return false" name="button_to_lose_focus" value="button_val">click button</button>
+    <select id="select_to_clear_button_val" name="select_to_clear_button_val">
+      <option value="select_val_1">select 1</option>
+      <option value="select_val_2">select 2</option>
+    </select>
+  </form>
+
+  <script>
+    intercoolerTest("No value included for button after select",
+      function (assert) {
+        $.mockjax({
+          url: "/no_button_val_on_select",
+          response: function(settings) {
+            var params = parseParams(settings.data);
+            assert.equal(params["button_to_lose_focus"], null);
+            assert.equal(params["select_to_clear_button_val"], "select_val_2");
+            return "";
+          }
+        });
+        $("#button_to_lose_focus").click();
+        $("#select_to_clear_button_val").val("select_val_2").click();
+        $("#no_button_val_on_select").submit();
       },
       function (assert) {
         // nothing to do here
