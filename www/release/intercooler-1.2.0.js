@@ -269,7 +269,7 @@ var Intercooler = Intercooler || (function() {
 
     if (xhr.getResponseHeader("X-IC-Script")) {
       log(elt, "X-IC-Script: evaling " + xhr.getResponseHeader("X-IC-Script"), "DEBUG");
-      eval(xhr.getResponseHeader("X-IC-Script"));
+      globalEval(xhr.getResponseHeader("X-IC-Script"), [["elt", elt]]);
     }
 
     if (xhr.getResponseHeader("X-IC-Redirect")) {
@@ -381,8 +381,43 @@ var Intercooler = Intercooler || (function() {
     }
   }
 
-  function globalEval(script) {
-    return window["eval"].call(window, script);
+  /*
+    Is the provided text a valid JavaScript identifier path?
+
+    We should also probably check if an identifier is a JavaScript keyword here.
+  */
+  function isIdentifier(txt) {
+    return /^[$A-Z_][0-9A-Z_$]*$/i.test(txt);
+  }
+
+  /*
+    Evaluate a script snippet provided by the user.
+
+    script: A string. If this is an identifier, it is assumed to be a callable, retrieved from the
+    global namespace, and called. If it is a compound statement, it is evaluated using eval.
+    args: A list of [name, value] tuples. These will be injected into the namespace of evaluated
+    scripts, and be passed as arguments to safe evaluations.
+  */
+  // It would be nice to use the spread operator here globalEval(script, ...args) - but it breaks
+  // uglify and isn't supported in some older browsers.
+  function globalEval(script, args) {
+    var names = [];
+    var values = [];
+    if (args) {
+        for (var i = 0; i < args.length; i++) {
+            names.push(args[i][0]);
+            values.push(args[i][1]);
+        }
+    }
+    if (isIdentifier(script)) {
+        return window[script].apply(this, values);
+    } else {
+        var outerfunc  = window["eval"].call(
+            window,
+            '(function (' + names.join(", ") + ') {' + script + '})'
+        );
+        return outerfunc.apply(this, values);
+    }
   }
 
   function closestAttrValue(elt, attr) {
@@ -440,15 +475,16 @@ var Intercooler = Intercooler || (function() {
         log(elt, "before AJAX request " + requestId + ": " + type + " to " + url, "DEBUG");
         var onBeforeSend = closestAttrValue(elt, 'ic-on-beforeSend');
         if (onBeforeSend) {
-          globalEval('(function (data, settings, xhr) {' + onBeforeSend + '})')(data, settings, xhr);
+          globalEval(onBeforeSend, [["elt", elt], ["data", data], ["settings", settings], ["xhr", xhr]]);
         }
+        maybeInvokeLocalAction(elt, "-beforeSend");
       },
       success: function(data, textStatus, xhr) {
         triggerEvent(elt, "success.ic", [elt, data, textStatus, xhr, requestId]);
         log(elt, "AJAX request " + requestId + " was successful.", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
         if (onSuccess) {
-          if (globalEval('(function (data, textStatus, xhr) {' + onSuccess + '})')(data, textStatus, xhr) == false) {
+          if (globalEval(onSuccess, [["elt", elt], ["data", data], ["textStatus", textStatus], ["xhr", xhr]]) == false) {
             return;
           }
         }
@@ -478,6 +514,7 @@ var Intercooler = Intercooler || (function() {
             log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
           }
           triggerEvent(elt, "after.success.ic", [elt, data, textStatus, xhr, requestId]);
+          maybeInvokeLocalAction(elt, "-success");
         } catch (e) {
           log(elt, "Error processing successful request " + requestId + " : " + formatError(e), "ERROR");
         }
@@ -486,9 +523,10 @@ var Intercooler = Intercooler || (function() {
         triggerEvent(elt, "error.ic", [elt, status, str, xhr]);
         var onError = closestAttrValue(elt, 'ic-on-error');
         if (onError) {
-          globalEval('(function (status, str, xhr) {' + onError + '})')(status, str, xhr);
+          globalEval(onError, [["elt", elt], ["status", status], ["str", str], ["xhr", xhr]]);
         }
         processHeaders(elt, xhr);
+        maybeInvokeLocalAction(elt, "-error");
         log(elt, "AJAX request " + requestId + " to " + url + " experienced an error: " + str, "ERROR");
       },
       complete: function(xhr, status) {
@@ -505,8 +543,9 @@ var Intercooler = Intercooler || (function() {
         }
         var onComplete = closestAttrValue(elt, 'ic-on-complete');
         if (onComplete) {
-          globalEval('(function (xhr, status) {' + onComplete + '})')(xhr, status);
+          globalEval(onComplete, [["elt", elt], ["xhr", xhr], ["status", status]]);
         }
+        maybeInvokeLocalAction(elt, "-complete");
       }
     };
     if ($.type(data) != "string") {
@@ -1017,8 +1056,10 @@ var Intercooler = Intercooler || (function() {
   function getTriggeredElement(elt) {
     var triggerFrom = getICAttribute(elt, 'ic-trigger-from');
     if(triggerFrom) {
-      if($.inArray(triggerFrom, ['document', 'window']) >= 0){
-        return $(eval(triggerFrom));
+      if (triggerFrom == "document") {
+        return $(document);
+      } else if (triggerFrom == "window") {
+        return $(window);
       } else {
         return $(triggerFrom);
       }
@@ -1031,7 +1072,7 @@ var Intercooler = Intercooler || (function() {
     if (getICAttribute(elt, 'ic-trigger-on')) {
       // record button or submit input click info
       if(elt.is('form')) {
-        elt.find('input, button').on('click focus', function(e){
+        elt.on('click focus', 'input, button, select, textarea', function(e){
           if($(this).is('input[type="submit"], button') && $(this).is("[name]")) {
             elt.data('ic-last-clicked-button', {name:$(this).attr("name"), value:$(this).val()})
           } else {
@@ -1060,7 +1101,7 @@ var Intercooler = Intercooler || (function() {
         $(getTriggeredElement(elt)).on(event, function(e) {
             var onBeforeTrigger = closestAttrValue(elt, 'ic-on-beforeTrigger');
             if (onBeforeTrigger) {
-              if (globalEval('(function (evt, elt) {' + onBeforeTrigger + '})')(e, elt) == false) {
+              if (globalEval(onError, [["elt", elt], ["evt", e], ["elt", elt]]) == false) {
                 log(elt, "ic-trigger cancelled by ic-on-beforeTrigger", "DEBUG");
                 return false;
               }
@@ -1256,6 +1297,10 @@ var Intercooler = Intercooler || (function() {
 
       var contentToSwap = maybeFilter(responseContent, closestAttrValue(elt, 'ic-select-from-response'));
 
+      if (closestAttrValue(elt, 'ic-fix-ids') == "true") {
+        fixIDs(contentToSwap);
+      }
+
       var doSwap = function() {
         if (closestAttrValue(elt, 'ic-replace-target') == "true") {
           try {
@@ -1339,10 +1384,40 @@ var Intercooler = Intercooler || (function() {
       asQuery = $($.parseHTML(newContent, null, true));
     }
     if (filter) {
-      return asQuery.filter(filter).add(asQuery.find(filter)).contents();
+      return walkTree(asQuery, filter).contents();
     } else {
       return asQuery;
     }
+  }
+
+  function walkTree(elt, filter) {
+    return elt.filter(filter).add(elt.find(filter));
+  }
+
+  function fixIDs(contentToSwap) {
+    var fixedIDs = {};
+    walkTree(contentToSwap, "[id]").each(function() {
+      var originalID = $(this).attr("id");
+      var fixedID;
+      do {
+        fixedID = "ic-fixed-id-" + uuid();
+      } while ($("#" + fixedID).length > 0);
+      fixedIDs[originalID] = fixedID;
+      $(this).attr("id", fixedID);
+    });
+    walkTree(contentToSwap, "label[for]").each(function () {
+      var originalID = $(this).attr("for");
+      $(this).attr("for", fixedIDs[originalID] || originalID);
+    });
+    walkTree(contentToSwap, "*").each(function () {
+      $.each(this.attributes, function () {
+        if (this.value.indexOf("#") !== -1) {
+          this.value = this.value.replace(/#([-_A-Za-z0-9]+)/g, function(match, originalID) {
+            return "#" + (fixedIDs[originalID] || originalID);
+          });
+        }
+      })
+    });
   }
 
   function getStyleTarget(elt) {
@@ -1363,7 +1438,7 @@ var Intercooler = Intercooler || (function() {
     }
   }
 
-  function fireICRequest(elt, alternateHandler) {
+    function fireICRequest(elt, alternateHandler) {
     elt = $(elt);
 
     var triggerOrigin = elt;
@@ -1374,6 +1449,18 @@ var Intercooler = Intercooler || (function() {
     var confirmText = closestAttrValue(elt, 'ic-confirm');
     if (confirmText) {
       if (!confirm(confirmText)) {
+        return;
+      }
+    }
+
+    if("true" == closestAttrValue(elt, 'ic-disable-when-doc-hidden')) {
+      if(document['hidden']) {
+        return;
+      }
+    }
+
+    if("true" == closestAttrValue(elt, 'ic-disable-when-doc-inactive')) {
+      if(!document.hasFocus()) {
         return;
       }
     }
@@ -1412,11 +1499,7 @@ var Intercooler = Intercooler || (function() {
               handleRemoteRequest(elt, verb, url, data, success);
             }
           }
-
-          var actions = getICAttribute(elt, 'ic-action');
-          if (actions) {
-            invokeLocalAction(elt, actions);
-          }
+          maybeInvokeLocalAction(elt, "");
         }
       };
 
@@ -1429,8 +1512,19 @@ var Intercooler = Intercooler || (function() {
     }
   }
 
-  function invokeLocalAction(elt, actions) {
-    var actionTargetVal = closestAttrValue(elt, 'ic-action-target');
+  function maybeInvokeLocalAction(elt, modifier) {
+    var actions = getICAttribute(elt, 'ic' + modifier + '-action');
+    if (actions) {
+      invokeLocalAction(elt, actions, modifier);
+    }
+  }
+
+  function invokeLocalAction(elt, actions, modifier) {
+    var actionTargetVal = closestAttrValue(elt, 'ic' + modifier + '-action-target');
+    if(actionTargetVal === null && modifier !== "") {
+      actionTargetVal = closestAttrValue(elt, 'ic-action-target');
+    }
+
     var target = null;
     if(actionTargetVal) {
       target = getTargetImpl(elt, 'ic-action-target');
@@ -1836,7 +1930,8 @@ var Intercooler = Intercooler || (function() {
       replaceOrAddMethod: replaceOrAddMethod,
       initEventSource: function(url) {
         return new EventSource(url);
-      }
+      },
+      globalEval: globalEval
     }
   };
 })();
