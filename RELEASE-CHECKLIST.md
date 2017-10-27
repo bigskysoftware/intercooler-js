@@ -9,3 +9,5 @@
 * Add an entry in `downloads.html` for the new release, that points to the proper files in `/releases`
 * _OPTIONAL:_ Hide an older release by moving it to the `#older` list
 * Run **ALL** test files in Chrome, Firefox and Safari browsers (run jekyll locally)
+* Create a blog post for the release in `www/_posts`
+* 
