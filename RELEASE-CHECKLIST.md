@@ -10,4 +10,8 @@
 * _OPTIONAL:_ Hide an older release by moving it to the `#older` list
 * Run **ALL** test files in Chrome, Firefox and Safari browsers (run jekyll locally)
 * Create a blog post for the release in `www/_posts`
-* 
+* Run `git tag vRELEASEVERSION`
+* Checkout `master` and merge `development`
+* Run `git push origin --tags`
+* Run `cap deploy` from the `/www` directory to depoly the website
+* Email announcement to intercooler-js@googlegroups.com and post on Twitter 
