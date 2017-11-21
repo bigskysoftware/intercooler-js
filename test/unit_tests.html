@@ -2284,6 +2284,38 @@ QUnit.test("Script evaluation", function (assert) {
       });
   </script>
 
+  <ul id="test-transformed-json" ic-get-from="/json_endpoint" ic-transform-response="return renderJsonAsList(content)"></ul>
+  <script>
+    function renderJsonAsList(content)
+    {
+      var data = JSON.parse(content);
+      var vals = data.vals;
+      var htmlVal = "";
+      for (var i = 0; i < vals.length; i++) {
+        htmlVal = htmlVal + "<li>" + vals[i] + "</li>";
+      }
+      return htmlVal;
+    }
+
+    intercoolerTest("JSON can be properly transformed into HTML ",
+      function (assert) {
+
+        $.mockjax({
+          url: '/json_endpoint',
+          response: function () {
+            this.responseText = "{\"vals\":[1, 2, 3]}";
+          }
+        });
+        $("#test-transformed-json").click();
+      },
+
+
+      function (assert) {
+
+        assert.equal($("#test-transformed-json").html(), "<li>1</li><li>2</li><li>3</li>");
+      });
+  </script>
+
 </div>
 </body>
 </html>
