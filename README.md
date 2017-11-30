@@ -40,9 +40,11 @@ Intercooler can be downloaded or hot-linked [from the downloads page](http://int
 
 Or installed via bower:
 
+```javascript
      "dependencies": {
         "intercooler-js" : "1.2.0"
       }
+```
 
 Intercooler depends on [jQuery](https://jquery.com/) v1.10.0 or higher.
 
