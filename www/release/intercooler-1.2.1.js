@@ -1114,6 +1114,12 @@ var Intercooler = Intercooler || (function() {
               if (currentVal != previousVal) {
                 fireICRequest(elt);
               }
+            } else if (triggerOn[1] == 'once') {
+              var alreadyTriggered = elt.data('ic-already-triggered');
+              elt.data('ic-already-triggered', true);
+              if (alreadyTriggered !== true) {
+                fireICRequest(elt);
+              }
             } else {
               fireICRequest(elt);
             }

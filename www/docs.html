@@ -1330,6 +1330,24 @@ nav: docs
 
         {% include javascript_api.html %}
 
+        <h3>Javascript Expression Evaluation</h3>
+
+        <p>Intercooler evaluates expressions for attributes (<code>ic-on-beforeSend</code>,
+          <code>ic-on-success</code>, <code>ic-on-error</code>, and <code>ic-on-complete</code>) and passed in via
+        headers, etc. in a somewhat complex way:</p>
+
+        <p>If the expression is a single symbol, it will be looked up in the global namespace as a function and then, if
+          it exists, it will be called with the given arguments.</p>
+
+        <p>If not, the expression will be evaluated in a new scope.</p>
+
+        <p>This allows sites with security restrictions around the use of <code>eval()</code> to still make use of scripting
+        within intercooler.</p>
+
+        <p>Also note that, because expressions are evaluated in a new scope, if you are using an attribute that supports
+          a return value (e.g. <code>ic-on-beforeSend</code> returning <code>false</code> to cancel a request) you
+        <b>must</b> return the value using an explicit <code>return</code> statement.</p>
+
       </section>
 
       <section>

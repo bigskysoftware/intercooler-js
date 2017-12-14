@@ -2357,6 +2357,24 @@ QUnit.test("Script evaluation", function (assert) {
       });
   </script>
 
+  <ul id="test-cancel-with-ic-on-success" ic-get-from="/ic-on-success" ic-on-success="return false"></ul>
+  <script>
+    intercoolerTest("ic-on-success can cancel swap",
+      function (assert) {
+        $.mockjax({
+          url: '/ic-on-success',
+          response: function () {
+            this.responseText = "foo";
+          }
+        });
+        $("#test-cancel-with-ic-on-success").click();
+      },
+
+      function (assert) {
+        assert.equal($("#test-cancel-with-ic-on-success").text(), "");
+      });
+  </script>
+
 </div>
 </body>
 </html>
