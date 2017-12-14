@@ -1085,7 +1085,7 @@ var Intercooler = Intercooler || (function() {
         $(getTriggeredElement(elt)).on(event, function(e) {
             var onBeforeTrigger = closestAttrValue(elt, 'ic-on-beforeTrigger');
             if (onBeforeTrigger) {
-              if (globalEval(onError, [["elt", elt], ["evt", e], ["elt", elt]]) == false) {
+              if (globalEval(onBeforeTrigger, [["elt", elt], ["evt", e], ["elt", elt]]) == false) {
                 log(elt, "ic-trigger cancelled by ic-on-beforeTrigger", "DEBUG");
                 return false;
               }

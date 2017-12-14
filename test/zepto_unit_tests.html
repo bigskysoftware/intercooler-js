@@ -2324,6 +2324,25 @@ QUnit.test("Script evaluation", function (assert) {
       });
   </script>
 
+  <ul id="test-before-trigger" ic-get-from="/before-trigger-test" ic-on-beforeTrigger="return false"></ul>
+  <script>
+    intercoolerTest("ic-before-trigger can cancel action ",
+      function (assert) {
+
+        $.mockjax({
+          url: '/before-trigger-test',
+          response: function () {
+            this.responseText = "foo";
+          }
+        });
+        $("#test-before-trigger").click();
+      },
+
+      function (assert) {
+        assert.equal($("#test-before-trigger").text(), "");
+      });
+  </script>
+
 </div>
 </body>
 </html>
