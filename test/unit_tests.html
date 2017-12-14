@@ -2335,6 +2335,28 @@ QUnit.test("Script evaluation", function (assert) {
       });
   </script>
 
+  <ul id="test-trigger-on-with-once" ic-get-from="/trigger-on-once" ic-trigger-on="click once"></ul>
+  <script>
+    var onceRequestCount = 0;
+    intercoolerTest("ic-trigger-on once keyword works",
+      function (assert) {
+        $.mockjax({
+          url: '/trigger-on-once',
+          response: function () {
+            this.responseText = "foo";
+            onceRequestCount = onceRequestCount + 1;
+          }
+        });
+        $("#test-trigger-on-with-once").click();
+        $("#test-trigger-on-with-once").click();
+        $("#test-trigger-on-with-once").click();
+      },
+
+      function (assert) {
+        assert.equal(onceRequestCount, 1);
+      });
+  </script>
+
 </div>
 </body>
 </html>

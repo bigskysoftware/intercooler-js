@@ -219,8 +219,7 @@ nav: docs
         </div>
 
         <p>If you wish to trigger an intercooler request only when an event has occurred <em>and</em> the value of an
-          element
-          has changed, you can use the <code>changed</code> modifier as well:</p>
+          element has changed, you can use the <code>changed</code> modifier as well:</p>
 
   <pre>
     &lt;input type="text" name="text" ic-post-to="/text_changed" ic-trigger-on="keyup changed"
@@ -242,6 +241,15 @@ nav: docs
 
           <div id="text-div"></div>
         </div>
+
+        <p>If you wish for an event to only trigger a request once (e.g. a click to load a detail div) you can use the
+        <code>once</code> modifier:</p>
+
+        <pre>
+    &lt;div ic-get-from="/details" ic-trigger-on="click once"/>
+          Click for Details...
+    &lt;/div>
+        </pre>
 
         <p>
           Finally, you can add a delay to the request by using the <a href="/attributes/ic-trigger-delay.html"><code>ic-trigger-delay</code></a>
