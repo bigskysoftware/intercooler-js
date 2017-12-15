@@ -13,5 +13,5 @@
 * Run `git tag vRELEASEVERSION`
 * Checkout `master` and merge `development`
 * Run `git push origin --tags`
-* Run `cap deploy` from the `/www` directory to depoly the website
-* Email announcement to intercooler-js@googlegroups.com and post on Twitter 
+* Run `cap deploy` from the `/www` directory to deploy the website
+* Email announcement to intercooler-js@googlegroups.com, post on Twitter, post to https://gitter.im/intercooler-js/Lobby 
