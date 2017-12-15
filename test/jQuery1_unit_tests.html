@@ -2281,6 +2281,97 @@ QUnit.test("Script evaluation", function (assert) {
       });
   </script>
 
+  <ul id="test-transformed-json" ic-get-from="/json_endpoint" ic-transform-response="return renderJsonAsList(content)"></ul>
+  <script>
+    function renderJsonAsList(content)
+    {
+      var data = JSON.parse(content);
+      var vals = data.vals;
+      var htmlVal = "";
+      for (var i = 0; i < vals.length; i++) {
+        htmlVal = htmlVal + "<li>" + vals[i] + "</li>";
+      }
+      return htmlVal;
+    }
+
+    intercoolerTest("JSON can be properly transformed into HTML ",
+      function (assert) {
+
+        $.mockjax({
+          url: '/json_endpoint',
+          response: function () {
+            this.responseText = "{\"vals\":[1, 2, 3]}";
+          }
+        });
+        $("#test-transformed-json").click();
+      },
+
+
+      function (assert) {
+
+        assert.equal($("#test-transformed-json").html(), "<li>1</li><li>2</li><li>3</li>");
+      });
+  </script>
+
+  <ul id="test-before-trigger" ic-get-from="/before-trigger-test" ic-on-beforeTrigger="return false"></ul>
+  <script>
+    intercoolerTest("ic-before-trigger can cancel action ",
+      function (assert) {
+
+        $.mockjax({
+          url: '/before-trigger-test',
+          response: function () {
+            this.responseText = "foo";
+          }
+        });
+        $("#test-before-trigger").click();
+      },
+
+      function (assert) {
+        assert.equal($("#test-before-trigger").text(), "");
+      });
+  </script>
+
+  <ul id="test-trigger-on-with-once" ic-get-from="/trigger-on-once" ic-trigger-on="click once"></ul>
+  <script>
+    var onceRequestCount = 0;
+    intercoolerTest("ic-trigger-on once keyword works",
+      function (assert) {
+        $.mockjax({
+          url: '/trigger-on-once',
+          response: function () {
+            this.responseText = "foo";
+            onceRequestCount = onceRequestCount + 1;
+          }
+        });
+        $("#test-trigger-on-with-once").click();
+        $("#test-trigger-on-with-once").click();
+        $("#test-trigger-on-with-once").click();
+      },
+
+      function (assert) {
+        assert.equal(onceRequestCount, 1);
+      });
+  </script>
+
+  <ul id="test-cancel-with-ic-on-success" ic-get-from="/ic-on-success" ic-on-success="return false"></ul>
+  <script>
+    intercoolerTest("ic-on-success can cancel swap",
+      function (assert) {
+        $.mockjax({
+          url: '/ic-on-success',
+          response: function () {
+            this.responseText = "foo";
+          }
+        });
+        $("#test-cancel-with-ic-on-success").click();
+      },
+
+      function (assert) {
+        assert.equal($("#test-cancel-with-ic-on-success").text(), "");
+      });
+  </script>
+
 </div>
 </body>
 </html>

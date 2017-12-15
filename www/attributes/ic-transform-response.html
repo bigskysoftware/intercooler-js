@@ -1,0 +1,85 @@
+---
+layout: default
+nav: attributes > ic-transform-response
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-transform-response</code> - Transform Response attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>This attribute is a javascript expression that will be evaluated after a response is received, allowing the
+      client side to transform the given response (e.g. from JSON to HTML)</p>
+
+      <h3>Syntax</h3>
+
+      <p>This attribute is a valid javascript expression, evaluated within an isolated scope.</p>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <p>Available symbols are:</p>
+
+      <ul>
+        <li><code>str</code> - Textual portion of the HTTP status, such as "Not Found" or "Internal Server Error."</li>
+        <li><code>xhr</code> - The XHR object</li>
+      </ul>
+
+      <p>The <code>ic-transform-response</code> attribute can be placed on an parent element, allowing general request processing
+        for an entire page. Intercooler will find the closest element with this attribute and evaluate it.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example, using a poll interval to update a list coming from a :</p>
+
+      <pre>
+  &lt;ul ic-append-from="/list_src" ic-poll="2s" ic-limit-children="5">&lt;/ul>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            $.mockjax({
+              url: '/ips',
+              response: function () {
+                function randIp() {
+                  function getOctet() {
+                    return Math.round(Math.random()*255);
+                  }
+                  //generate the ipaddress
+                  return getOctet() + '.' + getOctet() + '.' + getOctet() + '.' + getOctet();
+                }
+                this.responseText = "{\"ips\":[\"" + randIp() + "\", \"" + randIp() + "\", \"" + randIp() + "\"]}";
+              }
+            });
+          })();
+
+          function jsonToHTML(content)
+          {
+            var data = JSON.parse(content);
+            var ips = data.ips;
+            var htmlVal = "";
+            for (var i = 0; i < ips.length; i++) {
+              htmlVal = htmlVal + "<li>" + ips[i] + "</li>";
+            }
+            return htmlVal;
+          }
+        </script>
+
+        <h4>IP Addresses:</h4>
+        <ul ic-get-from="/ips"
+            ic-poll="1s"
+            ic-transform-response="return jsonToHTML(content)">
+          <li>No Data Yet...</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+</div>
