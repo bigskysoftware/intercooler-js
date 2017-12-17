@@ -25,12 +25,15 @@ nav: attributes > ic-transform-response
       <p>Available symbols are:</p>
 
       <ul>
-        <li><code>str</code> - Textual portion of the HTTP status, such as "Not Found" or "Internal Server Error."</li>
-        <li><code>xhr</code> - The XHR object</li>
+        <li><code>content</code> - The string content of the server response</li>
+        <li><code>url</code> - The URL that the content came from</li>
+        <li><code>elt</code> - The element that triggered the request</li>
       </ul>
 
       <p>The <code>ic-transform-response</code> attribute can be placed on an parent element, allowing general request processing
         for an entire page. Intercooler will find the closest element with this attribute and evaluate it.</p>
+
+      <p>Note that, due to the way intercooler evaluates expressions, you must include a <code>return</code> statement in this attribute to return the value.</p>
 
       <h3>Example</h3>
 
