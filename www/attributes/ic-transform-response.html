@@ -37,10 +37,15 @@ nav: attributes > ic-transform-response
 
       <h3>Example</h3>
 
-      <p>Here is a simple example, using a poll interval to update a list coming from a :</p>
+      <p>Here is a simple example, using a poll interval to update a list coming from a JSON end point and <code>ic-transform-response</code>
+        to convert that JSON into HTML:</p>
 
       <pre>
-  &lt;ul ic-append-from="/list_src" ic-poll="2s" ic-limit-children="5">&lt;/ul>
+        &lt;ul ic-get-from="/ips"
+            ic-poll="1s"
+            ic-transform-response="return jsonToHTML(content)">
+          &lt;li>No Data Yet...&lt;/li>
+        &lt;/ul>
       </pre>
 
 
