@@ -131,6 +131,32 @@ nav: attributes > ic-action
 
       </div>
 
+      <p>Here's an example of <code>ic-beforeSend-action</code>; the other <code>ic-*-action</code> attributes work
+        similarly:</p>
+
+      <div>
+        <ul>
+          <li>
+            Fade out and then remove the button before sending POST request to update span:<br/>
+            <div class="live-demo">
+              <script>
+                (function () {
+                  $.mockjax({
+                    'url': '/target_url',
+                    'response': function (settings) {
+                      this.responseText = '<span ic-src="/target_url">Thanks for clicking!</span>'
+                    }
+                  });
+                })();
+              </script>
+              <button class="btn btn-primary" ic-post-to="/target_url" ic-beforeSend-action="fadeOut;remove">Click Me!</button>
+              <span ic-src="/target_url">You haven't clicked yet...</span>
+            </div>
+          </li>
+        </ul>
+
+      </div>
+
     </div>
   </div>
 </div>
