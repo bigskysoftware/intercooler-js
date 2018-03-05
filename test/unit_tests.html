@@ -2187,6 +2187,37 @@ QUnit.test("Script evaluation", function (assert) {
       });
   </script>
 
+  <div id="sse-6" ic-sse-src="/foo">
+    <span id="sse-6-inner" ic-get-from="/sse_replace_req" ic-trigger-on="sse:foo" ic-replace-target="true"></span>
+  </div>
+  <script>
+    // This test fails if you see a warning in the console of the form:
+    //
+    // Intercooler Error : Error during content swap : TypeError: Cannot read
+    //   property 'addEventListener' of undefined
+    // TypeError: Cannot read property 'addEventListener' of undefined
+    //     at registerSSE (...)
+    //     at handleTriggerOn (...)
+    //     ...
+    intercoolerTest("Server Sent Event trigger handles missing ic-sse-src element", function(assert) {
+        $.mockjax({
+          url: "/sse_replace_req",
+          responseText: "<span id='sse-6-inner' ic-trigger-on='sse:foo'>foo</span>"
+        });
+        var mockSource = $("#sse-6").data("ic-event-sse-source");
+        assert.equal("", $("#sse-6-inner").html());
+
+        // Two events will cause a race between two requests, and one of the
+        // resulting <span>s will be removed from the DOM, thereby causing an
+        // ic-sse-src element to not be found for it.
+        mockSource.fireEvent("foo", "");
+        mockSource.fireEvent("foo", "");
+      },
+      function(assert) {
+        assert.equal("foo", $("#sse-6-inner").html());
+      });
+  </script>
+
   <div id="anchor-regression-div">
       <a id="anchor-regression-a" class="button button--primary" ic-post-to="/anchor_regression?issue=1" ic-replace-target="true">
           <span>Click Me!</span>
