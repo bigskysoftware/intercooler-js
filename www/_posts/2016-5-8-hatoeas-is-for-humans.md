@@ -92,7 +92,7 @@ You should use it.  😉
 Anyway, we can see that, despite all the fancy verbiage, HATEOAS is almost idiotically easy to implement by just using 
 HTML.  
 
-Why all the hate and confusion around i, then?
+Why all the hate and confusion around it, then?
 
 To understand why, let's look at the example from the [HATEOAS Wikipage](https://en.wikipedia.org/wiki/HATEOAS):
 
