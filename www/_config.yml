@@ -5,3 +5,4 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - Capfile
+  - vendor
