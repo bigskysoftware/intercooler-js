@@ -742,6 +742,31 @@ nav: docs
         powerful tools for doing client-side DOM manipulation, allowing you to implement many client-side
         needs using only a few attributes:</p>
 
+        <h3>Ready Handling</h3>
+
+        <p>A common pattern in jQuery-based applications is to have a <a href="https://api.jquery.com/ready/">ready handler</a>
+          that executes once the page is loaded, and that often is used to hook up event handlers or to initialize javascript
+          widgets:</p>
+
+  <pre>
+    $(document).ready(function() {
+      $("#my-element).click(function() { doSomethingOnClick() });
+    });
+  </pre>
+
+        <p>Intercooler has a similar mechanism so that you can wire event handlers (or use javascript plugins) to
+        partial content that has been swapped into the DOM:</p>
+
+  <pre>
+    Intercooler.ready(function(rootContent) {
+      rootContent.find("#my-element).click(function() { doSomethingOnClick() });
+    });
+  </pre>
+
+        <p>Note that rather than doing a global lookup of elements, you do a look up from the root element of the
+        swap, which is passed in as an argument to the callback.  This helps you avoid accidentally adding multiple
+        handlers to the same element.</p>
+
         <h3>Adding &amp; Removing Classes After A Delay</h3>
 
         <p>In order to fine tune transitions or provide other visual easements in your app, you may find yourself
