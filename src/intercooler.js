@@ -481,7 +481,6 @@ var Intercooler = Intercooler || (function() {
 
             if (xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true") {
               try {
-                requestCleanup(indicator, elt); // clean up before snap-shotting HTML
                 var newUrl = xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-src');
                 if(_history) {
                   _history.snapshotForHistory(newUrl);
