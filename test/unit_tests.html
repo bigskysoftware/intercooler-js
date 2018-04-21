@@ -2405,7 +2405,70 @@ QUnit.test("Script evaluation", function (assert) {
         assert.equal($("#test-cancel-with-ic-on-success").text(), "");
       });
   </script>
+	
+  <div id="test-ic-push-url-and-ic-use-transition">
+    <a id="page1-tab"
+      href=""
+      ic-get-from="/page1"
+      ic-target="#test-ic-push-url-and-ic-use-transition-content"
+      ic-push-url="true"
+      ic-indicator="#ic-push-url-and-ic-use-transition-indicator">
+      Page1
+    </a>
+    <a id="page2-tab"
+      href=""
+      ic-get-from="/page2"
+      ic-target="#test-ic-push-url-and-ic-use-transition-content"
+      ic-push-url="true"
+      ic-indicator="#ic-push-url-and-ic-use-transition-indicator">
+      Page2
+    </a>
+    <i id="ic-push-url-and-ic-use-transition-indicator" class="fa fa-spinner fa-spin ic-use-transition"></i>
+    <div id="test-ic-push-url-and-ic-use-transition-content" ic-history-elt="">
+      <h1>Content</h1>
+    </div>
+  </div>
+  <script>
+    QUnit.test("ic-use-transition should work when using ic-push-url", function (assert) {
+      // don't run test locally
+      if (window.location.hostname == "") {
+        assert.equal(true, true);
+        return;
+      }
+      var done = assert.async();
+      $.mockjax({
+        url: '/page1',
+        response: function () {
+          this.responseText = "Page 1";
+        }
+      });
+      $.mockjax({
+        url: '/page2',
+        response: function () {
+          this.responseText = "Page 2";
+        }
+      });
+      $("#page1-tab").click();
 
+      setTimeout(function () {
+        $("#page2-tab").click();
+      }, 100);
+
+      setTimeout(function () {
+        assert.equal($("#ic-push-url-and-ic-use-transition-indicator").css('display'), "inline-block");
+        done();
+      }, 200);
+
+      // Click "Back" twice to get back to the test page.
+      setTimeout(function () {
+        window.history.back();
+      }, 300);
+
+      setTimeout(function () {
+        window.history.back();
+      }, 400);
+    });
+  </script>
 </div>
 </body>
 </html>
