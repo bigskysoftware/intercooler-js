@@ -2449,21 +2449,17 @@ QUnit.test("Script evaluation", function (assert) {
         }
       });
       $("#page1-tab").click();
-
       setTimeout(function () {
         $("#page2-tab").click();
       }, 100);
-
       setTimeout(function () {
         assert.equal($("#ic-push-url-and-ic-use-transition-indicator").css('display'), "inline-block");
         done();
       }, 200);
-
       // Click "Back" twice to get back to the test page.
       setTimeout(function () {
         window.history.back();
       }, 300);
-
       setTimeout(function () {
         window.history.back();
       }, 400);
