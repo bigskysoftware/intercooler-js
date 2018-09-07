@@ -1076,7 +1076,7 @@ var Intercooler = Intercooler || (function() {
         if(triggerOn[0].indexOf("sse:") == 0) {
           //Server-sent event, find closest event source and register for it
           var sourceElt = elt.closest(getICAttributeSelector('ic-sse-src'));
-          if(sourceElt) {
+          if(sourceElt.length > 0) {
             registerSSE(sourceElt, triggerOn[0].substr(4))
           }
         } else {
