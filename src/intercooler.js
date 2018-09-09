@@ -72,9 +72,10 @@ var Intercooler = Intercooler || (function() {
   }
 
   function hideIndicator(elt) {
-    if (elt.data('ic-use-transition')) {
+    if (elt.data('ic-use-transition') || elt.data('is-indicator-cleared')) {
       elt.data('ic-use-transition', null);
       elt.addClass('ic-use-transition');
+      elt.data('is-indicator-cleared', true);
     } else {
       elt.hide();
     }
@@ -481,6 +482,7 @@ var Intercooler = Intercooler || (function() {
 
             if (xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true") {
               try {
+                requestCleanup(indicator, elt); // clean up before snap-shotting HTML
                 var newUrl = xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-src');
                 if(_history) {
                   _history.snapshotForHistory(newUrl);
