@@ -3,6 +3,7 @@ pygments: false
 exclude:
   - config
   - Gemfile
+  - publish.rb
   - Gemfile.lock
   - Capfile
   - vendor
