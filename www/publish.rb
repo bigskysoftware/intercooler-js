@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 unless File.directory? '../../intercoolerjs.github.io'
   puts "ERROR: You must have the github pages project for intercooler checked out as a sibling to the main intercooler project in order to publish the intercooler website."
   return -1
