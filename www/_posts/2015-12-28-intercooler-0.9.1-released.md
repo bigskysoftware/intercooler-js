@@ -23,7 +23,7 @@ This concludes the client-side functionality of intercooler (everything else sho
 
 The remaining outstanding items on the road to 1.0 are:
 
-  * [https://github.com/LeadDyno/intercooler-js/issues/60](https://github.com/LeadDyno/intercooler-js/issues/60) - an option for a data-prefix
-  * [https://github.com/LeadDyno/intercooler-js/issues/54](https://github.com/LeadDyno/intercooler-js/issues/54) - File upload handling
+  * [https://github.com/intercoolerjs/intercooler-js/issues/60](https://github.com/intercoolerjs/intercooler-js/issues/60) - an option for a data-prefix
+  * [https://github.com/intercoolerjs/intercooler-js/issues/54](https://github.com/intercoolerjs/intercooler-js/issues/54) - File upload handling
 
 I hope to have both of these done at some point in January, and we can all have a big 1.0 launch party:

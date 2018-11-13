@@ -20,7 +20,7 @@ actions:
 
 I'm hoping to be able to find some time today to finish my last pre-1.0 item:
 
-  * [https://github.com/LeadDyno/intercooler-js/issues/60](https://github.com/LeadDyno/intercooler-js/issues/60) - an option for a data-prefix
+  * [https://github.com/intercoolerjs/intercooler-js/issues/60](https://github.com/intercoolerjs/intercooler-js/issues/60) - an option for a data-prefix
 
 When I'm done with that I will release a v0.9.3, which will be intercooler 1.0-alpha1.
 
@@ -33,7 +33,7 @@ Finally, I'm happy to announce that I have set up a blog on the intercooler webs
 I'd love to have intercooler users contribute posts (particularly about how to user intercooler on various server-side
 platforms).  If you'd like to contribute, simply fork the intercooler codebase and add a markdown file here:
 
-[https://github.com/LeadDyno/intercooler-js/tree/master/www/_posts](https://github.com/LeadDyno/intercooler-js/tree/master/www/_posts)
+[https://github.com/intercoolerjs/intercooler-js/tree/master/www/_posts](https://github.com/intercoolerjs/intercooler-js/tree/master/www/_posts)
 
 Then issue a pull request and I'll merge it and publish it out.
 
