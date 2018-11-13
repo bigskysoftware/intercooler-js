@@ -8,7 +8,7 @@ nav: blog
 At long last, I'm very happy to announce the release of intercooler v1.0, available from the [downloads](/download.html)
 page, as well as Bower and NPM.
 
-I created intercooler almost [three years ago](https://github.com/LeadDyno/intercooler-js/commit/62d3dbdb5c056ee866aba3575e148de649fc3efe),
+I created intercooler almost [three years ago](https://github.com/intercoolerjs/intercooler-js/commit/62d3dbdb5c056ee866aba3575e148de649fc3efe),
 inspired by the [turbolinks](https://github.com/turbolinks/turbolinks) and [pjax](https://github.com/defunkt/jquery-pjax)
 projects.  I wanted a general, client-side library that opened up all the functionality of the web, based on the 
 following core idea:
@@ -54,7 +54,7 @@ That's very cool.
 Intercooler is at an interesting point: I view it as a largely complete library.  Perhaps this is arrogance, but I 
 think I got the basic idea right, and the implementation at least right enough.  I don't expect any major rewrites,
 but rather to polish it, fix bugs that come up and perhaps add declarative support for some 
-[more exotic web features](https://github.com/LeadDyno/intercooler-js/issues/104).  
+[more exotic web features](https://github.com/intercoolerjs/intercooler-js/issues/104).  
 
 So that means there will not be constant activity and churn on the project, but rather a [stewardship](http://goo.gl/sNBng6)
 relationship.  This is in contrast with the software industry in general, which is always looking for the new new thing,
@@ -62,7 +62,7 @@ and the front end world in particular, which is currently an almost
 [comical exaggeration](https://medium.com/@ericclemmons/javascript-fatigue-48d4011b6fc4#.88el9uljo) of this tendency.
 
 So I'll be here, writing about intercooler on the blog, improving the [docs](/docs.html) and [examples](/examples/index.html), 
-maybe adding [tests](https://github.com/LeadDyno/intercooler-js/blob/master/test/unit_tests.html), but mainly trying to 
+maybe adding [tests](https://github.com/intercoolerjs/intercooler-js/blob/master/test/unit_tests.html), but mainly trying to 
 avoid screwing it up.  You can use it, knowing that there won't be major changes in semantics or the API and that
 your code will continue to work a decade (or more) from now.  
 
