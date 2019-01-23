@@ -243,6 +243,11 @@ var Intercooler = Intercooler || (function() {
       document.title = xhr.getResponseHeader("X-IC-Title");
     }
 
+    if (xhr.getResponseHeader("X-IC-Title-ENCODED")) {
+      var decodedTitle = decodeURIComponent((xhr.getResponseHeader("X-IC-Title-ENCODED")).replace(/\+/g, '%20'));
+      document.title = decodedTitle;
+    }
+
     if (xhr.getResponseHeader("X-IC-Refresh")) {
       var pathsToRefresh = xhr.getResponseHeader("X-IC-Refresh").split(",");
       log(elt, "X-IC-Refresh: refreshing " + pathsToRefresh, "DEBUG");
