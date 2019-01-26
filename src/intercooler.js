@@ -1732,7 +1732,9 @@ var Intercooler = Intercooler || (function() {
         if (historyData) {
           processICResponse(historyData["content"], getTargetForHistory($('body')), true);
           if (historyData["yOffset"]) {
-            window.scrollTo(0, historyData["yOffset"])
+             setTimeout(function () {
+                window.scrollTo(0, historyData["yOffset"]);
+             }, 40);
           }
           return true;
         } else {
