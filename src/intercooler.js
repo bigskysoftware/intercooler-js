@@ -8,7 +8,7 @@ var Intercooler = Intercooler || (function() {
 
   // work around zepto build issue TODO - fix me
   if((typeof Zepto !== "undefined") && ($ == null)) {
-    $ = Zepto
+    window["$"] = Zepto
   }
 
   //--------------------------------------------------
