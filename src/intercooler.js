@@ -72,10 +72,10 @@ var Intercooler = Intercooler || (function() {
   }
 
   function hideIndicator(elt) {
-    if (elt.data('ic-use-transition') || elt.data('is-indicator-cleared')) {
+    if (elt.data('ic-use-transition') || elt.data('ic-indicator-cleared')) {
       elt.data('ic-use-transition', null);
       elt.addClass('ic-use-transition');
-      elt.data('is-indicator-cleared', true);
+      elt.data('ic-indicator-cleared', true);
     } else {
       elt.hide();
     }
