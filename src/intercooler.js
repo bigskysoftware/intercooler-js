@@ -1684,7 +1684,7 @@ var Intercooler = Intercooler || (function() {
         "content": html,
         "yOffset": yOffset,
         "timestamp": new Date().getTime(),
-		  "title": title
+        "title": title
       };
       updateLRUList(url);
       // save to the history slot
@@ -1710,7 +1710,7 @@ var Intercooler = Intercooler || (function() {
 
     function updateHistory() {
       if (_snapshot) {
-        pushUrl(_snapshot.newUrl, currentUrl(), _snapshot.oldHtml, _snapshot.yOffset, _snapshot.title);
+        pushUrl(_snapshot.newUrl, currentUrl(), _snapshot.oldHtml, _snapshot.yOffset, _snapshot.oldTitle);
         _snapshot = null;
       }
     }
@@ -1735,10 +1735,10 @@ var Intercooler = Intercooler || (function() {
           processICResponse(historyData["content"], getTargetForHistory($('body')), true);
           if (historyData["yOffset"]) {
             window.scrollTo(0, historyData["yOffset"]);
-           }
-           if (historyData["title"]) {
-				  document.title = historyData["title"];
-           }
+          }
+          if (historyData["title"]) {
+            document.title = historyData["title"];
+          }
           return true;
         } else {
           $.get(currentUrl(), {'ic-restore-history': true}, function(data, status) {
@@ -1767,7 +1767,7 @@ var Intercooler = Intercooler || (function() {
         newUrl: newUrl,
         oldHtml: t.html(),
         yOffset: window.pageYOffset,
-        title: oldTitle
+        oldTitle: oldTitle
       };
     }
 
