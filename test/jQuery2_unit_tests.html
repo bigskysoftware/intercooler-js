@@ -2184,6 +2184,37 @@ QUnit.test("Script evaluation", function (assert) {
       });
   </script>
 
+  <div id="sse-6" ic-sse-src="/foo">
+    <span id="sse-6-inner" ic-get-from="/sse_replace_req" ic-trigger-on="sse:foo" ic-replace-target="true"></span>
+  </div>
+  <script>
+    // This test fails if you see a warning in the console of the form:
+    //
+    // Intercooler Error : Error during content swap : TypeError: Cannot read
+    //   property 'addEventListener' of undefined
+    // TypeError: Cannot read property 'addEventListener' of undefined
+    //     at registerSSE (...)
+    //     at handleTriggerOn (...)
+    //     ...
+    intercoolerTest("Server Sent Event trigger handles missing ic-sse-src element", function(assert) {
+        $.mockjax({
+          url: "/sse_replace_req",
+          responseText: "<span id='sse-6-inner' ic-trigger-on='sse:foo'>foo</span>"
+        });
+        var mockSource = $("#sse-6").data("ic-event-sse-source");
+        assert.equal("", $("#sse-6-inner").html());
+
+        // Two events will cause a race between two requests, and one of the
+        // resulting <span>s will be removed from the DOM, thereby causing an
+        // ic-sse-src element to not be found for it.
+        mockSource.fireEvent("foo", "");
+        mockSource.fireEvent("foo", "");
+      },
+      function(assert) {
+        assert.equal("foo", $("#sse-6-inner").html());
+      });
+  </script>
+
   <div id="anchor-regression-div">
       <a id="anchor-regression-a" class="button button--primary" ic-post-to="/anchor_regression?issue=1" ic-replace-target="true">
           <span>Click Me!</span>
@@ -2371,7 +2402,66 @@ QUnit.test("Script evaluation", function (assert) {
         assert.equal($("#test-cancel-with-ic-on-success").text(), "");
       });
   </script>
-
+	
+  <div id="test-ic-push-url-and-ic-use-transition">
+    <a id="page1-tab"
+      href=""
+      ic-get-from="/page1"
+      ic-target="#test-ic-push-url-and-ic-use-transition-content"
+      ic-push-url="true"
+      ic-indicator="#ic-push-url-and-ic-use-transition-indicator">
+      Page1
+    </a>
+    <a id="page2-tab"
+      href=""
+      ic-get-from="/page2"
+      ic-target="#test-ic-push-url-and-ic-use-transition-content"
+      ic-push-url="true"
+      ic-indicator="#ic-push-url-and-ic-use-transition-indicator">
+      Page2
+    </a>
+    <i id="ic-push-url-and-ic-use-transition-indicator" class="fa fa-spinner fa-spin ic-use-transition"></i>
+    <div id="test-ic-push-url-and-ic-use-transition-content" ic-history-elt="">
+      <h1>Content</h1>
+    </div>
+  </div>
+  <script>
+    QUnit.test("ic-use-transition should work when using ic-push-url", function (assert) {
+      // don't run test locally
+      if (window.location.hostname == "") {
+        assert.equal(true, true);
+        return;
+      }
+      var done = assert.async();
+      $.mockjax({
+        url: '/page1',
+        response: function () {
+          this.responseText = "Page 1";
+        }
+      });
+      $.mockjax({
+        url: '/page2',
+        response: function () {
+          this.responseText = "Page 2";
+        }
+      });
+      $("#page1-tab").click();
+      setTimeout(function () {
+        $("#page2-tab").click();
+      }, 100);
+      setTimeout(function () {
+        assert.equal($("#ic-push-url-and-ic-use-transition-indicator").css('display'), "inline-block");
+        done();
+      }, 200);
+      // Click "Back" twice to get back to the test page.
+      setTimeout(function () {
+        window.history.back();
+      }, 300);
+      setTimeout(function () {
+        window.history.back();
+      }, 400);
+    });
+  </script>
 </div>
 </body>
 </html>
