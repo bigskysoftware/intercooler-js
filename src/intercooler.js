@@ -1918,6 +1918,8 @@ var Intercooler = Intercooler || (function() {
     isDependent: isDependent,
     getTarget: getTarget,
     processHeaders: processHeaders,
+    startPolling: startPolling,
+    cancelPolling: cancelPolling,
     setIsDependentFunction: function(func) {
       _isDependentFunction = func;
     },
