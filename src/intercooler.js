@@ -52,7 +52,7 @@ var Intercooler = Intercooler || (function() {
       return false;
     }
     return adest.slice(0, asrc.length).join("/") == asrc.join("/") ||
-    asrc.slice(0, adest.length).join("/") == adest.join("/");
+      asrc.slice(0, adest.length).join("/") == adest.join("/");
   };
 
   //============================================================
@@ -341,14 +341,19 @@ var Intercooler = Intercooler || (function() {
 
   function beforeRequest(elt) {
     elt.addClass('disabled');
+    elt.addClass('ic-request-in-flight');
     elt.data('ic-request-in-flight', true);
   }
 
-  function requestCleanup(indicator, elt) {
+  function requestCleanup(indicator, globalIndicator, elt) {
     if (indicator.length > 0) {
       hideIndicator(indicator);
     }
+    if (globalIndicator.length > 0) {
+      hideIndicator(globalIndicator);
+    }
     elt.removeClass('disabled');
+    elt.removeClass('ic-request-in-flight');
     elt.data('ic-request-in-flight', false);
     if (elt.data('ic-next-request')) {
       elt.data('ic-next-request')["req"]();
@@ -394,19 +399,19 @@ var Intercooler = Intercooler || (function() {
     var names = [];
     var values = [];
     if (args) {
-        for (var i = 0; i < args.length; i++) {
-            names.push(args[i][0]);
-            values.push(args[i][1]);
-        }
+      for (var i = 0; i < args.length; i++) {
+        names.push(args[i][0]);
+        values.push(args[i][1]);
+      }
     }
     if (isIdentifier(script)) {
-        return window[script].apply(this, values);
+      return window[script].apply(this, values);
     } else {
-        var outerfunc  = window["eval"].call(
-            window,
-            '(function (' + names.join(", ") + ') {' + script + '})'
-        );
-        return outerfunc.apply(this, values);
+      var outerfunc  = window["eval"].call(
+        window,
+        '(function (' + names.join(", ") + ') {' + script + '})'
+      );
+      return outerfunc.apply(this, values);
     }
   }
 
@@ -434,6 +439,12 @@ var Intercooler = Intercooler || (function() {
     beforeRequest(elt);
 
     data = replaceOrAddMethod(data, type);
+
+    // Global spinner support
+    var globalIndicator = findGlobalIndicator(elt);
+    if (globalIndicator && globalIndicator.length > 0) {
+      showIndicator(globalIndicator);
+    }
 
     // Spinner support
     var indicator = findIndicator(elt);
@@ -488,7 +499,7 @@ var Intercooler = Intercooler || (function() {
 
             if (xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true") {
               try {
-                requestCleanup(indicator, elt); // clean up before snap-shotting HTML
+                requestCleanup(indicator, globalIndicator, elt); // clean up before snap-shotting HTML
                 var newUrl = xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-src');
                 if(_history) {
                   _history.snapshotForHistory(newUrl, oldTitle);
@@ -522,7 +533,7 @@ var Intercooler = Intercooler || (function() {
       },
       complete: function(xhr, status) {
         log(elt, "AJAX request " + requestId + " completed in " + (new Date() - requestStart) + "ms", "DEBUG");
-        requestCleanup(indicator, elt);
+        requestCleanup(indicator, globalIndicator, elt);
         try {
           if ($.contains(document, elt[0])) {
             triggerEvent(elt, "complete.ic", [elt, data, status, xhr, requestId]);
@@ -548,10 +559,20 @@ var Intercooler = Intercooler || (function() {
     triggerEvent($(document), "beforeAjaxSend.ic", [ajaxSetup, elt]);
 
     if(ajaxSetup.cancel) {
-      requestCleanup(indicator, elt);
+      requestCleanup(indicator, globalIndicator, elt);
     } else {
       $.ajax(ajaxSetup)
     }
+  }
+
+  function findGlobalIndicator(elt) {
+    var indicator = null;
+    elt = $(elt);
+    var attr = closestAttrValue(elt, 'ic-global-indicator');
+    if (attr && attr !== "false") {
+      indicator = $(attr).first();
+    }
+    return indicator;
   }
 
   function findIndicator(elt) {
@@ -718,6 +739,7 @@ var Intercooler = Intercooler || (function() {
       });
     } else {
       processMacros(elt);
+      processEnhancement(elt);
       processSources(elt);
       processPolling(elt);
       processEventSources(elt);
@@ -834,6 +856,18 @@ var Intercooler = Intercooler || (function() {
           handleRemoveClasses(_this);
         }
       });
+    }
+  }
+
+  function processEnhancement(elt) {
+    if (elt.closest('.ic-ignore').length == 0) {
+      if(closestAttrValue(elt, 'ic-enhance') === 'true') {
+        enhanceDomTree(elt);
+      } else {
+        elt.find(getICAttributeSelector('ic-enhance')).each(function(){
+          enhanceDomTree($(this));
+        });
+      }
     }
   }
 
@@ -1087,9 +1121,9 @@ var Intercooler = Intercooler || (function() {
             registerSSE(sourceElt, triggerOn[0].substr(4))
           }
         } else {
-        var triggerOn = getICAttribute($(elt), 'ic-trigger-on').split(" ");
-        var event = eventFor(triggerOn[0], $(elt));
-        $(getTriggeredElement(elt)).on(event, function(e) {
+          var triggerOn = getICAttribute($(elt), 'ic-trigger-on').split(" ");
+          var event = eventFor(triggerOn[0], $(elt));
+          $(getTriggeredElement(elt)).on(event, function(e) {
             var onBeforeTrigger = closestAttrValue(elt, 'ic-on-beforeTrigger');
             if (onBeforeTrigger) {
               if (globalEval(onBeforeTrigger, [["elt", elt], ["evt", e], ["elt", elt]]) == false) {
@@ -1122,7 +1156,7 @@ var Intercooler = Intercooler || (function() {
           });
           if(event && (event.indexOf("timeout:") == 0)) {
             setTimeout(function () {
-            $(getTriggeredElement(elt)).trigger(event);
+              $(getTriggeredElement(elt)).trigger(event);
             }, parseInterval(event.split(":")[1]));
           }
         }
@@ -1169,6 +1203,7 @@ var Intercooler = Intercooler || (function() {
       setIfAbsent(elt, 'ic-trigger-on', 'default');
       setIfAbsent(elt, 'ic-deps', 'ignore');
     }
+
     if (macroIs(macro, 'ic-action')) {
       setIfAbsent(elt, 'ic-trigger-on', 'default');
     }
@@ -1200,6 +1235,51 @@ var Intercooler = Intercooler || (function() {
     }
   }
 
+  function isLocalLink(anchor) {
+    return location.hostname === anchor[0].hostname &&
+      anchor.attr('href') &&
+      !anchor.attr('href').startsWith("#")
+  }
+
+  function enhanceAnchor(anchor) {
+    if (closestAttrValue(anchor, 'ic-enhance') === "true") {
+      if (isLocalLink(anchor)) {
+        setIfAbsent(anchor, 'ic-src', anchor.attr('href'));
+        setIfAbsent(anchor, 'ic-trigger-on', 'default');
+        setIfAbsent(anchor, 'ic-deps', 'ignore');
+        setIfAbsent(anchor, 'ic-push-url', 'true');
+      }
+    }
+  }
+
+  function determineFormVerb(form) {
+    return form.find('input[name="_method"]').val() || form.attr('method') || form[0].method;
+  }
+
+  function enhanceForm(form) {
+    if (closestAttrValue(form, 'ic-enhance') === "true") {
+      setIfAbsent(form, 'ic-src', form.attr('action'));
+      setIfAbsent(form, 'ic-trigger-on', 'default');
+      setIfAbsent(form, 'ic-deps', 'ignore');
+      setIfAbsent(form, 'ic-verb', determineFormVerb(form));
+    }
+  }
+
+  function enhanceDomTree(elt) {
+    if(elt.is('a')) {
+      enhanceAnchor(elt);
+    }
+    elt.find('a').each(function(){
+      enhanceAnchor($(this));
+    });
+    if(elt.is('form')){
+      enhanceForm(elt);
+    }
+    elt.find('form').each(function(){
+      enhanceForm($(this));
+    });
+  }
+
   function setIfAbsent(elt, attr, value) {
     if (getICAttribute(elt, attr) == null) {
       setICAttribute(elt, attr, value);
@@ -1213,7 +1293,7 @@ var Intercooler = Intercooler || (function() {
   function isScrolledIntoView(elem) {
     elem = $(elem);
     if (elem.height() == 0 && elem.width() == 0) {
-       return false;
+      return false;
     }
     var docViewTop = $(window).scrollTop();
     var docViewBottom = docViewTop + $(window).height();
@@ -1222,13 +1302,13 @@ var Intercooler = Intercooler || (function() {
     var elemBottom = elemTop + elem.height();
 
     return ((elemBottom >= docViewTop) && (elemTop <= docViewBottom)
-    && (elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+      && (elemBottom <= docViewBottom) && (elemTop >= docViewTop));
   }
 
   function maybeScrollToTarget(elt, target) {
     if (closestAttrValue(elt, 'ic-scroll-to-target') != "false" &&
-    (closestAttrValue(elt, 'ic-scroll-to-target') == 'true' ||
-    closestAttrValue(target, 'ic-scroll-to-target') == 'true')) {
+      (closestAttrValue(elt, 'ic-scroll-to-target') == 'true' ||
+        closestAttrValue(target, 'ic-scroll-to-target') == 'true')) {
       var offset = -50; // -50 px default offset padding
       if (closestAttrValue(elt, 'ic-scroll-offset')) {
         offset = parseInt(closestAttrValue(elt, 'ic-scroll-offset'));
@@ -1343,6 +1423,18 @@ var Intercooler = Intercooler || (function() {
           if (forHistory != true) {
             maybeScrollToTarget(elt, target);
           }
+
+          var switchClass = elt.closest(getICAttributeSelector('ic-switch-class'));
+          var classToSwitch = switchClass.attr(fixICAttributeName('ic-switch-class'));
+          if(classToSwitch) {
+            switchClass.children().removeClass(classToSwitch);
+            switchClass.children().each(function(){
+              if($.contains($(this)[0], $(elt)[0])) {
+                $($(this).addClass(classToSwitch));
+              }
+            })
+          }
+
         }
       };
 
@@ -1440,7 +1532,7 @@ var Intercooler = Intercooler || (function() {
     }
   }
 
-    function fireICRequest(elt, alternateHandler) {
+  function fireICRequest(elt, alternateHandler) {
     elt = $(elt);
 
     var triggerOrigin = elt;
@@ -1619,9 +1711,9 @@ var Intercooler = Intercooler || (function() {
     /* Instance Methods  */
     function historyConfigHasChanged(historySupportData) {
       return historySupportData == null ||
-      historySupportData.slotLimit != slotLimit ||
-      historySupportData.historyVersion != historyVersion ||
-      historySupportData.lruList == null
+        historySupportData.slotLimit != slotLimit ||
+        historySupportData.historyVersion != historyVersion ||
+        historySupportData.lruList == null
     }
 
     function clearHistory() {
@@ -1678,7 +1770,7 @@ var Intercooler = Intercooler || (function() {
           storage.setItem(restorationData.id, content);
         } catch (e) {
           log(getTargetForHistory($('body')), "Unable to save intercooler history with entire history cleared, is something else eating " +
-          "local storage? History Limit:" + slotLimit, "ERROR");
+            "local storage? History Limit:" + slotLimit, "ERROR");
         }
       }
     }
@@ -1928,11 +2020,11 @@ var Intercooler = Intercooler || (function() {
     },
     debug: function() {
       var debuggerUrl = closestAttrValue('body', 'ic-debugger-url') ||
-      "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js";
+        "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js";
       $.getScript(debuggerUrl)
-      .fail(function(jqxhr, settings, exception) {
-        log($('body'), formatError(exception), "ERROR");
-      });
+        .fail(function(jqxhr, settings, exception) {
+          log($('body'), formatError(exception), "ERROR");
+        });
     },
     _internal: {
       init: init,
