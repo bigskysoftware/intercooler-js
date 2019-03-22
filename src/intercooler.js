@@ -566,7 +566,7 @@ var Intercooler = Intercooler || (function() {
   }
 
   function findGlobalIndicator(elt) {
-    var indicator = null;
+    var indicator = $([]);
     elt = $(elt);
     var attr = closestAttrValue(elt, 'ic-global-indicator');
     if (attr && attr !== "false") {
@@ -576,7 +576,7 @@ var Intercooler = Intercooler || (function() {
   }
 
   function findIndicator(elt) {
-    var indicator = null;
+    var indicator = $([]);
     elt = $(elt);
     if (getICAttribute(elt, 'ic-indicator')) {
       indicator = $(getICAttribute(elt, 'ic-indicator')).first();
