@@ -1988,9 +1988,6 @@ var Intercooler = Intercooler || (function() {
         console.log("!!!! Please include the data module with Zepto!  Intercooler requires full data support to function !!!!")
       }
     }
-    if (location.search && location.search.indexOf("ic-launch-debugger=true") >= 0) {
-      Intercooler.debug();
-    }
   }
 
   $(function() {
@@ -2017,14 +2014,6 @@ var Intercooler = Intercooler || (function() {
     },
     ready: function(readyHandler) {
       _readyHandlers.push(readyHandler);
-    },
-    debug: function() {
-      var debuggerUrl = closestAttrValue('body', 'ic-debugger-url') ||
-        "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js";
-      $.getScript(debuggerUrl)
-        .fail(function(jqxhr, settings, exception) {
-          log($('body'), formatError(exception), "ERROR");
-        });
     },
     _internal: {
       init: init,
