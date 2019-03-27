@@ -7,9 +7,31 @@ nav: dependencies
 
   <a class="anchor" id="1_2_2"></a>
   <h2>
-    Intercooler 1.2.1 - March 8, 2019
+    Intercooler 1.2.1 - March 29, 2019
   </h2>
   <ul>
+    <li>
+      Added <code>ic-enhance</code> attribute, which enhances standard anchor and form tags with the intercooler
+      equivalent attributes, allowing for graceful degradation in non-javascript environments.
+    </li>
+    <li>
+      Added <code>ic-global-indicator</code> attribute, which sets a global indicator to be shown when a request
+      is in flight, even along side any local indicators specified by the triggering element.
+    </li>
+    <li>
+      Added <code>ic-switch-class</code> attribute, which switches a class between siblings when an intercooler request
+      is caused within one.  This can be uses, for example, to update the "active" state of tabs without replacing
+      the tab UI.
+    </li>
+    <li>
+      <code>LeadDyno.startPolling()</code> and <code>LeadDyno.stopPolling()</code> were added to the Javascript API
+    </li>
+    <li>
+      Added <code>X-IC-Title-Encoded</code> response header to handle URI encoded titles for international users
+    </li>
+    <li>
+      Removed the legacy debugger
+    </li>
     <li>
       Bug fixes
     </li>
