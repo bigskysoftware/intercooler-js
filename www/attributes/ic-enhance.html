@@ -41,10 +41,16 @@ nav: attributes > ic-enhance
       Below is a live demo of an achor tag that has been enhanced.  Note that it is a standard anchor tag, but
       if you click on it it will issue an AJAX request and update the navigation bar.
 
+      <pre>
+      &lt;div ic-enhance="true">
+        &lt;h3>Here is an enhanced link&lt;/h3>
+        &lt;a href="/ic-enhance">A Link&lt;/a>
+      &lt;/div>
+      </pre>
+
       <div class="live-demo">
         <script>
           (function () {
-            var init = Math.floor(new Date().getTime() / 1000);
             $.mockjax({
               'url': '/ic-enhance',
               'response': function () {
@@ -54,7 +60,7 @@ nav: attributes > ic-enhance
           })();
         </script>
 
-        <div ic-enhance="true"">
+        <div ic-enhance="true">
           <h3>Here is an enhanced link</h3>
           <a href="/ic-enhance">A Link</a>
         </div>
