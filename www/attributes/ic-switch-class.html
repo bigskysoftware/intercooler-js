@@ -34,12 +34,12 @@ nav: attributes > ic-switch-class
 
       <pre>
         &lt;ul class="nav nav-tabs" ic-target="#content" ic-switch-class="active">
-          &lt;li class="active">&lt;a ic-get-from="/tabs">Tab1&lt;/a>&lt;/li>
-          &lt;li>&lt;a ic-get-from="/tabs">Tab2&lt;/a>&lt;/li>
-          &lt;li>&lt;a ic-get-from="/tabs">Tab3&lt;/a>&lt;/li>
+          &lt;li class="active">&lt;a ic-get-from="/tab1">Tab1&lt;/a>&lt;/li>
+          &lt;li>&lt;a ic-get-from="/tab2">Tab2&lt;/a>&lt;/li>
+          &lt;li>&lt;a ic-get-from="/tab3">Tab3&lt;/a>&lt;/li>
         &lt;/ul>
         &lt;div id="content">
-          Pick a tab
+          Tab 1
         &lt;/div>
       </pre>
 
@@ -47,23 +47,19 @@ nav: attributes > ic-switch-class
         <script>
           (function () {
             var i = 0;
-            $.mockjax({
-              'url': '/tabs',
-              'response': function () {
-                i++;
-                this.responseText = "You have changed tabs " + i + " times...";
-              }
-            });
+            $.mockjax({'url': '/tab1', 'responseText': "Tab 1"});
+            $.mockjax({'url': '/tab2', 'responseText': "Tab 2"});
+            $.mockjax({'url': '/tab3', 'responseText': "Tab 3"});
           })();
         </script>
 
         <ul class="nav nav-tabs" ic-target="#content" ic-switch-class="active">
-          <li class="active"><a ic-get-from="/tabs">Tab1</a></li>
-          <li><a ic-get-from="/tabs">Tab2</a></li>
-          <li><a ic-get-from="/tabs">Tab3</a></li>
+          <li class="active"><a ic-get-from="/tab1">Tab1</a></li>
+          <li><a ic-get-from="/tab2">Tab2</a></li>
+          <li><a ic-get-from="/tab3">Tab3</a></li>
         </ul>
         <div id="content">
-          Pick a tab
+          Tab 1
         </div>
 
       </div>
