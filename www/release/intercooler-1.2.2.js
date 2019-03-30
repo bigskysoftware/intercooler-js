@@ -1,3 +1,19 @@
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define(["jquery"], function (a0) {
+      return (root['Intercooler'] = factory(a0));
+    });
+  } else if (typeof module === 'object' && module.exports) {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require("jquery"));
+  } else {
+    root['Intercooler'] = factory(root["jQuery"]);
+  }
+}(this, function ($) {
+
 ////////////////////////////////////
 
 /**
@@ -21,6 +37,7 @@ var Intercooler = Intercooler || (function() {
                        'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from', 'ic-action'],
                       function(elt){ return fixICAttributeName(elt) });
 
+  var _scrollHandler = null;
   var _UUID = 1;
   var _readyHandlers = [];
 
@@ -139,9 +156,6 @@ var Intercooler = Intercooler || (function() {
       elt = $('body');
     }
     triggerEvent(elt, "log.ic", [msg, level, elt]);
-    if (level == "DEBUG") {
-      window.console.log('[DEBUG]: ' + msg);  // TODO: Remove this again
-    }
     if (level == "ERROR") {
       if (window.console) {
         window.console.log("Intercooler Error : " + msg);
@@ -178,13 +192,10 @@ var Intercooler = Intercooler || (function() {
     return "[" + fixICAttributeName(attribute) + "]";
   }
 
-  function initScrollHandler(elt) {
-    var _scrollContainer = scrollContainer(elt)
-    if (_scrollContainer == null) _scrollContainer = $(window)
-      if (_scrollContainer.data('ic-has-scroll-handler') != true) {
-        log(elt, 'Adding scroll handler to ' + elt, 'DEBUG')
-        var _scrollHandler = function() {
-        $(getICAttributeSelector("ic-trigger-on='scrolled-into-view'")).each(function() {  // TODO: Why the "each()"?
+  function initScrollHandler() {
+    if (_scrollHandler == null) {
+      _scrollHandler = function() {
+        $(getICAttributeSelector("ic-trigger-on='scrolled-into-view'")).each(function() {
           var _this = $(this);
           if (isScrolledIntoView(getTriggeredElement(_this)) && _this.data('ic-scrolled-into-view-loaded') != true) {
             _this.data('ic-scrolled-into-view-loaded', true);
@@ -192,18 +203,9 @@ var Intercooler = Intercooler || (function() {
           }
         });
       };
-      _scrollContainer.data('ic-has-scroll-handler', true)  // TODO: Should has-scroll-handler be rather a property of the actual element?
-      _scrollContainer.scroll(_scrollHandler)  
+      $(window).scroll(_scrollHandler);
     }
   }
-
-  function scrollContainer(elt) {
-    var _scrollContainer = $(elt).closest('.ic-scroll-container')
-    log(elt, 'Found scroll container: ' + _scrollContainer, 'DEBUG')
-    if (_scrollContainer == null) _scrollContainer = $(window)
-    return _scrollContainer
-  }
-
 
   function currentUrl() {
     return window.location.pathname + window.location.search + window.location.hash;
@@ -1122,16 +1124,16 @@ var Intercooler = Intercooler || (function() {
       if (getICAttribute(elt, 'ic-trigger-on') == 'load') {
         fireICRequest(elt);
       } else if (getICAttribute(elt, 'ic-trigger-on') == 'scrolled-into-view') {
-        initScrollHandler(elt);
+        initScrollHandler();
         setTimeout(function() {
-          triggerEvent(scrollContainer(elt), 'scroll');
+          triggerEvent($(window), 'scroll');
         }, 100); // Trigger a scroll in case element is already viewable
       } else {
         var triggerOn = getICAttribute(elt, 'ic-trigger-on').split(" ");
         if(triggerOn[0].indexOf("sse:") == 0) {
           //Server-sent event, find closest event source and register for it
           var sourceElt = elt.closest(getICAttributeSelector('ic-sse-src'));
-          if(sourceElt) {
+          if(sourceElt.length > 0) {
             registerSSE(sourceElt, triggerOn[0].substr(4))
           }
         } else {
@@ -1306,14 +1308,7 @@ var Intercooler = Intercooler || (function() {
 
   function isScrolledIntoView(elem) {
     elem = $(elem);
-    var _scrollContainer = scrollContainer(elem)
-    
-    var inview = elem.isInView(_scrollContainer, {partial: true, direction: "vertical"})
-    log(elem, 'isScrolledIntoView: ' + inview, 'DEBUG')
-    return inview
-   }
-// TODO: Put this back in.
-   /*    if (elem.height() == 0 && elem.width() == 0) {
+    if (elem.height() == 0 && elem.width() == 0) {
       return false;
     }
     var docViewTop = $(window).scrollTop();
@@ -1325,7 +1320,6 @@ var Intercooler = Intercooler || (function() {
     return ((elemBottom >= docViewTop) && (elemTop <= docViewBottom)
       && (elemBottom <= docViewBottom) && (elemTop >= docViewTop));
   }
-*/
 
   function maybeScrollToTarget(elt, target) {
     if (closestAttrValue(elt, 'ic-scroll-to-target') != "false" &&
@@ -2048,3 +2042,7 @@ var Intercooler = Intercooler || (function() {
     }
   };
 })();
+
+return Intercooler;
+
+}));
