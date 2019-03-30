@@ -289,6 +289,30 @@ nav: docs
           This can be useful for implementing UI patterns such as infinite scroll or lazy image loading.
         </p>
 
+        <p>
+          <b>Note: </b>Out of the box, Intercooler supports <code>scrolled-into-view</code> for layouts where the scrolling viewport is the entire window (or at least the same height).
+          Loading two additional libraries ahead of loading Intercooler.js automatically gives it support for scrolling in smaller viewports (there is no flag, the mere presence of the libraries triggers the enhanced behavior).
+          A CSS class called <code>ic-scroll-container</code> is used to indicate to Intercooler which parent element is the viewport. When no parent element is tagged with <code>ic-scroll-container</code> the viewport defaults to
+          the entire window (same behavior as regular Intercooler).
+          <pre>
+          &lt;head>
+            &lt;script src="https://raw.githubusercontent.com/hashchange/jquery.documentsize/master/dist/jquery.documentsize.min.js">&lt;/script>
+            &lt;script src="https://raw.githubusercontent.com/hashchange/jquery.isinview/master/dist/jquery.isinview.min.js">&lt;/script>
+            &lt;script src="URL for Intercooler.js">&lt;/script>
+          &lt;/head>
+          &lt;body>
+          &lt;div class="ic-scroll-container" style="max-height: 200px; overflow-y: auto">
+          &lt;table id="items">
+          &lt;tr>A row&lt;/tr>
+          &lt;tr>Another row&lt;/tr>
+          ...
+          &lt;tr ic-trigger-on="scrolled-into-view" ic-target="#items" ic-append-from="/source/of/data">The last row&lt;/tr>
+          &lt;/table>
+          &lt;/div>
+          &lt;/body>
+          </pre>
+        </p>
+
       </section>
 
       <section>

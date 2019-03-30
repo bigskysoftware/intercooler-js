@@ -186,6 +186,7 @@ var Intercooler = Intercooler || (function() {
     var handlertype = 'calculated';
     if (typeof(elt.isInView) === 'function')
       handlertype = 'isinview';
+    // TODO: For modern browsers, support for IntersectionObserver should be added
 
     log(elt, "handlertype: " + handlertype, 'DEBUG')
 
