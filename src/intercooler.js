@@ -138,6 +138,9 @@ var Intercooler = Intercooler || (function() {
       elt = $('body');
     }
     triggerEvent(elt, "log.ic", [msg, level, elt]);
+    if (level == "DEBUG") {
+      window.console.log('[DEBUG]: ' + msg);  // TODO: Remove this again
+    }
     if (level == "ERROR") {
       if (window.console) {
         window.console.log("Intercooler Error : " + msg);
@@ -175,12 +178,12 @@ var Intercooler = Intercooler || (function() {
   }
 
   function initScrollHandler(elt) {
-    var _scrollee = scrollContainer(elt)
-    if (_scrollee == null) _scrollee = $(window)
-      if (_scrollee.data('ic-has-scroll-handler') != true) {
-        console.log('Adding scroll handler')
+    var _scrollContainer = scrollContainer(elt)
+    if (_scrollContainer == null) _scrollContainer = $(window)
+      if (_scrollContainer.data('ic-has-scroll-handler') != true) {
+        log(elt, 'Adding scroll handler to ' + elt, 'DEBUG')
         var _scrollHandler = function() {
-        $(getICAttributeSelector("ic-trigger-on='scrolled-into-view'")).each(function() {
+        $(getICAttributeSelector("ic-trigger-on='scrolled-into-view'")).each(function() {  // TODO: Why the "each()"?
           var _this = $(this);
           if (isScrolledIntoView(getTriggeredElement(_this)) && _this.data('ic-scrolled-into-view-loaded') != true) {
             _this.data('ic-scrolled-into-view-loaded', true);
@@ -188,16 +191,16 @@ var Intercooler = Intercooler || (function() {
           }
         });
       };
-      _scrollee.data('ic-has-scroll-handler', true)
-      _scrollee.scroll(_scrollHandler)  
+      _scrollContainer.data('ic-has-scroll-handler', true)  // TODO: Should has-scroll-handler be rather a property of the actual element?
+      _scrollContainer.scroll(_scrollHandler)  
     }
   }
 
   function scrollContainer(elt) {
-    var _scrollee = $(elt).closest('.ic-scroll-container')
-    console.log(_scrollee)
-    if (_scrollee == null) _scrollee = $(window)
-    return _scrollee
+    var _scrollContainer = $(elt).closest('.ic-scroll-container')
+    log(elt, 'Found scroll container: ' + _scrollContainer, 'DEBUG')
+    if (_scrollContainer == null) _scrollContainer = $(window)
+    return _scrollContainer
   }
 
 
@@ -1080,8 +1083,8 @@ var Intercooler = Intercooler || (function() {
       } else if (getICAttribute(elt, 'ic-trigger-on') == 'scrolled-into-view') {
         initScrollHandler(elt);
         setTimeout(function() {
-          triggerEvent($(window), 'scroll');  // TODO: This should also not be $(window) probably??
-        }, 100); // Trigger a scroll in case element is already viewable   TODO: Should this check for actual visibility???
+          triggerEvent(scrollContainer(elt), 'scroll');
+        }, 100); // Trigger a scroll in case element is already viewable
       } else {
         var triggerOn = getICAttribute(elt, 'ic-trigger-on').split(" ");
         if(triggerOn[0].indexOf("sse:") == 0) {
@@ -1215,10 +1218,11 @@ var Intercooler = Intercooler || (function() {
   //============================================================----
 
   function isScrolledIntoView(elem) {
-    console.log('Checking scroll')
     elem = $(elem);
-    var inview = elem.isInView(scrollContainer(elem), {partial: true})
-    console.log(inview)
+    var _scrollContainer = scrollContainer(elem)
+    
+    var inview = elem.isInView(_scrollContainer, {partial: true, direction: "vertical"})
+    log(elem, 'isScrolledIntoView: ' + inview, 'DEBUG')
     return inview
    }
 
