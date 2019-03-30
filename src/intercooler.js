@@ -178,22 +178,46 @@ var Intercooler = Intercooler || (function() {
     return "[" + fixICAttributeName(attribute) + "]";
   }
 
-  function initScrollHandler(elt) {
+  function addScrollHandler(elt) {
     var _scrollContainer = scrollContainer(elt)
     if (_scrollContainer == null) _scrollContainer = $(window)
-      if (_scrollContainer.data('ic-has-scroll-handler') != true) {
-        log(elt, 'Adding scroll handler to ' + elt, 'DEBUG')
-        var _scrollHandler = function() {
-        $(getICAttributeSelector("ic-trigger-on='scrolled-into-view'")).each(function() {  // TODO: Why the "each()"?
-          var _this = $(this);
-          if (isScrolledIntoView(getTriggeredElement(_this)) && _this.data('ic-scrolled-into-view-loaded') != true) {
-            _this.data('ic-scrolled-into-view-loaded', true);
-            fireICRequest(_this);
-          }
-        });
-      };
-      _scrollContainer.data('ic-has-scroll-handler', true)  // TODO: Should has-scroll-handler be rather a property of the actual element?
-      _scrollContainer.scroll(_scrollHandler)  
+
+    // Determine best possible handling of scrolling
+    var handlertype = 'calculated';
+    if (typeof(elt.isInView) === 'function')
+      handlertype = 'isinview';
+
+    console.log("handlertype: " + handlertype)
+
+    if (elt.data('ic-has-scroll-handler') != true) {
+      log(elt, 'Adding scroll handler to ' + elt, 'DEBUG')
+      switch(handlertype) {
+        case 'calculated':
+          var _scrollHandler = function() {
+            $(getICAttributeSelector("ic-trigger-on='scrolled-into-view'")).each(function() {  // TODO: Why the "each()"?
+              var _this = $(this);
+              if (isScrolledIntoView_calculated(getTriggeredElement(_this)) && _this.data('ic-scrolled-into-view-loaded') != true) {
+                _this.data('ic-scrolled-into-view-loaded', true);
+                fireICRequest(_this);
+              }
+            });
+          };
+          _scrollContainer.scroll(_scrollHandler)  
+          break;
+        case 'isinview':
+          var _scrollHandler = function() {
+            $(getICAttributeSelector("ic-trigger-on='scrolled-into-view'")).each(function() {  // TODO: Why the "each()"?
+              var _this = $(this);
+              if (isScrolledIntoView_isInView(getTriggeredElement(_this)) && _this.data('ic-scrolled-into-view-loaded') != true) {
+                _this.data('ic-scrolled-into-view-loaded', true);
+                fireICRequest(_this);
+              }
+            });
+          };
+          _scrollContainer.scroll(_scrollHandler)  
+          break;  
+      }
+      elt.data('ic-has-scroll-handler', true)
     }
   }
 
@@ -1122,7 +1146,7 @@ var Intercooler = Intercooler || (function() {
       if (getICAttribute(elt, 'ic-trigger-on') == 'load') {
         fireICRequest(elt);
       } else if (getICAttribute(elt, 'ic-trigger-on') == 'scrolled-into-view') {
-        initScrollHandler(elt);
+        addScrollHandler(elt);
         setTimeout(function() {
           triggerEvent(scrollContainer(elt), 'scroll');
         }, 100); // Trigger a scroll in case element is already viewable
@@ -1304,16 +1328,19 @@ var Intercooler = Intercooler || (function() {
   // Utilities
   //============================================================----
 
-  function isScrolledIntoView(elem) {
+  function isScrolledIntoView_isInView(elem) {
     elem = $(elem);
     var _scrollContainer = scrollContainer(elem)
     
     var inview = elem.isInView(_scrollContainer, {partial: true, direction: "vertical"})
     log(elem, 'isScrolledIntoView: ' + inview, 'DEBUG')
     return inview
-   }
-// TODO: Put this back in.
-   /*    if (elem.height() == 0 && elem.width() == 0) {
+  }
+
+  function isScrolledIntoView_calculated(elem) {
+    elem = $(elem);
+
+    if (elem.height() == 0 && elem.width() == 0) {
       return false;
     }
     var docViewTop = $(window).scrollTop();
@@ -1325,7 +1352,7 @@ var Intercooler = Intercooler || (function() {
     return ((elemBottom >= docViewTop) && (elemTop <= docViewBottom)
       && (elemBottom <= docViewBottom) && (elemTop >= docViewTop));
   }
-*/
+
 
   function maybeScrollToTarget(elt, target) {
     if (closestAttrValue(elt, 'ic-scroll-to-target') != "false" &&
