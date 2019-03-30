@@ -187,7 +187,7 @@ var Intercooler = Intercooler || (function() {
     if (typeof(elt.isInView) === 'function')
       handlertype = 'isinview';
 
-    console.log("handlertype: " + handlertype)
+    log(elt, "handlertype: " + handlertype, 'DEBUG')
 
     if (elt.data('ic-has-scroll-handler') != true) {
       log(elt, 'Adding scroll handler to ' + elt, 'DEBUG')
