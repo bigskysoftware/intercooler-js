@@ -139,9 +139,6 @@ var Intercooler = Intercooler || (function() {
       elt = $('body');
     }
     triggerEvent(elt, "log.ic", [msg, level, elt]);
-    if (level == "DEBUG") {
-      window.console.log('[DEBUG]: ' + msg);  // TODO: Remove this again
-    }
     if (level == "ERROR") {
       if (window.console) {
         window.console.log("Intercooler Error : " + msg);
