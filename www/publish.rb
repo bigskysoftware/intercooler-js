@@ -10,7 +10,7 @@ puts `jekyll clean`
 puts "Building..."
 puts `jekyll build`
 puts "Syncing to github pages repo..."
-puts `rsync -avu --delete --exclude=".*" _site/  ../../intercoolerjs.github.io/`
+puts `rsync -av --exclude=".*" _site/  ../../intercoolerjs.github.io/`
 puts "Adding changes in git"
 puts `git -C ../../intercoolerjs.github.io add -A`
 puts "Done!  You must now push intercoolerjs.github.io up to github"
