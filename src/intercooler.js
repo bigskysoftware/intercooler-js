@@ -140,7 +140,9 @@ var Intercooler = Intercooler || (function() {
     }
     triggerEvent(elt, "log.ic", [msg, level, elt]);
     if (level == "ERROR") {
-      if (window.console) {
+      if (typeof(console.error) === 'function') {
+        console.error("Intercooler Error : " + msg);
+      } else if (window.console) {
         window.console.log("Intercooler Error : " + msg);
       }
       var errorUrl = closestAttrValue($('body'), 'ic-post-errors-to');
