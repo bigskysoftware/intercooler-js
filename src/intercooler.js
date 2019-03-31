@@ -221,7 +221,6 @@ var Intercooler = Intercooler || (function() {
 
   function scrollContainer(elt) {
     var _scrollContainer = $(elt).closest('.ic-scroll-container')
-    log(elt, 'Found scroll container: ' + _scrollContainer, 'DEBUG')
     if (_scrollContainer == null) _scrollContainer = $(window)
     return _scrollContainer
   }
@@ -2025,6 +2024,7 @@ var Intercooler = Intercooler || (function() {
 
   function init() {
     var elt = $('body');
+    log(elt, 'Intercooler.init', 'DEBUG')
     processNodes(elt);
     fireReadyStuff(elt);
     if(_history) {
