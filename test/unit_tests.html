@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="A Javascript-optional AJAX library featuring declarative, REST-ful bindings">
   <meta name="author" content="">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 
   <title>Intercooler.js</title>
 
@@ -23,6 +26,8 @@
 
   <!--BEGIN HEADER-->
   <script src="lib/jquery-3.1.1.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery.documentsize@1.2.5/dist/jquery.documentsize.min.js" integrity="sha256-9Psfu7Qmn9nczYC13Sbg+pf66mg/YgSSd//pmZ36SB0=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery.isinview@1.0.6/dist/jquery.isinview.min.js" integrity="sha256-5FMd/bsHKHteo4x/343J+eFUHnAh0mytkfdYC1/1VIQ=" crossorigin="anonymous"></script>
   <script type="text/javascript" src="lib/jquery.mockjax-2.2.1.js"></script>
   <!--END HEADER-->
 
@@ -86,7 +91,7 @@
       QUnit.test(name, function (assert) {
         var done = assert.async();
         beforeRequest(assert);
-        var delay = timeout || 100;
+        var delay = timeout || 1000;
         setTimeout(function () {
           afterRequest(assert);
           done();
@@ -2587,6 +2592,25 @@ QUnit.test("Script evaluation", function (assert) {
           });
 </script>
 
+<div id="scrolling-viewport" class="ic-scroll-container" style="height: 50px; overflow-y: auto; border-style: solid; border-width: 2px; border-color: black">
+  <div id="scrollrow1">Content of scroll row #1</div>
+  <div id="scrollrow2" ic-trigger-on="scrolled-into-view" ic-target="#scrolling-viewport" ic-append-from="/scroll-row">Content of scroll row #2</div>
+</div>
+
+<script>
+  $(function() {
+    $(window).on('log.ic', function(evt, msg, level, elt){
+    console.log(msg);
+  });
+  })
+  intercoolerTest("test scrolled-into-view functionality",
+          function(assert) {
+            $.mockjax({ url: "/scroll-row", responseText:"<div>Loaded scroll row #3</div>"});
+            assert.equal(true, $("#scrollrow2").data("ic-has-scroll-handler"));
+          },
+          function(assert) {
+          });
+</script>
 
 
 </div>

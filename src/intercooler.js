@@ -21,7 +21,6 @@ var Intercooler = Intercooler || (function() {
                        'ic-style-src', 'ic-attr-src', 'ic-prepend-from', 'ic-append-from', 'ic-action'],
                       function(elt){ return fixICAttributeName(elt) });
 
-  var _scrollHandler = null;
   var _UUID = 1;
   var _readyHandlers = [];
 
@@ -141,7 +140,9 @@ var Intercooler = Intercooler || (function() {
     }
     triggerEvent(elt, "log.ic", [msg, level, elt]);
     if (level == "ERROR") {
-      if (window.console) {
+      if (typeof(console.error) === 'function') {
+        console.error("Intercooler Error : " + msg);
+      } else if (window.console) {
         window.console.log("Intercooler Error : " + msg);
       }
       var errorUrl = closestAttrValue($('body'), 'ic-post-errors-to');
@@ -176,20 +177,56 @@ var Intercooler = Intercooler || (function() {
     return "[" + fixICAttributeName(attribute) + "]";
   }
 
-  function initScrollHandler() {
-    if (_scrollHandler == null) {
-      _scrollHandler = function() {
-        $(getICAttributeSelector("ic-trigger-on='scrolled-into-view'")).each(function() {
-          var _this = $(this);
-          if (isScrolledIntoView(getTriggeredElement(_this)) && _this.data('ic-scrolled-into-view-loaded') != true) {
-            _this.data('ic-scrolled-into-view-loaded', true);
-            fireICRequest(_this);
-          }
-        });
-      };
-      $(window).scroll(_scrollHandler);
+  function addScrollHandler(elt) {
+    var _scrollContainer = scrollContainer(elt)
+    if (_scrollContainer == null) _scrollContainer = $(window)
+
+    // Determine best possible handling of scrolling
+    var handlertype = 'calculated';
+    if (typeof(elt.isInView) === 'function')
+      handlertype = 'isinview';
+    // TODO: For modern browsers, support for IntersectionObserver should be added
+
+    log(elt, "handlertype: " + handlertype, 'DEBUG')
+
+    if (elt.data('ic-has-scroll-handler') != true) {
+      log(elt, 'Adding scroll handler to ' + elt, 'DEBUG')
+      switch(handlertype) {
+        case 'calculated':
+          var _scrollHandler = function() {
+            $(getICAttributeSelector("ic-trigger-on='scrolled-into-view'")).each(function() {  // TODO: Why the "each()"?
+              var _this = $(this);
+              if (isScrolledIntoView_calculated(getTriggeredElement(_this)) && _this.data('ic-scrolled-into-view-loaded') != true) {
+                _this.data('ic-scrolled-into-view-loaded', true);
+                fireICRequest(_this);
+              }
+            });
+          };
+          _scrollContainer.scroll(_scrollHandler)  
+          break;
+        case 'isinview':
+          var _scrollHandler = function() {
+            $(getICAttributeSelector("ic-trigger-on='scrolled-into-view'")).each(function() {  // TODO: Why the "each()"?
+              var _this = $(this);
+              if (isScrolledIntoView_isInView(getTriggeredElement(_this)) && _this.data('ic-scrolled-into-view-loaded') != true) {
+                _this.data('ic-scrolled-into-view-loaded', true);
+                fireICRequest(_this);
+              }
+            });
+          };
+          _scrollContainer.scroll(_scrollHandler)  
+          break;  
+      }
+      elt.data('ic-has-scroll-handler', true)
     }
   }
+
+  function scrollContainer(elt) {
+    var _scrollContainer = $(elt).closest('.ic-scroll-container')
+    if (_scrollContainer == null) _scrollContainer = $(window)
+    return _scrollContainer
+  }
+
 
   function currentUrl() {
     return window.location.pathname + window.location.search + window.location.hash;
@@ -1108,9 +1145,9 @@ var Intercooler = Intercooler || (function() {
       if (getICAttribute(elt, 'ic-trigger-on') == 'load') {
         fireICRequest(elt);
       } else if (getICAttribute(elt, 'ic-trigger-on') == 'scrolled-into-view') {
-        initScrollHandler();
+        addScrollHandler(elt);
         setTimeout(function() {
-          triggerEvent($(window), 'scroll');
+          triggerEvent(scrollContainer(elt), 'scroll');
         }, 100); // Trigger a scroll in case element is already viewable
       } else {
         var triggerOn = getICAttribute(elt, 'ic-trigger-on').split(" ");
@@ -1290,8 +1327,18 @@ var Intercooler = Intercooler || (function() {
   // Utilities
   //============================================================----
 
-  function isScrolledIntoView(elem) {
+  function isScrolledIntoView_isInView(elem) {
     elem = $(elem);
+    var _scrollContainer = scrollContainer(elem)
+    
+    var inview = elem.isInView(_scrollContainer, {partial: true, direction: "vertical"})
+    log(elem, 'isScrolledIntoView: ' + inview, 'DEBUG')
+    return inview
+  }
+
+  function isScrolledIntoView_calculated(elem) {
+    elem = $(elem);
+
     if (elem.height() == 0 && elem.width() == 0) {
       return false;
     }
@@ -1304,6 +1351,7 @@ var Intercooler = Intercooler || (function() {
     return ((elemBottom >= docViewTop) && (elemTop <= docViewBottom)
       && (elemBottom <= docViewBottom) && (elemTop >= docViewTop));
   }
+
 
   function maybeScrollToTarget(elt, target) {
     if (closestAttrValue(elt, 'ic-scroll-to-target') != "false" &&
@@ -1978,6 +2026,7 @@ var Intercooler = Intercooler || (function() {
 
   function init() {
     var elt = $('body');
+    log(elt, 'Intercooler.init', 'DEBUG')
     processNodes(elt);
     fireReadyStuff(elt);
     if(_history) {
