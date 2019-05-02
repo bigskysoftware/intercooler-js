@@ -341,6 +341,7 @@ var Intercooler = Intercooler || (function() {
 
   function beforeRequest(elt) {
     elt.addClass('disabled');
+    elt.attr("disabled", true);
     elt.addClass('ic-request-in-flight');
     elt.data('ic-request-in-flight', true);
   }
@@ -353,6 +354,7 @@ var Intercooler = Intercooler || (function() {
       hideIndicator(globalIndicator);
     }
     elt.removeClass('disabled');
+    elt.removeAttr('disabled');
     elt.removeClass('ic-request-in-flight');
     elt.data('ic-request-in-flight', false);
     if (elt.data('ic-next-request')) {
