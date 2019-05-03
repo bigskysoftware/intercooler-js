@@ -10,12 +10,15 @@ nav: tutorial
 
       <h1>Debugging Intercooler</h1>
 
-      <p>This example shows some of the features of the integrated intercooler debugger.  The debugger
-      can be launched via javascript by invoking <code>Intercooler.debug()</code> or by setting the
-      <code>ic-launch-debugger</code> parameter for a page to <code>true</code></p>
+      <p>This example shows some of the features of the intercooler debugger.  The debugger
+      can be launched by including the following javascript:</p>
+      <pre class="prettyprint">
+&lt;script>
+  $.getScript("https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js");
+&lt;/script></pre>
 
       <p class="text-center">
-        <button onclick="Intercooler.debug();" class="btn btn-primary btn-lg">Launch Intercooler Debugger</button>
+        <button onclick="$.getScript('https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js');" class="btn btn-primary btn-lg">Launch Intercooler Debugger</button>
       </p>
 
       <p>The buttons below will all show up in the "Elements" tab of the debugger.  If you click on the element it will

@@ -1407,11 +1407,16 @@ nav: docs
 
         <h3>Integrated Client-Side Debugger</h3>
 
-        <p>Intercooler comes with an integrated client-side debugger. You can launch the debugger by either invoking the
-          <code>Intercooler.debug()</code> method or by passing a <code>true</code> value in for the
-          <code>ic-launch-debugger</code> parameter to a page.</p>
+        <p>Intercooler comes with an integrated client-side debugger. You can launch the debugger by including the
+        following script on your page:</p>
 
-        <p>The debugger consists of three tabs: "Elements", "Logs" and "Errors".</p>
+        <pre class="prettyprint">
+&lt;script>
+  $.getScript("https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js");
+&lt;/script></pre>
+
+
+          <p>The debugger consists of three tabs: "Elements", "Logs" and "Errors".</p>
 
         <p>"Elements" has a clickable list of active elements on the page. When you click on one of the items in
           the list, it will be highlighted on the page, and intercooler-related details will be shown about it.</p>
@@ -1424,7 +1429,9 @@ nav: docs
         <p>You can launch the debugger on this page by clicking this button:</p>
 
         <p>
-          <button class="btn btn-default" onclick="Intercooler.debug()">Launch The Debugger</button>
+          <button class="btn btn-default"
+                  onclick="$.getScript('https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js');">
+          Launch The Debugger</button>
         </p>
 
 
