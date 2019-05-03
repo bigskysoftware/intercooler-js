@@ -72,6 +72,21 @@ nav: attributes > ic-action
       <p>It does not handle all UX cases, of course, but does allow you to capture many common UI/UX needs using a small
       and simple syntax.</p>
 
+      <h3>AJAX Lifecycle Integrated Actions</h3>
+
+      There are four additional <code>action</code> attributes:
+
+      <ul>
+        <li>
+          <code>ic-beforeSend-action</code>
+          <code>ic-success-action</code>
+          <code>ic-error-action</code>
+          <code>ic-complete-action</code>
+        </li>
+      </ul>
+
+      These actions are fired during the jQuery AJAX life cycle.
+
       <h3>Dependencies</h3>
 
       <p><code>ic-action</code> has no effect on dependencies.</p>
@@ -111,6 +126,32 @@ nav: attributes > ic-action
           <li>
             Toggle the <code>btn-primary</code> class on the button:<br/>
             <div class="btn btn-primary btn-default" ic-action="toggleClass:btn-primary">Code: toggleClass:btn-primary</div>
+          </li>
+        </ul>
+
+      </div>
+
+      <p>Here's an example of <code>ic-beforeSend-action</code>; the other <code>ic-*-action</code> attributes work
+        similarly:</p>
+
+      <div>
+        <ul>
+          <li>
+            Fade out and then remove the button before sending POST request to update span:<br/>
+            <div class="live-demo">
+              <script>
+                (function () {
+                  $.mockjax({
+                    'url': '/target_url',
+                    'response': function (settings) {
+                      this.responseText = '<span ic-src="/target_url">Thanks for clicking!</span>'
+                    }
+                  });
+                })();
+              </script>
+              <button class="btn btn-primary" ic-post-to="/target_url" ic-beforeSend-action="fadeOut;remove">Click Me!</button>
+              <span ic-src="/target_url">You haven't clicked yet...</span>
+            </div>
           </li>
         </ul>
 

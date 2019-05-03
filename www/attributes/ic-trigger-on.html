@@ -23,8 +23,16 @@ nav: attributes > ic-trigger-on
 
       <a href="http://api.jquery.com/category/events/">http://api.jquery.com/category/events/</a>
 
-      <p>Also supported is the special event <code>scrolled-into-view</code>, which will fire when an element
-        first scrolls into view.</p>
+      <p>The special event <code>scrolled-into-view</code> will fire when an element first scrolls into view.</p>
+
+      <p>The special event <code>timeout</code> allows you to trigger the request after a given interval (e.g.
+        <code>timeout:400ms</code> will fire after 400 milliseconds</p>
+
+      <p>The <code>changed</code> modifier can be added after the event name and a space.  Intercooler will only trigger a request
+      if the value of the element in question has changed if this modifier is present.</p>
+
+      <p>The <code>once</code> modifier can be added after the event name and a space.  Intercooler will only trigger a request
+      once for the given event if this modifier is present.</p>
 
       <h4>Server Sent Events</h4>
 

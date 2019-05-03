@@ -2,7 +2,7 @@
 layout: default
 nav: tutorial
 ---
-<script src="Sortable.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.6.1/Sortable.min.js"></script>
 
 <div class="container">
 
@@ -44,7 +44,7 @@ nav: tutorial
   </span>
 
   <form>
-    <ul id="sortable-list" ic-put-to="/colors" ic-trigger-on="sort" ic-indicator="#indicator">
+    <ul id="sortable-list" ic-put-to="/colors" ic-trigger-on="end" ic-indicator="#indicator">
       <li>Blue <input type="hidden" name="colors" value="Blue"></li>
       <li>Red <input type="hidden" name="colors" value="Red"></li>
       <li>Green <input type="hidden" name="colors" value="Green"></li>

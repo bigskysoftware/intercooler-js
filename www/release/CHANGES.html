@@ -5,6 +5,98 @@ nav: dependencies
 
 <div class="container">
 
+  <a class="anchor" id="1_2_2"></a>
+  <h2>
+    Intercooler 1.2.2 - March 29, 2019
+  </h2>
+  <ul>
+    <li>
+      Added <code><a href="/attributes/ic-enhance.html">ic-enhance</a></code> attribute, which enhances standard anchor and form tags with the intercooler
+      equivalent attributes, allowing for graceful degradation in non-javascript environments.
+    </li>
+    <li>
+      Added <code><a href="/attributes/ic-global-indicator.html">ic-global-indicator</a></code> attribute, which sets a global indicator to be shown when a request
+      is in flight, even along side any local indicators specified by the triggering element.
+    </li>
+    <li>
+      Added <code><a href="/attributes/ic-switch-class.html">ic-switch-class</a></code> attribute, which switches a class between siblings when an intercooler request
+      is caused within one.  This can be uses, for example, to update the "active" state of tabs without replacing
+      the tab UI.
+    </li>
+    <li>
+      <code>LeadDyno.startPolling()</code> and <code>LeadDyno.stopPolling()</code> were added to the Javascript API
+    </li>
+    <li>
+      Added <code>X-IC-Title-Encoded</code> response header to handle URI encoded titles for international users
+    </li>
+    <li>
+      Removed the legacy debugger
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_2_1"></a>
+  <h2>
+    Intercooler 1.2.1 - December 15, 2017
+  </h2>
+  <ul>
+    <li>
+      Added the <code>once</code> modifier to the <code><a href="/attributes/ic-trigger-on.html">ic-trigger-on</a></code>
+      attribute, to allow an event to trigger one and only one request.
+    </li>
+    <li>
+      Added the <code><a href="/attributes/ic-transform-response.html">ic-transform-response</a></code> attribute to
+      allow transforming JSON responses from a server into HTML on the client side.
+    </li>
+    <li>
+      Fixed a bug that prevented <code><a href="/attributes/ic-on-beforeTrigger.html">ic-on-beforeTrigger</a></code> from
+      working properly
+    </li>
+    <li>
+      Deeper tests and an explaination around how returning values from intercooler expression attributes work.
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_2_0"></a>
+  <h2>
+    Intercooler 1.2.0 - October 27, 2017
+  </h2>
+  <ul>
+    <li>
+      Added <code><a href="/attributes/ic-disable-when-doc-hidden.html">ic-disable-when-doc-hidden</a></code> and
+      <code><a href="/attributes/ic-disable-when-doc-inactive.html">ic-disable-when-doc-inactive</a></code>
+      attributes to allow short-circuiting polling when a document isn't focused or active
+    </li>
+    <li>
+      Added <code><a href="/attributes/ic-fix-ids.html">ic-fix-ids</a></code> attribute to replace the IDs of any added elements
+      with globally unique IDs so that they don't conflict with any existing IDs on the page.
+    </li>
+    <li>
+      Better support for last-clicked elements in forms
+    </li>
+    <li>
+      Added <code>timeout:</code> syntax for <code>ic-trigger-on</code> attribute
+    </li>
+    <li>
+      Added four additional local <code>action</code> attributes:
+      <ul>
+        <li>
+          <code>ic-action-beforeSend</code>
+          <code>ic-action-success</code>
+          <code>ic-action-error</code>
+          <code>ic-action-complete</code>
+        </li>
+      </ul>
+
+      These actions are fired during the jQuery AJAX life cycle.
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
   <a class="anchor" id="1_1_2"></a>
   <h2>
     Intercooler 1.1.2 - May 5th, 2017
@@ -391,7 +483,7 @@ nav: dependencies
   <a class="anchor" id="0_4_1"></a>
   <h3>Intercooler 0.4.1 - July 4th, 2014</h3>
   <ul>
-    <li>Exposed <code>LeadDyno.processElements()</code> in the Javascript API</li>
+    <li>Exposed <code>Intercooler.processElements()</code> in the Javascript API</li>
     <li>Begin sending the  <code>X-HTTP-Method-Override</code> header up in intercooler requests</li>
     <li>Begin sending the  <code>X-IC-Request</code> header up in intercooler requests</li>
   </ul>
@@ -404,7 +496,7 @@ nav: dependencies
       handlers.
     </li>
     <li>Added the <a href="/attributes/ic-confirm.html"><code>ic-confirm</code></a> attribute.</li>
-    <li>Merged a fix for <a href="https://github.com/LeadDyno/intercooler-js/pull/19">an IE8 compatibility issue</a>.
+    <li>Merged a fix for <a href="https://github.com/intercoolerjs/intercooler-js/pull/19">an IE8 compatibility issue</a>.
     </li>
   </ul>
   <h4>Comments on 0.4.0 Release</h4>

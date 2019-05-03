@@ -214,6 +214,38 @@
   </div>
 </div>
 
+<script>
+function eval_test(...args) {
+    return args;
+}
+QUnit.test("Script evaluation", function (assert) {
+  var geval = Intercooler._internal.globalEval;
+  assert.deepEqual(geval("return eval_test()"), [], "Unsafe basic: empty return");
+  assert.deepEqual(geval("return eval_test('a')"), ['a'], "Unsafe basic: return");
+  assert.deepEqual(
+    geval("return a", [['a', 'b']]),
+    "b",
+    "Unsafe args: single return"
+  );
+  assert.deepEqual(
+    geval("return [a, c]", [['a', 'b'], ['c', 'd']]),
+    ["b", "d"],
+    "Unsafe args: multiple return"
+  );
+  assert.deepEqual(geval("eval_test"), [], "Safe: empty return");
+  assert.deepEqual(
+    geval("eval_test", [['a', 'b']]),
+    ["b"],
+    "Safe args: single return"
+  );
+  assert.deepEqual(
+    geval("eval_test", [['a', 'b'], ['c', 'd']]),
+    ["b", "d"],
+    "Safe args: single return"
+  );
+});
+</script>
+
 <div class="row">
   <div class="col-md-12">
     <hr/>
@@ -225,6 +257,7 @@
     </script>
   </div>
 </div>
+
 
 <div id="ic-src-div2" ic-src="/basic_update">Foo</div>
 <script>
@@ -1986,6 +2019,35 @@
       });
   </script>
 
+  <form id="no_button_val_on_select" ic-post-to="/no_button_val_on_select">
+    <button id="button_to_lose_focus" onclick="return false" name="button_to_lose_focus" value="button_val">click button</button>
+    <select id="select_to_clear_button_val" name="select_to_clear_button_val">
+      <option value="select_val_1">select 1</option>
+      <option value="select_val_2">select 2</option>
+    </select>
+  </form>
+
+  <script>
+    intercoolerTest("No value included for button after select",
+      function (assert) {
+        $.mockjax({
+          url: "/no_button_val_on_select",
+          response: function(settings) {
+            var params = parseParams(settings.data);
+            assert.equal(params["button_to_lose_focus"], null);
+            assert.equal(params["select_to_clear_button_val"], "select_val_2");
+            return "";
+          }
+        });
+        $("#button_to_lose_focus").click();
+        $("#select_to_clear_button_val").val("select_val_2").click();
+        $("#no_button_val_on_select").submit();
+      },
+      function (assert) {
+        // nothing to do here
+      });
+  </script>
+
   <form id="addCategoryForm" ic-post-to="/categories/create" style="">
     <div class="form-group">
       <input type="text" class="form-control" name="Name" placeholder="Category Name - 'Apparel', 'Drinkware', etc..." required="" value="asdr">
@@ -2122,6 +2184,37 @@
       });
   </script>
 
+  <div id="sse-6" ic-sse-src="/foo">
+    <span id="sse-6-inner" ic-get-from="/sse_replace_req" ic-trigger-on="sse:foo" ic-replace-target="true"></span>
+  </div>
+  <script>
+    // This test fails if you see a warning in the console of the form:
+    //
+    // Intercooler Error : Error during content swap : TypeError: Cannot read
+    //   property 'addEventListener' of undefined
+    // TypeError: Cannot read property 'addEventListener' of undefined
+    //     at registerSSE (...)
+    //     at handleTriggerOn (...)
+    //     ...
+    intercoolerTest("Server Sent Event trigger handles missing ic-sse-src element", function(assert) {
+        $.mockjax({
+          url: "/sse_replace_req",
+          responseText: "<span id='sse-6-inner' ic-trigger-on='sse:foo'>foo</span>"
+        });
+        var mockSource = $("#sse-6").data("ic-event-sse-source");
+        assert.equal("", $("#sse-6-inner").html());
+
+        // Two events will cause a race between two requests, and one of the
+        // resulting <span>s will be removed from the DOM, thereby causing an
+        // ic-sse-src element to not be found for it.
+        mockSource.fireEvent("foo", "");
+        mockSource.fireEvent("foo", "");
+      },
+      function(assert) {
+        assert.equal("foo", $("#sse-6-inner").html());
+      });
+  </script>
+
   <div id="anchor-regression-div">
       <a id="anchor-regression-a" class="button button--primary" ic-post-to="/anchor_regression?issue=1" ic-replace-target="true">
           <span>Click Me!</span>
@@ -2173,6 +2266,325 @@
       function (assert) {
       });
   </script>
+
+  <div id="prototype-with-ids-to-fix" class="ic-ignore">
+    <div id="first-id-to-fix"></div>
+    <a href="#first-id-to-fix"></a>
+    <div ic-get-from="#first-id-to-fix"></div>
+    <div>
+      <input id="second-id-to-fix"/>
+      <label for="second-id-to-fix"></label>
+    </div>
+    <div data-fix-ids-here-too="bla bla#first-id-to-fix#second-id-to-fix;etc"></div>
+    <div data-not-here-because-longer-id="#second-id-to-fix-not"></div>
+    <div ic-get-from="#id-of-something-outside"></div>
+  </div>
+  <div id="id-of-something-outside"></div>
+  <div id="target-for-fixed-ids" ic-get-from="#prototype-with-ids-to-fix" ic-fix-ids="true"></div>
+  <script>
+    intercoolerTest("Fix IDs in swapped content if ic-fix-ids is specified",
+      function (assert) {
+        if ($.zepto) {
+          $.mockjax({
+            url: "#prototype-with-ids-to-fix",
+            response: function (settings) {
+              this.responseText = $("#prototype-with-ids-to-fix").html();
+            }
+          });
+        }
+        $("#target-for-fixed-ids").click();
+      },
+      function (assert) {
+        var children = $("#target-for-fixed-ids").children();
+        var firstFixedId = $(children[0]).attr("id");
+        var secondFixedId = $(children[3]).find("input").attr("id");
+        assert.notEqual(firstFixedId, "first-id-to-fix");
+        assert.notEqual(secondFixedId, "second-id-to-fix");
+        assert.notEqual(firstFixedId, secondFixedId);
+        assert.strictEqual($("#" + firstFixedId)[0], children[0]);
+        assert.strictEqual($("#" + secondFixedId).parent()[0], children[3]);
+        assert.equal($(children[1]).attr("href"), "#" + firstFixedId);
+        assert.equal($(children[2]).attr(fixAttrName("ic-get-from")), "#" + firstFixedId);
+        assert.equal($(children[3]).find("label").attr("for"), secondFixedId);
+        assert.equal($(children[4]).attr("data-fix-ids-here-too"), "bla bla#" + firstFixedId + "#" + secondFixedId + ";etc");
+        assert.equal($(children[5]).attr("data-not-here-because-longer-id"), "#second-id-to-fix-not");
+        assert.equal($(children[6]).attr(fixAttrName("ic-get-from")), "#id-of-something-outside");
+      });
+  </script>
+
+  <ul id="test-transformed-json" ic-get-from="/json_endpoint" ic-transform-response="return renderJsonAsList(content)"></ul>
+  <script>
+    function renderJsonAsList(content)
+    {
+      var data = JSON.parse(content);
+      var vals = data.vals;
+      var htmlVal = "";
+      for (var i = 0; i < vals.length; i++) {
+        htmlVal = htmlVal + "<li>" + vals[i] + "</li>";
+      }
+      return htmlVal;
+    }
+
+    intercoolerTest("JSON can be properly transformed into HTML ",
+      function (assert) {
+
+        $.mockjax({
+          url: '/json_endpoint',
+          response: function () {
+            this.responseText = "{\"vals\":[1, 2, 3]}";
+          }
+        });
+        $("#test-transformed-json").click();
+      },
+
+
+      function (assert) {
+
+        assert.equal($("#test-transformed-json").html(), "<li>1</li><li>2</li><li>3</li>");
+      });
+  </script>
+
+  <ul id="test-before-trigger" ic-get-from="/before-trigger-test" ic-on-beforeTrigger="return false"></ul>
+  <script>
+    intercoolerTest("ic-before-trigger can cancel action ",
+      function (assert) {
+
+        $.mockjax({
+          url: '/before-trigger-test',
+          response: function () {
+            this.responseText = "foo";
+          }
+        });
+        $("#test-before-trigger").click();
+      },
+
+      function (assert) {
+        assert.equal($("#test-before-trigger").text(), "");
+      });
+  </script>
+
+  <ul id="test-trigger-on-with-once" ic-get-from="/trigger-on-once" ic-trigger-on="click once"></ul>
+  <script>
+    var onceRequestCount = 0;
+    intercoolerTest("ic-trigger-on once keyword works",
+      function (assert) {
+        $.mockjax({
+          url: '/trigger-on-once',
+          response: function () {
+            this.responseText = "foo";
+            onceRequestCount = onceRequestCount + 1;
+          }
+        });
+        $("#test-trigger-on-with-once").click();
+        $("#test-trigger-on-with-once").click();
+        $("#test-trigger-on-with-once").click();
+      },
+
+      function (assert) {
+        assert.equal(onceRequestCount, 1);
+      });
+  </script>
+
+  <ul id="test-cancel-with-ic-on-success" ic-get-from="/ic-on-success" ic-on-success="return false"></ul>
+  <script>
+    intercoolerTest("ic-on-success can cancel swap",
+      function (assert) {
+        $.mockjax({
+          url: '/ic-on-success',
+          response: function () {
+            this.responseText = "foo";
+          }
+        });
+        $("#test-cancel-with-ic-on-success").click();
+      },
+
+      function (assert) {
+        assert.equal($("#test-cancel-with-ic-on-success").text(), "");
+      });
+  </script>
+
+  <div id="test-ic-push-url-and-ic-use-transition">
+    <a id="page1-tab"
+      href=""
+      ic-get-from="/page1"
+      ic-target="#test-ic-push-url-and-ic-use-transition-content"
+      ic-push-url="true"
+      ic-indicator="#ic-push-url-and-ic-use-transition-indicator">
+      Page1
+    </a>
+    <a id="page2-tab"
+      href=""
+      ic-get-from="/page2"
+      ic-target="#test-ic-push-url-and-ic-use-transition-content"
+      ic-push-url="true"
+      ic-indicator="#ic-push-url-and-ic-use-transition-indicator">
+      Page2
+    </a>
+    <i id="ic-push-url-and-ic-use-transition-indicator" class="fa fa-spinner fa-spin ic-use-transition"></i>
+    <div id="test-ic-push-url-and-ic-use-transition-content" ic-history-elt="">
+      <h1>Content</h1>
+    </div>
+  </div>
+  <script>
+    QUnit.test("ic-use-transition should work when using ic-push-url", function (assert) {
+      // don't run test locally
+      if (window.location.hostname == "") {
+        assert.equal(true, true);
+        return;
+      }
+      var done = assert.async();
+      $.mockjax({
+        url: '/page1',
+        response: function () {
+          this.responseText = "Page 1";
+        }
+      });
+      $.mockjax({
+        url: '/page2',
+        response: function () {
+          this.responseText = "Page 2";
+        }
+      });
+      $("#page1-tab").click();
+      setTimeout(function () {
+        $("#page2-tab").click();
+      }, 100);
+      setTimeout(function () {
+        assert.equal($("#ic-push-url-and-ic-use-transition-indicator").css('display'), "inline-block");
+        done();
+      }, 200);
+      // Click "Back" twice to get back to the test page.
+      setTimeout(function () {
+        window.history.back();
+      }, 300);
+      setTimeout(function () {
+        window.history.back();
+      }, 400);
+    });
+  </script>
+
+  <span id="global-indicator" style="display:none">**</span>
+  <div id="global-indicator-test" ic-post-to="/global-indicator" ic-global-indicator="#global-indicator"><strong id="global-indicator-regular" class="ic-indicator" style="display:none">loading...</strong> Foo
+  </div>
+  <script>
+    intercoolerTest("Test global indicator works as well as a local indicator",
+            function (assert) {
+              $.mockjax({ url: "/global-indicator" });
+              $("#global-indicator-test").click();
+              assert.equal('inline', $('#global-indicator-regular').css('display'));
+              assert.equal('inline', $('#global-indicator').css('display'));
+            },
+            function (assert) {
+              assert.equal('none', $('#global-indicator-regular').css('display'));
+              assert.equal('none', $('#global-indicator').css('display'));
+            });
+  </script>
+
+  <div ic-switch-class="active">
+    <div id="ic-switch-class-1" ic-get-from="/ic-switch-class" class="active"></div>
+    <div id="ic-switch-class-2" ic-get-from="/ic-switch-class"></div>
+    <div id="ic-switch-class-3" ic-get-from="/ic-switch-class"></div>
+  </div>
+  <script>
+    intercoolerTest("Test switch class works on parent",
+            function (assert) {
+              $.mockjax({ url: "/ic-switch-class", responseText:"foo"});
+              assert.equal(true, $("#ic-switch-class-1").is(".active"));
+              assert.equal(false, $("#ic-switch-class-2").is(".active"));
+              assert.equal(false, $("#ic-switch-class-3").is(".active"));
+              $("#ic-switch-class-2").click();
+            },
+            function (assert) {
+              assert.equal(false, $("#ic-switch-class-1").is(".active"));
+              assert.equal(true, $("#ic-switch-class-2").is(".active"));
+              assert.equal(false, $("#ic-switch-class-3").is(".active"));
+            });
+  </script>
+
+  <div ic-switch-class="active">
+    <div id="ic-deep-switch-class-1" class="active">
+      <div id="ic-deep-switch-class-1-1" ic-get-from="/ic-switch-class"></div>
+    </div>
+    <div id="ic-deep-switch-class-2">
+      <div id="ic-deep-switch-class-2-2" ic-get-from="/ic-switch-class"></div>
+    </div>
+    <div id="ic-deep-switch-class-3">
+      <div id="ic-deep-switch-class-3-3" ic-get-from="/ic-switch-class"></div>
+    </div>
+  </div>
+  <script>
+    intercoolerTest("Test switch class works on deep parent",
+            function (assert) {
+              $.mockjax({ url: "/ic-switch-class", responseText:"foo"});
+              assert.equal(true, $("#ic-deep-switch-class-1").is(".active"));
+              assert.equal(false, $("#ic-deep-switch-class-2").is(".active"));
+              assert.equal(false, $("#ic-deep-switch-class-3").is(".active"));
+              $("#ic-deep-switch-class-2-2").click();
+            },
+            function (assert) {
+              assert.equal(false, $("#ic-deep-switch-class-1").is(".active"));
+              assert.equal(true, $("#ic-deep-switch-class-2").is(".active"));
+              assert.equal(false, $("#ic-deep-switch-class-3").is(".active"));
+            });
+  </script>
+
+
+  <a id="enhanced-link-local" ic-enhance="true" href="/enhanced-foo">bar</a>
+  <script>
+    intercoolerTest("test ic-enhance works on basic link",
+            function (assert) {
+              $.mockjax({ url: "/enhanced-foo", responseText:"foo"});
+              assert.equal("true", $("#enhanced-link-local").attr('ic-push-url'));
+              assert.equal("/enhanced-foo", $("#enhanced-link-local").attr('ic-src'));
+              assert.equal("default", $("#enhanced-link-local").attr('ic-trigger-on'));
+              assert.equal("ignore", $("#enhanced-link-local").attr('ic-deps'));
+              $("#enhanced-link-local").click();
+            },
+            function (assert) {
+              assert.equal("foo", $("#enhanced-link-local").html());
+            });
+  </script>
+
+  <a id="enhanced-link-non-local" ic-enhance="true" href="https://intercooler.org">bar</a>
+  <script>
+    intercoolerTest("test ic-enhance does not monkey with external links",
+            function (assert) {
+              assert.equal(null, $("#enhanced-link-non-local").attr("ic-src"));
+            },
+            function (assert) {
+            });
+  </script>
+
+  <a id="enhanced-link-anchor" ic-enhance="true" href="#foo">bar</a>
+  <script>
+    intercoolerTest("test ic-enhance does not monkey with local anchor links",
+            function (assert) {
+              assert.equal(null, $("#enhanced-link-non-local").attr("ic-src"));
+            },
+            function (assert) {
+            });
+  </script>
+
+<form id="enhanced-form" ic-enhance="true" action="/enhanced-form" method="post">
+  bar
+</form>
+
+<script>
+  intercoolerTest("test ic-enhance works on form",
+          function (assert) {
+            $.mockjax({ url: "/enhanced-form", responseText:"foo"});
+            assert.equal("/enhanced-form", $("#enhanced-form").attr('ic-src'));
+            assert.equal("default", $("#enhanced-form").attr('ic-trigger-on'));
+            assert.equal("post", $("#enhanced-form").attr('ic-verb'));
+
+            $("#enhanced-form").submit();
+          },
+          function (assert) {
+            assert.equal("foo", $("#enhanced-form").html());
+          });
+</script>
+
+
 
 </div>
 </body>
