@@ -23,6 +23,7 @@ nav: docs
           <li><a href="#transitions">CSS Element Transitions</a></li>
           <li><a href="#client-side">Client Side Tools</a></li>
           <li><a href="#history">History</a></li>
+          <li><a href="#progressive_enhancement">Progressive Enhancement</a></li>
           <li><a href="#sse">Server Sent Events <sub>BETA</sub></a></li>
           <li><a href="#requests">Anatomy of an Intercooler Request</a></li>
           <li><a href="#responses">Anatomy of an Intercooler Response</a></li>
@@ -109,21 +110,13 @@ nav: docs
 
         <h2>Installing Intercooler</h2>
 
-        <p>Intercooler is just another javascript library, and can be either installed locally with your web
-          application,
-          loaded off our CDN (generously donated by <a href="https://www.maxcdn.com/">MaxCDN</a>).</p>
-
-      <pre style="width:90%">
-  &lt;script src="https://code.jquery.com/jquery-3.1.1.min.js">&lt;/script>
-  &lt;script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-1.2.1.min.js">&lt;/script>
-      </pre>
+        <p>Intercooler is just another javascript library.  You can download and install the latest version from
+        the <a href="download.html">release</a> page.</p>
 
         <p>If you are using <a href="http://bower.io/">Bower</a>, the package name for Intercooler is
           <code>intercooler-js</code>.</p>
 
-        <p>Intercooler depends on JQuery, version 1.10.0 or higher.</p>
-
-        <p>You can always grab the latest code from the <a href="download.html">Downloads</a> page.</p>
+        <p>Intercooler depends on JQuery, version 1.10.0 or higher, and is compatible with JQuery 1, 2 and 3.</p>
 
       </section>
 
@@ -579,6 +572,14 @@ nav: docs
         <p>In the above demos you will see that the button greys out during
           the request, which is due to Bootstrap's handling of this CSS class.</p>
 
+        <h3>The <code>ic-global-indicator</code> Attribute</h3>
+
+        <p>
+          The <code><a href="/attributes/ic-global-indicator.html">ic-global-indicator</a></code> attribute is similar to the <code>ic-indicator</code> attribute, but
+          will be shown in addition to any local indicators.  This can be used to implement a site-wide progress indicator.
+        </p>
+
+
       </section>
 
       <section>
@@ -855,6 +856,64 @@ nav: docs
           </blockquote>
         </div>
 
+        <h3>Switch Class</h3>
+
+        <p>Sometimes you may want to switch a class between siblings in a DOM without replacing the HTML.  A
+        common situation where this comes up is in tabbed UIs, where the target is within the tabbed UI, but the
+        tabs themselves are not replaced.</p>
+
+        <p>Intercooler has an attribute, <code><a href="/attributes/ic-switch-class.html">ic-switch-class</a></code> that
+        enabled this pattern.  It is placed on the parent element and the value is the name of the class that will be
+        switched to the element causing the intercooler request.</p>
+
+        <p>Below is an example of a tabbed UI using this technique.  Note that the tabs are not replaced, but the
+        <code>active</code> class is switched between them as they are clicked.</p>
+
+        <pre>
+        &lt;ul class="nav nav-tabs" ic-target="#content" ic-switch-class="active">
+          &lt;li class="active">&lt;a ic-get-from="/tab1">Tab1&lt;/a>&lt;/li>
+          &lt;li>&lt;a ic-get-from="/tab2">Tab2&lt;/a>&lt;/li>
+          &lt;li>&lt;a ic-get-from="/tab3">Tab3&lt;/a>&lt;/li>
+        &lt;/ul>
+        &lt;div id="content">
+          Pick a tab
+        &lt;/div>
+        </pre>
+
+        <div class="live-demo">
+
+          <script>
+            (function () {
+              var i = 0;
+              $.mockjax({'url': '/tab1', 'responseText': "Tab 1"});
+              $.mockjax({'url': '/tab2', 'responseText': "Tab 2"});
+              $.mockjax({'url': '/tab3', 'responseText': "Tab 3"});
+            })();
+          </script>
+
+          <ul class="nav nav-tabs" ic-target="#content" ic-switch-class="active">
+            <li class="active"><a ic-get-from="/tab1">Tab1</a></li>
+            <li><a ic-get-from="/tab2">Tab2</a></li>
+            <li><a ic-get-from="/tab3">Tab3</a></li>
+          </ul>
+          <div id="content">
+            Tab 1
+          </div>
+
+        </div>
+
+        <pre>
+  &lt;a ic-action="slideToggle" ic-target="#chesterton-quote">Toggle Chesterton!&lt;/a>
+        </pre>
+
+        <div class="live-demo">
+          <a class="btn btn-primary" ic-action="slideToggle" ic-target="#chesterton-quote">Toggle Chesterton!</a>
+          <blockquote id="chesterton-quote" style="display: none">
+            “Without education, we are in a horrible and deadly danger of taking educated people seriously.”<br/>
+            --GK Chesterton
+          </blockquote>
+        </div>
+
       </section>
 
       <section>
@@ -925,6 +984,47 @@ nav: docs
           older browsers. If you wish to maintain maximum compatibility with your intercooler website, you should not
           use
           the history support.</p>
+
+      </section>
+
+        <section>
+        <a class="anchor" id="progressive_enhancement"></a>
+
+        <h2>Progressive Enhancement<i class=""></i></h2>
+
+        <p>Intercooler provides a mechanism for
+          <a href="https://en.wikipedia.org/wiki/Progressive_enhancement">progressive enhancement</a>.  The
+          <code><a href="/attributes/ic-enhance.html">ic-enhance</a></code> attribute can be set to <code>true</code>
+        on an element, all child anchor tags and form tags will be converted to their equivalent intercooler
+        implementations.</p>
+
+          <p>Anchor tags (links) will be converted to <code>ic-get-from</code> with <code>ic-push-url</code> set to true.</p>
+
+          <p>Forms will be converted to the intercooler equivalent action (e.g. a POST form will convert to <code>ic-post-to</code>)</p>
+
+        <p>Commonly you will have an <code>ic-target</code> set up at the top level of your DOM, paired with a
+        <code>ic-enhance</code> attribute.  You can differentiate on the server side between normal and AJAX requests
+        by looking for the intercooler headers.</p>
+
+        <p>Here is an example:</p>
+
+  <pre>
+    &lt;div ic-enhance="true">
+      &lt;a href="/enhancement_example">Click Me!&lt;/a>
+    &lt;/div>
+  </pre>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/enhancement_example',
+              responseText: "Link was clicked!"
+            });
+          </script>
+          <div ic-enhance="true">
+            <a href="/enhancement_example">Click Me!</a>
+          </div>
+        </div>
 
       </section>
 
@@ -1307,11 +1407,16 @@ nav: docs
 
         <h3>Integrated Client-Side Debugger</h3>
 
-        <p>Intercooler comes with an integrated client-side debugger. You can launch the debugger by either invoking the
-          <code>Intercooler.debug()</code> method or by passing a <code>true</code> value in for the
-          <code>ic-launch-debugger</code> parameter to a page.</p>
+        <p>Intercooler comes with an integrated client-side debugger. You can launch the debugger by including the
+        following script on your page:</p>
 
-        <p>The debugger consists of three tabs: "Elements", "Logs" and "Errors".</p>
+        <pre class="prettyprint">
+&lt;script>
+  $.getScript("https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js");
+&lt;/script></pre>
+
+
+          <p>The debugger consists of three tabs: "Elements", "Logs" and "Errors".</p>
 
         <p>"Elements" has a clickable list of active elements on the page. When you click on one of the items in
           the list, it will be highlighted on the page, and intercooler-related details will be shown about it.</p>
@@ -1324,7 +1429,9 @@ nav: docs
         <p>You can launch the debugger on this page by clicking this button:</p>
 
         <p>
-          <button class="btn btn-default" onclick="Intercooler.debug()">Launch The Debugger</button>
+          <button class="btn btn-default"
+                  onclick="$.getScript('https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js');">
+          Launch The Debugger</button>
         </p>
 
 

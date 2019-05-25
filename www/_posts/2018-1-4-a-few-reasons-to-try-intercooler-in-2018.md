@@ -11,7 +11,7 @@ Unfortunately a bit of PR is necessary for any project, especially one that isn'
 a list of reasons you might consider intercooler for a project in 2018.  
 
 If you find intercooler interesting, please 
-consider sharing this post with your friends and, if you haven't [giving it a star on Github](https://github.com/LeadDyno/intercooler-js).
+consider sharing this post with your friends and, if you haven't [giving it a star on Github](https://github.com/intercoolerjs/intercooler-js).
 
 Thank you!
 

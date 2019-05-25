@@ -13,6 +13,7 @@
 * Run `git tag vRELEASEVERSION`
 * Checkout `master` and merge `development`
 * Run `git push origin --tags`
-* Run `cap deploy` from the `/www` directory to deploy the website
+* Run `publish.rb` from the `/www` directory to sync the website directory to ../intercoolerjs.github.io
+* cd to ../intercoolerjs.github.io and 'git commit' 'git push' to deploy the website
 * Run `npm publish` to publish to NPM
 * Email announcement to intercooler-js@googlegroups.com, post on Twitter, post to https://gitter.im/intercooler-js/Lobby 
