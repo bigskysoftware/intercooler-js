@@ -1515,16 +1515,18 @@ var Intercooler = Intercooler || (function() {
   }
 
   function invokeLocalAction(elt, actions, modifier) {
-    var actionTargetVal = closestAttrValue(elt, 'ic' + modifier + '-action-target');
-    if(actionTargetVal === null && modifier !== "") {
-      actionTargetVal = closestAttrValue(elt, 'ic-action-target');
+    var actionTargetAttr = 'ic' + modifier + '-action-target';
+    var actionTargetVal = closestAttrValue(elt, actionTargetAttr);
+    if (actionTargetVal === null && modifier !== "") {
+        actionTargetAttr = 'ic-action-target';
+        actionTargetVal = closestAttrValue(elt, actionTargetAttr);
     }
 
     var target = null;
-    if(actionTargetVal) {
-      target = getTargetImpl(elt, 'ic-action-target');
+    if (actionTargetVal) {
+        target = getTargetImpl(elt, actionTargetAttr);
     } else {
-      target = getTarget(elt);
+        target = getTarget(elt);
     }
     var actionArr = actions.split(";");
 
