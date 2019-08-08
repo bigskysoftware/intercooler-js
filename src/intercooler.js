@@ -341,7 +341,11 @@ var Intercooler = Intercooler || (function() {
 
   function beforeRequest(elt) {
     elt.addClass('disabled');
-    if (elt.is('input, textarea, select, button')) {
+    // inputs to disabled
+    var are_inputs = [
+        'input', 'textarea', 'select', 'button', 'fieldset', 
+        'optgroup', 'option', 'textarea'];
+    if (elt.is(are_inputs.join(", "))) {
         elt.attr("disabled", true);
     }
     elt.addClass('ic-request-in-flight');
@@ -356,7 +360,11 @@ var Intercooler = Intercooler || (function() {
       hideIndicator(globalIndicator);
     }
     elt.removeClass('disabled');
-    if (elt.is('input, textarea, select, button') && elt.is(":disabled")) {
+    // are inputs and are disabled
+    var are_inputs = [
+        'input', 'textarea', 'select', 'button', 'fieldset', 
+        'optgroup', 'option', 'textarea'];
+    if (elt.is(are_inputs.join(", ")) && elt.is(":disabled")) {
         elt.removeAttr('disabled');
     }
     elt.removeClass('ic-request-in-flight');
