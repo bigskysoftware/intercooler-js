@@ -2584,6 +2584,31 @@ QUnit.test("Script evaluation", function (assert) {
           });
 </script>
 
+<a id="multiple-events-link" ic-trigger-on="click, foo,    bar" ic-get-from="/multiple-events">
+  bar
+</a>
+
+<script>
+  intercoolerTest("test multiple events trigger",
+          function (assert) {
+            var requests = 0;
+            $.mockjax({ url: "/multiple-events", response: function () {
+                requests = requests + 1;
+                this.responseText = "Requests: " + requests;
+              }
+            });
+            $("#multiple-events-link").trigger("click");
+            setTimeout(function(){
+              $("#multiple-events-link").trigger("foo");
+            }, 200);
+            setTimeout(function(){
+              $("#multiple-events-link").trigger("bar");
+            }, 400);
+          },
+          function (assert) {
+            assert.equal("Requests: 3", $("#multiple-events-link").html());
+          }, 600);
+</script>
 
 
 </div>
