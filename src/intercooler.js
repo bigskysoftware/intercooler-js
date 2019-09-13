@@ -1429,7 +1429,6 @@ var Intercooler = Intercooler || (function() {
           if(classToSwitch) {
             switchClass.children().removeClass(classToSwitch);
             switchClass.children().each(function(){
-              console.log($(this));
               if($.contains($(this)[0], $(elt)[0]) || $(this)[0] == $(elt)[0]) {
                 $(this).addClass(classToSwitch);
               }
