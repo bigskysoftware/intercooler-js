@@ -190,6 +190,34 @@
   </div>
 </div>
 
+<h3>Form on submit</h3>
+  <form id="form-on-submit" ic-post-to='/disabled_on_submit'  ic-disable-inputs="true" >
+    <input type="text" name="foo" value="bar">
+    <input type="submit" value="submit to disabled">
+  </form>
+
+  <script>
+    intercoolerTest("Disable fields at submit",
+      function (assert) { // before request
+        $.mockjax({
+          url: "/disabled_on_submit",
+          response: function(settings) {
+            console.log("ajax call disabled_ob_submit")
+            var params = parseParams(settings.data);
+            assert.equal(params["foo"], "bar");
+            assert.equal($("#form-on-submit input").is(":disabled"), true);
+            return "";
+          }
+        });
+        $("#form-on-submit input[type='submit']").click();
+      },
+      function (assert) { // afterrequest
+        
+      });
+  </script>
+
+
+
 <div class="row">
   <div class="col-md-12">
     <hr/>
@@ -1968,6 +1996,10 @@ QUnit.test("Script evaluation", function (assert) {
         // nothing to do here
       });
   </script>
+
+
+
+
 
   <form ic-post-to='/submit_val_included'>
     <input type="submit" id="submit_val_button" name="foo" value="bar">
