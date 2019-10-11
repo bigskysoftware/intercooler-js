@@ -1049,14 +1049,15 @@ var Intercooler = Intercooler || (function() {
     elt = $(elt);
     if (getICAttribute(elt, 'ic-sse-src')) {
       var evtSrcUrl = getICAttribute(elt, 'ic-sse-src');
-      var eventSource = initEventSource(elt, evtSrcUrl);
+      var evtSrcWithCredentials = getICAttribute(elt, 'ic-sse-with-credentials') === 'true';
+      var eventSource = initEventSource(elt, evtSrcUrl, evtSrcWithCredentials);
       elt.data('ic-event-sse-source', eventSource);
       elt.data('ic-event-sse-map', {});
     }
   }
 
-  function initEventSource(elt, evtSrcUrl) {
-    var eventSource = Intercooler._internal.initEventSource(evtSrcUrl);
+  function initEventSource(elt, evtSrcUrl, evtSrcWithCredentials) {
+    var eventSource = Intercooler._internal.initEventSource(evtSrcUrl, evtSrcWithCredentials);
     eventSource.onmessage = function(e) {
       processICResponse(e.data, elt, false);
     };
@@ -2029,8 +2030,8 @@ var Intercooler = Intercooler || (function() {
     _internal: {
       init: init,
       replaceOrAddMethod: replaceOrAddMethod,
-      initEventSource: function(url) {
-        return new EventSource(url);
+      initEventSource: function(url, withCredentials) {
+        return new EventSource(url, {withCredentials: withCredentials});
       },
       globalEval: globalEval
     }
