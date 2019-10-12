@@ -209,7 +209,7 @@
               console.log($("#form-on-submit"))
             var params = parseParams(settings.data);
             assert.equal(params["foo"], "bar");
-      //      assert.equal($("#form-on-submit input").is(":disabled"), true);
+            assert.equal($("#form-on-submit input").is(":disabled"), true);
 
             return "";
           }
@@ -217,7 +217,7 @@
         $("#form-on-submit input[type='submit']").click();
       },
       function (assert) { // afterrequest
-        
+        assert.equal($("#form-on-submit input").is(":disabled"), false);
       });
   </script>
 
