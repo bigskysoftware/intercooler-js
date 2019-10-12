@@ -339,14 +339,26 @@ var Intercooler = Intercooler || (function() {
   }
 
 
+
   function beforeRequest(elt) {
+
     elt.addClass('disabled');
-    // inputs to disabled
-    var are_inputs = [
+
+    var check_disable_inputs = closestAttrValue(elt, "ic-disable-inputs");
+    if (check_disable_inputs === 'true') {
+      var are_inputs = [
         'input', 'textarea', 'select', 'button', 'fieldset', 
         'optgroup', 'option', 'textarea'];
-    if (elt.is(are_inputs.join(", "))) {
-        elt.attr("disabled", true);
+      elt.closest("form").children().each(function(){
+        var $elt = $(this);
+        $elt.addClass('disabled');
+        // inputs to disabled
+        if ($elt.is(are_inputs.join(", "))) {
+            $elt.attr("disabled", true);
+        }
+       
+      })
+    
     }
     elt.addClass('ic-request-in-flight');
     elt.data('ic-request-in-flight', true);
@@ -360,12 +372,20 @@ var Intercooler = Intercooler || (function() {
       hideIndicator(globalIndicator);
     }
     elt.removeClass('disabled');
-    // are inputs and are disabled
-    var are_inputs = [
-        'input', 'textarea', 'select', 'button', 'fieldset', 
-        'optgroup', 'option', 'textarea'];
-    if (elt.is(are_inputs.join(", ")) && elt.is(":disabled")) {
-        elt.removeAttr('disabled');
+    var check_disable_inputs = closestAttrValue(elt, "ic-disable-inputs");
+    if ( check_disable_inputs === 'true') {
+        // are inputs and are disabled
+        var are_inputs = [
+            'input', 'textarea', 'select', 'button', 'fieldset', 
+            'optgroup', 'option', 'textarea'];
+        elt.closest("form").children().each(function(){
+          var $elt = $(this);
+          $elt.removeClass("disabled");
+          if ($elt.is(are_inputs.join(", ")) && $elt.is(":disabled")) {
+            $elt.removeAttr('disabled');
+          }
+        });
+       
     }
     elt.removeClass('ic-request-in-flight');
     elt.data('ic-request-in-flight', false);
@@ -1220,7 +1240,8 @@ var Intercooler = Intercooler || (function() {
 
     if (macroIs(macro, 'ic-action')) {
       setIfAbsent(elt, 'ic-trigger-on', 'default');
-    }
+    } 
+
 
     // non-action attributes
     var value = null;
