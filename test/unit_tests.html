@@ -2613,6 +2613,27 @@ QUnit.test("Script evaluation", function (assert) {
           }, 600);
 </script>
 
+    <script>
+      QUnit.test("getLocalURL works properly", function (assert) {
+
+        // null cases
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", null, ""), "http://foo.bar");
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", null, null), "http://foo.bar");
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "", null), "http://foo.bar");
+
+        // single var
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "bar", ""), "http://foo.bar?bar=");
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "bar", "bar=foo&joe=blow"), "http://foo.bar?bar=foo");
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "joe", "bar=foo&joe=blow"), "http://foo.bar?joe=blow");
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "doe", "bar=foo&joe=blow"), "http://foo.bar?doe=");
+
+        // multiple vars
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "doe, joe", "bar=foo&joe=blow"), "http://foo.bar?doe=&joe=blow");
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "doe,   joe", "bar=foo&joe=blow"), "http://foo.bar?doe=&joe=blow");
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", " doe,   joe", "bar=foo&joe=blow"), "http://foo.bar?doe=&joe=blow");
+      });
+
+    </script>
 
 </div>
 </body>

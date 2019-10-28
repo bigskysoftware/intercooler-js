@@ -434,6 +434,23 @@ var Intercooler = Intercooler || (function() {
     return msg;
   }
 
+  function getLocalURL(baseURL, paramsToPush, data) {
+    if (paramsToPush) {
+      baseURL = baseURL + "?";
+      var vars = {};
+      data.replace(/([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+      });
+      $(paramsToPush.split(",")).each(function(index) {
+        var param = $.trim(this);
+        var value = vars[param] || "";
+        baseURL += (index == 0) ? "" : "&";
+        baseURL += param + "=" + value;
+      });
+    }
+    return baseURL;
+  }
+
   function handleRemoteRequest(elt, type, url, data, success) {
 
     beforeRequest(elt);
@@ -500,7 +517,9 @@ var Intercooler = Intercooler || (function() {
             if (xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true") {
               try {
                 requestCleanup(indicator, globalIndicator, elt); // clean up before snap-shotting HTML
-                var newUrl = xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-src');
+                var baseURL = closestAttrValue(elt, 'ic-src');
+                var paramsToPush = closestAttrValue(elt, 'ic-push-params');
+                var newUrl = xhr.getResponseHeader("X-IC-PushURL") || getLocalURL(baseURL, paramsToPush, data);
                 if(_history) {
                   _history.snapshotForHistory(newUrl, oldTitle);
                 } else {
@@ -624,14 +643,14 @@ var Intercooler = Intercooler || (function() {
     return data;
   }
 
-  function appendData(data, string, value) {
+  function appendData(data, key, value) {
     if ($.type(data) === "string") {
       if($.type(value) !== "string") {
         value = JSON.stringify(value);
       }
-      return data + "&" + string + "=" + encodeURIComponent(value);
+      return data + "&" + key + "=" + encodeURIComponent(value);
     } else {
-      data.append(string, value);
+      data.append(key, value);
       return data;
     }
   }
@@ -2034,7 +2053,8 @@ var Intercooler = Intercooler || (function() {
       initEventSource: function(url) {
         return new EventSource(url);
       },
-      globalEval: globalEval
+      globalEval: globalEval,
+      getLocalURL: getLocalURL
     }
   };
 })();
