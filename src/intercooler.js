@@ -497,12 +497,12 @@ var Intercooler = Intercooler || (function() {
         }
         maybeInvokeLocalAction(elt, "-beforeSend");
       },
-      success: function(data, textStatus, xhr) {
-        triggerEvent(elt, "success.ic", [elt, data, textStatus, xhr, requestId]);
+      success: function(responseData, textStatus, xhr) {
+        triggerEvent(elt, "success.ic", [elt, responseData, textStatus, xhr, requestId]);
         log(elt, "AJAX request " + requestId + " was successful.", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
         if (onSuccess) {
-          if (globalEval(onSuccess, [["elt", elt], ["data", data], ["textStatus", textStatus], ["xhr", xhr]]) == false) {
+          if (globalEval(onSuccess, [["elt", elt], ["data", responseData], ["textStatus", textStatus], ["xhr", xhr]]) == false) {
             return;
           }
         }
@@ -530,11 +530,11 @@ var Intercooler = Intercooler || (function() {
               }
             }
 
-            success(data, textStatus, elt, xhr);
+            success(responseData, textStatus, elt, xhr);
 
             log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
           }
-          triggerEvent(elt, "after.success.ic", [elt, data, textStatus, xhr, requestId]);
+          triggerEvent(elt, "after.success.ic", [elt, responseData, textStatus, xhr, requestId]);
           maybeInvokeLocalAction(elt, "-success");
         } catch (e) {
           log(elt, "Error processing successful request " + requestId + " : " + formatError(e), "ERROR");
