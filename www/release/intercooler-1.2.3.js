@@ -450,6 +450,23 @@ var Intercooler = Intercooler || (function() {
     return msg;
   }
 
+  function getLocalURL(baseURL, paramsToPush, data) {
+    if (paramsToPush) {
+      baseURL = baseURL + "?";
+      var vars = {};
+      data.replace(/([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+      });
+      $(paramsToPush.split(",")).each(function(index) {
+        var param = $.trim(this);
+        var value = vars[param] || "";
+        baseURL += (index == 0) ? "" : "&";
+        baseURL += param + "=" + value;
+      });
+    }
+    return baseURL;
+  }
+
   function handleRemoteRequest(elt, type, url, data, success) {
 
     beforeRequest(elt);
@@ -496,12 +513,12 @@ var Intercooler = Intercooler || (function() {
         }
         maybeInvokeLocalAction(elt, "-beforeSend");
       },
-      success: function(data, textStatus, xhr) {
-        triggerEvent(elt, "success.ic", [elt, data, textStatus, xhr, requestId]);
+      success: function(responseData, textStatus, xhr) {
+        triggerEvent(elt, "success.ic", [elt, responseData, textStatus, xhr, requestId]);
         log(elt, "AJAX request " + requestId + " was successful.", "DEBUG");
         var onSuccess = closestAttrValue(elt, 'ic-on-success');
         if (onSuccess) {
-          if (globalEval(onSuccess, [["elt", elt], ["data", data], ["textStatus", textStatus], ["xhr", xhr]]) == false) {
+          if (globalEval(onSuccess, [["elt", elt], ["data", responseData], ["textStatus", textStatus], ["xhr", xhr]]) == false) {
             return;
           }
         }
@@ -516,7 +533,9 @@ var Intercooler = Intercooler || (function() {
             if (xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true") {
               try {
                 requestCleanup(indicator, globalIndicator, elt); // clean up before snap-shotting HTML
-                var newUrl = xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-src');
+                var baseURL = closestAttrValue(elt, 'ic-src');
+                var paramsToPush = closestAttrValue(elt, 'ic-push-params');
+                var newUrl = xhr.getResponseHeader("X-IC-PushURL") || getLocalURL(baseURL, paramsToPush, data);
                 if(_history) {
                   _history.snapshotForHistory(newUrl, oldTitle);
                 } else {
@@ -527,11 +546,11 @@ var Intercooler = Intercooler || (function() {
               }
             }
 
-            success(data, textStatus, elt, xhr);
+            success(responseData, textStatus, elt, xhr);
 
             log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
           }
-          triggerEvent(elt, "after.success.ic", [elt, data, textStatus, xhr, requestId]);
+          triggerEvent(elt, "after.success.ic", [elt, responseData, textStatus, xhr, requestId]);
           maybeInvokeLocalAction(elt, "-success");
         } catch (e) {
           log(elt, "Error processing successful request " + requestId + " : " + formatError(e), "ERROR");
@@ -640,14 +659,14 @@ var Intercooler = Intercooler || (function() {
     return data;
   }
 
-  function appendData(data, string, value) {
+  function appendData(data, key, value) {
     if ($.type(data) === "string") {
       if($.type(value) !== "string") {
         value = JSON.stringify(value);
       }
-      return data + "&" + string + "=" + encodeURIComponent(value);
+      return data + "&" + key + "=" + encodeURIComponent(value);
     } else {
-      data.append(string, value);
+      data.append(key, value);
       return data;
     }
   }
@@ -1065,14 +1084,15 @@ var Intercooler = Intercooler || (function() {
     elt = $(elt);
     if (getICAttribute(elt, 'ic-sse-src')) {
       var evtSrcUrl = getICAttribute(elt, 'ic-sse-src');
-      var eventSource = initEventSource(elt, evtSrcUrl);
+      var evtSrcWithCredentials = getICAttribute(elt, 'ic-sse-with-credentials') === 'true';
+      var eventSource = initEventSource(elt, evtSrcUrl, evtSrcWithCredentials);
       elt.data('ic-event-sse-source', eventSource);
       elt.data('ic-event-sse-map', {});
     }
   }
 
-  function initEventSource(elt, evtSrcUrl) {
-    var eventSource = Intercooler._internal.initEventSource(evtSrcUrl);
+  function initEventSource(elt, evtSrcUrl, evtSrcWithCredentials) {
+    var eventSource = Intercooler._internal.initEventSource(evtSrcUrl, evtSrcWithCredentials);
     eventSource.onmessage = function(e) {
       processICResponse(e.data, elt, false);
     };
@@ -1857,7 +1877,9 @@ var Intercooler = Intercooler || (function() {
         if (historyData) {
           processICResponse(historyData["content"], getTargetForHistory($('body')), true);
           if (historyData["yOffset"]) {
-            window.scrollTo(0, historyData["yOffset"]);
+            setTimeout(function () {
+              window.scrollTo(0, historyData["yOffset"]);
+            }, 100);
           }
           if (historyData["title"]) {
             document.title = historyData["title"];
@@ -2045,10 +2067,11 @@ var Intercooler = Intercooler || (function() {
     _internal: {
       init: init,
       replaceOrAddMethod: replaceOrAddMethod,
-      initEventSource: function(url) {
-        return new EventSource(url);
+      initEventSource: function(url, withCredentials) {
+        return new EventSource(url, {withCredentials: withCredentials});
       },
-      globalEval: globalEval
+      globalEval: globalEval,
+      getLocalURL: getLocalURL
     }
   };
 })();
