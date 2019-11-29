@@ -573,6 +573,27 @@ var Intercooler = Intercooler || (function() {
       ajaxSetup.dataType = null;
       ajaxSetup.processData = false;
       ajaxSetup.contentType = false;
+
+      if (data.append !== undefined) {
+        // remove 'mock' append function
+        delete data["append"];
+
+        // optional, but necessary for my code to work correctly
+        // if more than exact parameters go to flask-jwt, it fails.
+        // hence, I created an optional ic-filter-request-params to filter
+        // just the necessary parameters for the auth to work.
+
+        // NOTE: ic-filter-request-params currently ONLY works for json request parameters
+        var filterRequestParams = closestAttrValue(elt, 'ic-filter-request-params');
+        if (filterRequestParams) {
+          data = processFilterRequestParams(data, filterRequestParams);
+        }
+
+        // json headers
+        ajaxSetup.data = JSON.stringify(data);
+        ajaxSetup.dataType = "json";
+        ajaxSetup.contentType = "application/json";
+      }
     }
 
     triggerEvent($(document), "beforeAjaxSend.ic", [ajaxSetup, elt]);
@@ -582,6 +603,17 @@ var Intercooler = Intercooler || (function() {
     } else {
       $.ajax(ajaxSetup)
     }
+  }
+
+  // I created an optional ic-filter-request-params to filter
+  // just the necessary parameters for the auth to work.
+  function processFilterRequestParams(olddata, str) {
+    var data = {};
+    $.each(str.split(","), function(idx, strkey) {
+      var param = $.trim(strkey);
+      data[param] = olddata[param];
+    });
+    return data;
   }
 
   function findGlobalIndicator(elt) {
@@ -655,6 +687,18 @@ var Intercooler = Intercooler || (function() {
     }
   }
 
+  // converts an array of dictionary values into just 1 dictionary.  
+  // Of course, there is a danger that you could "lose" a key, 
+  // value on a name clash so be careful.
+
+  function combinedicts(arraydict) {
+    var newdict = {};
+    $.each(arraydict, function(idx, aryval) {
+      newdict[aryval.name]= aryval.value;
+    });
+    return newdict;
+  }
+
   function getParametersForElement(verb, elt, triggerOrigin) {
     var target = getTarget(elt);
     var data = null;
@@ -662,6 +706,17 @@ var Intercooler = Intercooler || (function() {
     if (elt.is('form') && elt.attr('enctype') == 'multipart/form-data') {
       data = new FormData(elt[0]);
       data = appendData(data, 'ic-request', true);
+
+    // JSON enctype type: to handle passing parameters in a dictionary
+    // instead of a query string.
+    } else if (elt.is('form') && elt.attr('ic-data-encoding') == 'json') {
+
+      var closestForm = elt.closest('form');
+      data = combinedicts(closestForm.serializeArray());
+      // adding append function, so it just 'works' with 
+      // the rest of the code, later it will be removed
+      data.append = function( x, y ) { this[x] = y; };
+
     } else {
       data = "ic-request=true";
       // if the element is in a form, include the entire form
