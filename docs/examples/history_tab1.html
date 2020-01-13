@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/images/Intercooler_CMYK_noType_ico.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simple AJAX using HTML attributes">
+  <meta name="author" content="Carson Gross">
+
+  <meta property="og:title" content="Simple AJAX using HTML attributes"/>
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://intercoolerjs.org"/>
+  <meta property="og:site_name" content="Intercooler.js"/>
+  <meta property="og:image" content="http://intercoolerjs.org/images/Intercooler_CMYK_noType_ico.png" />
+
+  
+  <title>intercooler.js - Simple AJAX using HTML attributes</title>
+  
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
+    rel="stylesheet" type="text/css">
+  <link href="/css/site.css" rel="stylesheet" type="text/css">
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/release/lib/jquery.mockjax-2.2.1.js"></script>
+  <script>
+    $.mockjaxSettings['responseTime'] = 100;
+    // Taken from https://gist.github.com/kares/956897
+    function parseParams(str) {
+      var re = /([^&=]+)=?([^&]*)/g;
+      var decode = function (str) {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+      };
+      var params = {}, e;
+      if (str) {
+        if (str.substr(0, 1) == '?') {
+          str = str.substr(1);
+        }
+        while (e = re.exec(str)) {
+          var k = decode(e[1]);
+          var v = decode(e[2]);
+          if (params[k] !== undefined) {
+            if (!$.isArray(params[k])) {
+              params[k] = [params[k]];
+            }
+            params[k].push(v);
+          } else {
+            params[k] = v;
+          }
+        }
+      }
+      return params;
+    }
+  </script>
+  <script type="text/javascript" src="/release/intercooler-1.2.3.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">intercooler<span class="intercooler-dot">.</span><span class="intercooler-js">js</span></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class=""><a href="/docs.html">Guide</a></li>
+              <li class="active"><a href="/examples/index.html">Examples</a></li>
+              <li class=""><a href="/reference.html">Reference</a></li>
+              <li class="" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Talk <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="mailto:intercoolerjs@gmail.com?subject=intercooler.js Consulting">Consulting Contact</a></li>
+                  <li><a href="https://gitter.im/intercooler-js/Lobby" target="_blank">Gitter</a></li>
+                  <li><a href="https://groups.google.com/forum/#!forum/intercooler-js" target="_blank">Newsgroup</a></li>
+                  <li><a href="https://github.com/intercoolerjs/intercooler-js/issues" target="_blank">Bugs</a></li>
+                  <li><a href="/blog.html">Blog</a></li>
+                </ul>
+              </li>
+              <li class=""><a href="/download.html">Download</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://github.com/intercoolerjs/intercooler-js"><i class="fa fa-github"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="body-wrapper">
+  <div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>History Support</h1>
+
+      <p>This example demonstrates history support in intercooler.</p>
+
+      <p>As you click between the tabs, the URL and history will be updated correctly, allowing back button
+        support</p>
+
+      <ul>
+        <li>
+          The <code>content</code> div tells Intercooler that it should be snap-shotted for history, rather than the
+          body of the page, by using the
+          <a href="/attributes/ic-history-elt.html"><code>ic-history-elt</code></a>
+          attribute.  The element that is snap-shotted for history should be stable across your entire site
+          so that the UI can be reliably restored.
+        </li>
+        <li>
+          <p>
+            The navigation tabs parent <code>ul</code> targets a div with the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute.  This div encloses both the tabs and content, allowing the server side to render
+          a new tab state as well as the new content.
+          </p>
+
+          <p>
+            The key element on the <code>ul</code> that enables history support is the
+          <a href="/attributes/ic-push-url.html"><code>ic-push-url</code></a>
+          attribute, which tells Intercooler to push the url into the location bar, with a new history entry,
+          when a request is made.
+          </p>
+
+          <p>
+            Finally, because this nav is layered on top of actual pages, we use the
+          <a href="/attributes/ic-select-from-response.html"><code>ic-select-from-response</code></a>
+            attribute on the <code>ul</code> to pick out the content from within the response for the tab UI.
+          </p>
+        </li>
+        <li>
+          Each tab has an
+          <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a>
+          attribute which points to the page for each respective tab.  Because of the behavior inherited from the paren
+          <code>ul</code>, the request will target the content div, will pick out the content tab-specific content from
+          the response and will push a new entry into history.
+        </li>
+        <li>
+          We use some transition CSS to make the inner content (but not the tabs) fade in and out.
+        </li>
+      </ul>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+          <style>
+            #content.ic-transitioning div {
+              transition: all 800ms;
+              opacity: 0;
+            }
+            #content div {
+              transition: all 800ms;
+            }
+          </style>
+
+            <div id="content" ic-history-elt>
+    <ul class="nav nav-tabs" ic-target="#content" ic-push-url="true" ic-select-from-response="#content">
+      <li class="active"><a ic-get-from="/examples/history_tab1.html">Tab1</a></li>
+      <li><a ic-get-from="/examples/history_tab2.html">Tab2</a></li>
+      <li><a ic-get-from="/examples/history_tab3.html">Tab3</a></li>
+    </ul>
+    <div>
+      <h1>Tab 1</h1>
+      <a ic-post-to="/click_me">Click Me!</a>
+    </div>
+  </div>
+
+          <script>
+
+            //========================================================================
+            // Mock Server-Side HTTP End Point
+            //========================================================================
+            $.mockjax({
+              url: "/click_me",
+              response: function (settings) {
+                this.responseText = "You clicked me!";
+              }
+            });
+
+          </script>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>
+
+</div>
+
+<div class="container">
+  <hr>
+  <footer>
+    <p>
+      &copy; <a href="http://intercoolerjs.org">IntercoolerJS.org</a> 2013-2019
+    </p>
+  </footer>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20364649-2', 'intercoolerjs.org');
+  ga('send', 'pageview');
+</script>
+<script>
+  $('pre').addClass('prettyprint');
+</script>
+<script src="/js/google-code-prettify/run_prettify.js?lang=css&skin=desert"></script>
+</body>
+</html>

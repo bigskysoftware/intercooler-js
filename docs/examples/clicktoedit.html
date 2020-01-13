@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/images/Intercooler_CMYK_noType_ico.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simple AJAX using HTML attributes">
+  <meta name="author" content="Carson Gross">
+
+  <meta property="og:title" content="Simple AJAX using HTML attributes"/>
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://intercoolerjs.org"/>
+  <meta property="og:site_name" content="Intercooler.js"/>
+  <meta property="og:image" content="http://intercoolerjs.org/images/Intercooler_CMYK_noType_ico.png" />
+
+  
+  <title>intercooler.js - Simple AJAX using HTML attributes</title>
+  
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
+    rel="stylesheet" type="text/css">
+  <link href="/css/site.css" rel="stylesheet" type="text/css">
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/release/lib/jquery.mockjax-2.2.1.js"></script>
+  <script>
+    $.mockjaxSettings['responseTime'] = 100;
+    // Taken from https://gist.github.com/kares/956897
+    function parseParams(str) {
+      var re = /([^&=]+)=?([^&]*)/g;
+      var decode = function (str) {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+      };
+      var params = {}, e;
+      if (str) {
+        if (str.substr(0, 1) == '?') {
+          str = str.substr(1);
+        }
+        while (e = re.exec(str)) {
+          var k = decode(e[1]);
+          var v = decode(e[2]);
+          if (params[k] !== undefined) {
+            if (!$.isArray(params[k])) {
+              params[k] = [params[k]];
+            }
+            params[k].push(v);
+          } else {
+            params[k] = v;
+          }
+        }
+      }
+      return params;
+    }
+  </script>
+  <script type="text/javascript" src="/release/intercooler-1.2.3.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">intercooler<span class="intercooler-dot">.</span><span class="intercooler-js">js</span></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class=""><a href="/docs.html">Guide</a></li>
+              <li class="active"><a href="/examples/index.html">Examples</a></li>
+              <li class=""><a href="/reference.html">Reference</a></li>
+              <li class="" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Talk <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="mailto:intercoolerjs@gmail.com?subject=intercooler.js Consulting">Consulting Contact</a></li>
+                  <li><a href="https://gitter.im/intercooler-js/Lobby" target="_blank">Gitter</a></li>
+                  <li><a href="https://groups.google.com/forum/#!forum/intercooler-js" target="_blank">Newsgroup</a></li>
+                  <li><a href="https://github.com/intercoolerjs/intercooler-js/issues" target="_blank">Bugs</a></li>
+                  <li><a href="/blog.html">Blog</a></li>
+                </ul>
+              </li>
+              <li class=""><a href="/download.html">Download</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://github.com/intercoolerjs/intercooler-js"><i class="fa fa-github"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="body-wrapper">
+  <div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Implementing A Click To Edit UI</h1>
+
+      <p>This example offers an inline click-to-edit UI for a contact. When you click the button below the current
+        UI will be replaced with an editing UI, without a full browser refresh. You can then update the user information
+        or cancel the edit.</p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation.  Click the "Source Code" tab to see the code.</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          The 'Click To Edit' button uses <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a> to
+          issue a GET to <code>/contact/1/edit</code>, and targets the div surrounding the entire Contact UI using
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+        </li>
+        <li>
+          The server returns a form that replaces the content of the div.  The form uses the
+          <a href="/attributes/ic-put-to"><code>ic-put-to</code></a> to issue a PUT to <code>/contact/1</code> and
+          targets the same enclosing div.
+        </li>
+        <li>
+          The 'Cancel' button uses <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a> to
+          issue a GET to <code>/contact/1</code> and targets the same div.  The server-side handler at <code>/contact/1</code>
+          should use the <code>ic-request</code> or <code>ic-target</code> parameter to differentiate between a full
+          window request and this partial request.</a>
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+  <!--
+  This is the initial UI (which would normally be generated by the userDisplayTemplate below of course)
+  Note that the button targets the outer div which encloses the entire contact UI because that's what we
+  want to replace when the button is clicked.
+  -->
+  <div id="contact-div">
+    <div><strong>First Name</strong>: Joe</div>
+    <div><strong>Last Name</strong>: Smith</div>
+    <div><strong>Email</strong>: joesmith@example.com</div>
+    <button ic-target="#contact-div" ic-get-from="/contact/1/edit" class="btn btn-default">
+      Click To Edit
+    </button>
+  </div>
+
+  <script>
+
+    //========================================================================
+    // Mock Server-Side HTTP End Points
+    //========================================================================
+    $.mockjax({
+      url: "/contact/1/edit",
+      response: function (settings) {
+        var mockUser = dataStore.findUser("1");
+        this.responseText = userFormTemplate(mockUser);
+      }
+    });
+
+    $.mockjax({
+      url: "/contact/1",
+      response: function (settings) {
+        var mockUser = dataStore.findUser("1");
+        var params = parseParams(settings.data);
+        if (params['_method']== 'PUT') {
+          mockUser.firstName = params['firstName'];
+          mockUser.lastName = params['lastName'];
+          mockUser.email = params['email'];
+        }
+        this.responseText = userDisplayTemplate(mockUser);
+      }
+    });
+
+    //========================================================================
+    // Mock Server-Side Templates
+    //========================================================================
+    function userFormTemplate(mockUser) {
+      // Pretty simple bootstrap form, but note that the form uses an ic-put-to and the cancel button uses
+      // an ic-get-from rather than the usual HTML attributes
+      return '\
+<form ic-put-to="/contact/1" ic-target="#contact-div"> \
+  <div class="form-group"> \
+    <label>First Name</label> \
+    <input type="text" class="form-control" name="firstName" value="' + mockUser.firstName + '"> \
+  </div> \
+  <div class="form-group"> \
+    <label>Last Name</label> \
+    <input type="text" class="form-control" name="lastName" value="' + mockUser.lastName + '"> \
+  </div> \
+  <div class="form-group"> \
+    <label>Email address</label> \
+    <input type="email" class="form-control" name="email" value="' + mockUser.email + '"> \
+  </div> \
+  <button class="btn btn-default">Submit</button> \
+  <button ic-get-from="/contact/1" ic-target="#contact-div" class="btn btn-danger">Cancel</button> \
+</form>';
+    }
+
+    function userDisplayTemplate(mockUser) {
+      return '\
+<div><strong>First Name</strong>: ' + mockUser.firstName + '</div> \
+<div><strong>Last Name</strong>: ' + mockUser.lastName + '</div> \
+<div><strong>Email</strong>: ' + mockUser.email + '</div> \
+<button ic-target="#contact-div" ic-get-from="/contact/1/edit" class="btn btn-default"> \
+  Click To Edit \
+</button>';
+    }
+
+    //========================================================================
+    // Mock Data Store
+    //========================================================================
+    var dataStore = (function() {
+      var mockUser = {
+        "firstName": "Joe",
+        "lastName": "Smith",
+        "email": "joesmith@example.com"
+      };
+      return {
+        findUser : function(id) {
+          return mockUser
+        }
+      }
+    })()
+
+  </script>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>
+
+</div>
+
+<div class="container">
+  <hr>
+  <footer>
+    <p>
+      &copy; <a href="http://intercoolerjs.org">IntercoolerJS.org</a> 2013-2019
+    </p>
+  </footer>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20364649-2', 'intercoolerjs.org');
+  ga('send', 'pageview');
+</script>
+<script>
+  $('pre').addClass('prettyprint');
+</script>
+<script src="/js/google-code-prettify/run_prettify.js?lang=css&skin=desert"></script>
+</body>
+</html>

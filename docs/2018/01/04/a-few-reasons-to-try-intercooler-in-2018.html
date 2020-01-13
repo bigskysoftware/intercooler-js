@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/images/Intercooler_CMYK_noType_ico.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simple AJAX using HTML attributes">
+  <meta name="author" content="Carson Gross">
+
+  <meta property="og:title" content="Simple AJAX using HTML attributes"/>
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://intercoolerjs.org"/>
+  <meta property="og:site_name" content="Intercooler.js"/>
+  <meta property="og:image" content="http://intercoolerjs.org/images/Intercooler_CMYK_noType_ico.png" />
+
+  
+  <title>A Few Reasons To Try Intercooler In 2018</title>
+  
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
+    rel="stylesheet" type="text/css">
+  <link href="/css/site.css" rel="stylesheet" type="text/css">
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/release/lib/jquery.mockjax-2.2.1.js"></script>
+  <script>
+    $.mockjaxSettings['responseTime'] = 100;
+    // Taken from https://gist.github.com/kares/956897
+    function parseParams(str) {
+      var re = /([^&=]+)=?([^&]*)/g;
+      var decode = function (str) {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+      };
+      var params = {}, e;
+      if (str) {
+        if (str.substr(0, 1) == '?') {
+          str = str.substr(1);
+        }
+        while (e = re.exec(str)) {
+          var k = decode(e[1]);
+          var v = decode(e[2]);
+          if (params[k] !== undefined) {
+            if (!$.isArray(params[k])) {
+              params[k] = [params[k]];
+            }
+            params[k].push(v);
+          } else {
+            params[k] = v;
+          }
+        }
+      }
+      return params;
+    }
+  </script>
+  <script type="text/javascript" src="/release/intercooler-1.2.3.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">intercooler<span class="intercooler-dot">.</span><span class="intercooler-js">js</span></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class=""><a href="/docs.html">Guide</a></li>
+              <li class=""><a href="/examples/index.html">Examples</a></li>
+              <li class=""><a href="/reference.html">Reference</a></li>
+              <li class="active" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Talk <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="mailto:intercoolerjs@gmail.com?subject=intercooler.js Consulting">Consulting Contact</a></li>
+                  <li><a href="https://gitter.im/intercooler-js/Lobby" target="_blank">Gitter</a></li>
+                  <li><a href="https://groups.google.com/forum/#!forum/intercooler-js" target="_blank">Newsgroup</a></li>
+                  <li><a href="https://github.com/intercoolerjs/intercooler-js/issues" target="_blank">Bugs</a></li>
+                  <li><a href="/blog.html">Blog</a></li>
+                </ul>
+              </li>
+              <li class=""><a href="/download.html">Download</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://github.com/intercoolerjs/intercooler-js"><i class="fa fa-github"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="body-wrapper">
+  <div class="container">
+
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+
+      <h1 class="blog-title">A Few Reasons To Try Intercooler In 2018<br/> <small>4 January 2018</small></h1>
+
+      <hr/>
+
+      <section class="blog-section">
+        <p>About a year ago, intercooler.js <a href="https://news.ycombinator.com/item?id=12885980">made it to the top of HN</a>.  I had been 
+shilling intercooler pretty hard on HN for over a year and was very relieved to stop when this happened. I don’t enjoy doing
+PR work &amp; annoying people: I’d rather be writing code.</p>
+
+<p>Unfortunately a bit of PR is necessary for any project, especially one that isn’t backed by a big tech company, so I’ve put together
+a list of reasons you might consider intercooler for a project in 2018.</p>
+
+<p>If you find intercooler interesting, please 
+consider sharing this post with your friends and, if you haven’t <a href="https://github.com/intercoolerjs/intercooler-js">giving it a star on Github</a>.</p>
+
+<p>Thank you!</p>
+
+<h3 id="introduction">Introduction</h3>
+
+<p>Intercooler is basically HTML++: it lets you add AJAX to a web page using only HTML attributes.  It generalizes
+the anchor/form mechanism in HTML for triggering HTTP requests, allowing any element and/or event to cause a request and
+replace (target) any part of the page.</p>
+
+<p>The <a href="http://intercoolerjs.org/docs.html">docs</a> and 
+<a href="http://intercoolerjs.org/examples/index.html">examples</a> are quick reads and give you a good idea how the library works.</p>
+
+<p>There is a good theoretical basis for using intercooler: because network communication is HTML, a hypertext, it
+naturally satisfies REST/HATEOAS.  I think intercooler is one of the best ways to implement a REST-ful web application
+available, if you are interested in that type of architecture.  You can read a more on this in the
+<a href="http://intercoolerjs.org/2016/01/18/rescuing-rest.html">‘Rescuing REST’</a> and 
+<a href="http://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html">‘HATEOAS is for Humans’</a>
+blog posts.</p>
+
+<h3 id="a-few-reasons-to-try-intercooler">A Few Reasons To Try Intercooler</h3>
+
+<p>With that introduction out of the way, here are a few reasons you might consider using intercooler for a project (or
+part of a project) this year:</p>
+
+<ul>
+  <li>
+    <p><strong>Intercooler is incremental</strong> - It would be difficult for getting started with intercooler to be simpler; a single 
+HTML attribute is enough to add AJAX functionality to a web application:</p>
+
+    <p><code class="highlighter-rouge">&lt;a ic-post-to="/click"&gt; Click Me! &lt;/a&gt;</code></p>
+
+    <p>This means you can add it to an existing web application with very little commitment, adding as much or little AJAX
+as you like at the pace you are comfortable with, and in the places that add the most value.</p>
+  </li>
+  <li>
+    <p><strong>Intercooler scales well</strong> - Because browsers are fast at swapping HTML into the DOM, and because intercooler is
+symmetric with the way traditional web applications worked, properly built intercooler-based applications can take
+advantage of many of the tools used to scale traditional web applications (e.g. HTTP caching headers).</p>
+  </li>
+  <li>
+    <p><strong>Intercooler is language agnostic</strong> - Since it is based on HTML, intercooler doesn’t put pressure on you to use any 
+particular back end language.  You can use whatever language and stack you are comfortable with that best addresses
+the problem you are working on.</p>
+  </li>
+  <li>
+    <p><strong>Intercooler trivially satisfies REST</strong> - Again, since intercooler uses HTML, your web applications naturally satisfy
+the <a href="https://en.wikipedia.org/wiki/Representational_state_transfer">REST-ful architectural constraints</a> (Particularly 
+<a href="https://en.wikipedia.org/wiki/HATEOAS">HATEOAS</a>) without you really needing to think about it.  REST is the unique, 
+native architecture of the web, and many of its advantages are being lost as people adopt client/server models.</p>
+  </li>
+  <li>
+    <p><strong>Intercooler makes it easy to show request indicators</strong> - It can be very frustrating working with many modern web 
+applications because they don’t make it clear when a request is in flight.  Intercooler has simple support for 
+<a href="http://intercoolerjs.org/docs.html#progress">progress indicators</a> and also makes it easy to take advantage of CCS
+transitions during <a href="/docs.html#transitions">requests</a> or based on <a href="/docs.html#client-side">timing</a>.</p>
+  </li>
+  <li>
+    <p><strong>Intercooler makes it easy to implement history</strong> - Adding history and back-button support can be done by 
+ <a href="/docs.html#history">adding two attributes to your application</a>, giving you nice, copy-and-paste-able semantic 
+ URLs in your AJAX-based application. Because intercooler applications are stateless on the client side 
+ (for the most part) a user can refresh a page and not lose everything, just like the old days.  :)</p>
+  </li>
+</ul>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>I hope you find some of these reasons to look at intercooler compelling and decide to give it a try in 2018.  It obviously
+goes against the grain of a lot of web development being done today and it certainly isn’t right for every project, but 
+I think there are some real advantages to its approach for many web applications.</p>
+
+<p>Again, if you like what you see, please consider sharing this article with your friends to help me get the word out.</p>
+
+<p>Thank you and good luck in 2018!</p>
+
+<hr/>
+<section>
+  <h3><em><i class="fa fa-bullhorn"></i> | The Comments Section |</em></h3>
+  <div id="disqus_thread"></div>
+</section>
+<script>
+  /**
+   * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+   * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+   */
+  /*
+   var disqus_config = function () {
+   this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+   this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+   };
+   */
+  (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+
+    s.src = '//intercoolerjs.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+      </section>
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+</div>
+</div>
+
+<div class="container">
+  <hr>
+  <footer>
+    <p>
+      &copy; <a href="http://intercoolerjs.org">IntercoolerJS.org</a> 2013-2019
+    </p>
+  </footer>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20364649-2', 'intercoolerjs.org');
+  ga('send', 'pageview');
+</script>
+<script>
+  $('pre').addClass('prettyprint');
+</script>
+<script src="/js/google-code-prettify/run_prettify.js?lang=css&skin=desert"></script>
+</body>
+</html>

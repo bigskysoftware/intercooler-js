@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/images/Intercooler_CMYK_noType_ico.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simple AJAX using HTML attributes">
+  <meta name="author" content="Carson Gross">
+
+  <meta property="og:title" content="Simple AJAX using HTML attributes"/>
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://intercoolerjs.org"/>
+  <meta property="og:site_name" content="Intercooler.js"/>
+  <meta property="og:image" content="http://intercoolerjs.org/images/Intercooler_CMYK_noType_ico.png" />
+
+  
+  <title>intercooler.js - Simple AJAX using HTML attributes</title>
+  
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
+    rel="stylesheet" type="text/css">
+  <link href="/css/site.css" rel="stylesheet" type="text/css">
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/release/lib/jquery.mockjax-2.2.1.js"></script>
+  <script>
+    $.mockjaxSettings['responseTime'] = 100;
+    // Taken from https://gist.github.com/kares/956897
+    function parseParams(str) {
+      var re = /([^&=]+)=?([^&]*)/g;
+      var decode = function (str) {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+      };
+      var params = {}, e;
+      if (str) {
+        if (str.substr(0, 1) == '?') {
+          str = str.substr(1);
+        }
+        while (e = re.exec(str)) {
+          var k = decode(e[1]);
+          var v = decode(e[2]);
+          if (params[k] !== undefined) {
+            if (!$.isArray(params[k])) {
+              params[k] = [params[k]];
+            }
+            params[k].push(v);
+          } else {
+            params[k] = v;
+          }
+        }
+      }
+      return params;
+    }
+  </script>
+  <script type="text/javascript" src="/release/intercooler-1.2.3.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">intercooler<span class="intercooler-dot">.</span><span class="intercooler-js">js</span></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class=""><a href="/docs.html">Guide</a></li>
+              <li class=""><a href="/examples/index.html">Examples</a></li>
+              <li class=""><a href="/reference.html">Reference</a></li>
+              <li class="active" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Talk <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="mailto:intercoolerjs@gmail.com?subject=intercooler.js Consulting">Consulting Contact</a></li>
+                  <li><a href="https://gitter.im/intercooler-js/Lobby" target="_blank">Gitter</a></li>
+                  <li><a href="https://groups.google.com/forum/#!forum/intercooler-js" target="_blank">Newsgroup</a></li>
+                  <li><a href="https://github.com/intercoolerjs/intercooler-js/issues" target="_blank">Bugs</a></li>
+                  <li><a href="/blog.html">Blog</a></li>
+                </ul>
+              </li>
+              <li class=""><a href="/download.html">Download</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://github.com/intercoolerjs/intercooler-js"><i class="fa fa-github"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="body-wrapper">
+  <div class="container">
+
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+
+      <h1>I Regret Nothing. <em>Nothing.</em><br/>
+        <small><em>The Intercooler Blog</em></small>
+      </h1>
+      <hr/>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+
+
+      <ul class="list-unstyled">
+        
+        <li class="blog-summary">
+          <a href="/2019/11/01/intercooler-1.2.3-released.html">
+            <div>Intercooler 1.2.3 Released</div>
+            <em>Posted 1 November 2019</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2019/03/29/intercooler-1.2.2-released.html">
+            <div>Intercooler 1.2.2 Released</div>
+            <em>Posted 29 March 2019</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2018/01/04/a-few-reasons-to-try-intercooler-in-2018.html">
+            <div>A Few Reasons To Try Intercooler In 2018</div>
+            <em>Posted 4 January 2018</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2017/12/15/intercooler-1.2.1-released.html">
+            <div>Intercooler 1.2.1 Released</div>
+            <em>Posted 15 December 2017</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2017/10/27/intercooler-1.2.0-released.html">
+            <div>Intercooler 1.2.0 Released</div>
+            <em>Posted 27 October 2017</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2017/06/22/five-reasons-to-consider-the-server-side.html">
+            <div>Five Reasons To Consider The Server Side</div>
+            <em>Posted 22 June 2017</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2017/02/17/intercooler-1.1.0-released.html">
+            <div>Intercooler 1.1.0 Released</div>
+            <em>Posted 17 February 2017</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2017/01/16/stupid-client-side-tricks.html">
+            <div>Stupid Client Side Tricks</div>
+            <em>Posted 16 January 2017</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/11/28/server-sent-events.html">
+            <div>Server Sent Events</div>
+            <em>Posted 28 November 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/11/22/intercooler-1.0.3-released.html">
+            <div>Intercooler 1.0.3 Released</div>
+            <em>Posted 22 November 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/10/14/full-stack-the-easy-way.html">
+            <div>Full Stack The Easy Way</div>
+            <em>Posted 14 October 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/10/05/how-it-feels-to-learn-intercooler-in-2016.html">
+            <div>How It Feels To Learn Intercooler In 2016</div>
+            <em>Posted 5 October 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/09/30/intercooler-1.0.1-released.html">
+            <div>Intercooler 1.0.1 Released</div>
+            <em>Posted 30 September 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/09/26/intercooler-official-soundtrack.html">
+            <div>Intercooler Official Soundtrack</div>
+            <em>Posted 26 September 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/09/12/intercooler-1.0.0-released.html">
+            <div>Intercooler 1.0.0 Released</div>
+            <em>Posted 12 September 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/06/24/intercooler-0.9.7-released.html">
+            <div>Intercooler 0.9.7 Released</div>
+            <em>Posted 24 June 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/05/25/twelve-html-attributes-explained.html">
+            <div>Twelve, er, Ten, er, Eight HTML Attributes Explained...</div>
+            <em>Posted 25 May 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/05/24/twelve-html-attributes.html">
+            <div>Twelve HTML Attributes</div>
+            <em>Posted 24 May 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/05/19/back-to-the-future.html">
+            <div>Back to the future</div>
+            <em>Posted 19 May 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/05/08/hatoeas-is-for-humans.html">
+            <div>HATEOAS is for Humans</div>
+            <em>Posted 8 May 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/04/22/intercooler-0.9.6-released.html">
+            <div>Intercooler 0.9.6 Released</div>
+            <em>Posted 22 April 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/04/08/intercooler-0.9.5-released.html">
+            <div>Intercooler 0.9.5 Released</div>
+            <em>Posted 8 April 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/03/15/hypertext-hypotext.html">
+            <div>On Hypertext and Hypotext</div>
+            <em>Posted 15 March 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/02/17/api-churn-vs-security.html">
+            <div>The API Churn/Security Trade-off</div>
+            <em>Posted 17 February 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/01/29/intercooler-0.9.4-released.html">
+            <div>Intercooler 0.9.4 Released</div>
+            <em>Posted 29 January 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/01/18/rescuing-rest.html">
+            <div>Rescuing REST From the API Winter</div>
+            <em>Posted 18 January 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/01/15/intercooler-0.9.3-released.html">
+            <div>Intercooler 0.9.3 Released</div>
+            <em>Posted 15 January 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/01/01/n-reasons-to-try-intercooler-this-year.html">
+            <div>N Reasons To Try Intercooler This Year</div>
+            <em>Posted 1 January 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2016/01/01/intercooler-0.9.2-released.html">
+            <div>Intercooler 0.9.2 Released</div>
+            <em>Posted 1 January 2016</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2015/12/28/intercooler-0.9.1-released.html">
+            <div>Intercooler 0.9.1 Released</div>
+            <em>Posted 28 December 2015</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2015/05/16/there-is-no-need-to-be-complex.html">
+            <div>There Is No Need To Be Complex</div>
+            <em>Posted 16 May 2015</em></a>
+        </li>
+        
+        <li class="blog-summary">
+          <a href="/2015/01/27/angular-intercooler-comparison.html">
+            <div>Angular Intercooler Comparison</div>
+            <em>Posted 27 January 2015</em></a>
+        </li>
+        
+      </ul>
+
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+</div>
+</div>
+
+<div class="container">
+  <hr>
+  <footer>
+    <p>
+      &copy; <a href="http://intercoolerjs.org">IntercoolerJS.org</a> 2013-2019
+    </p>
+  </footer>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20364649-2', 'intercoolerjs.org');
+  ga('send', 'pageview');
+</script>
+<script>
+  $('pre').addClass('prettyprint');
+</script>
+<script src="/js/google-code-prettify/run_prettify.js?lang=css&skin=desert"></script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/images/Intercooler_CMYK_noType_ico.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simple AJAX using HTML attributes">
+  <meta name="author" content="Carson Gross">
+
+  <meta property="og:title" content="Simple AJAX using HTML attributes"/>
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://intercoolerjs.org"/>
+  <meta property="og:site_name" content="Intercooler.js"/>
+  <meta property="og:image" content="http://intercoolerjs.org/images/Intercooler_CMYK_noType_ico.png" />
+
+  
+  <title>The API Churn/Security Trade-off</title>
+  
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
+    rel="stylesheet" type="text/css">
+  <link href="/css/site.css" rel="stylesheet" type="text/css">
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/release/lib/jquery.mockjax-2.2.1.js"></script>
+  <script>
+    $.mockjaxSettings['responseTime'] = 100;
+    // Taken from https://gist.github.com/kares/956897
+    function parseParams(str) {
+      var re = /([^&=]+)=?([^&]*)/g;
+      var decode = function (str) {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+      };
+      var params = {}, e;
+      if (str) {
+        if (str.substr(0, 1) == '?') {
+          str = str.substr(1);
+        }
+        while (e = re.exec(str)) {
+          var k = decode(e[1]);
+          var v = decode(e[2]);
+          if (params[k] !== undefined) {
+            if (!$.isArray(params[k])) {
+              params[k] = [params[k]];
+            }
+            params[k].push(v);
+          } else {
+            params[k] = v;
+          }
+        }
+      }
+      return params;
+    }
+  </script>
+  <script type="text/javascript" src="/release/intercooler-1.2.3.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">intercooler<span class="intercooler-dot">.</span><span class="intercooler-js">js</span></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class=""><a href="/docs.html">Guide</a></li>
+              <li class=""><a href="/examples/index.html">Examples</a></li>
+              <li class=""><a href="/reference.html">Reference</a></li>
+              <li class="active" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Talk <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="mailto:intercoolerjs@gmail.com?subject=intercooler.js Consulting">Consulting Contact</a></li>
+                  <li><a href="https://gitter.im/intercooler-js/Lobby" target="_blank">Gitter</a></li>
+                  <li><a href="https://groups.google.com/forum/#!forum/intercooler-js" target="_blank">Newsgroup</a></li>
+                  <li><a href="https://github.com/intercoolerjs/intercooler-js/issues" target="_blank">Bugs</a></li>
+                  <li><a href="/blog.html">Blog</a></li>
+                </ul>
+              </li>
+              <li class=""><a href="/download.html">Download</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://github.com/intercoolerjs/intercooler-js"><i class="fa fa-github"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="body-wrapper">
+  <div class="container">
+
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+
+      <h1 class="blog-title">The API Churn/Security Trade-off<br/> <small>17 February 2016</small></h1>
+
+      <hr/>
+
+      <section class="blog-section">
+        <p><strong><em>TLDR</em></strong>: Heavy client-side logic requires a trade off between API churn or an increasingly complex security
+model</p>
+
+<h2 id="the-problem">The Problem</h2>
+
+<p>A recent article by Jean-Jacques Dubray, <a href="http://www.infoq.com/articles/no-more-mvc-frameworks">Why I No Longer Use MVC Frameworks</a>
+sparked a <a href="https://news.ycombinator.com/item?id=11104356">long and interesting discussion</a> on HackerNews which crystallized
+a fundamental problem I see with the current trend towards heavy client-side logic in web applications.</p>
+
+<p>Here is the start from that article, where Jean-Jacques lays out the problem:</p>
+
+<blockquote>
+  <p>The worst part of my job these days is designing APIs for front-end developers. The conversation goes inevitably as:<br /><br /></p>
+
+  <p><strong>Dev</strong> – “So, this screen has data element x,y,z… could you please create an API with the response format {x: , y:, z: }”<br /><br /></p>
+
+  <p><strong>Me</strong> – “Ok”<br /><br /></p>
+
+  <p>I don’t even argue anymore. Projects end up with a gazillion APIs tied to screens that change often, which, by “design” 
+ require changes in the API and before you know it, you end up with lots of APIs and for each API many form factors and 
+ platform variants.</p>
+</blockquote>
+
+<p>To summarize: if you are designing network API end points for a front end, you will end up tweaking and modifying the API
+to support your UI needs in an ad hoc and often chaotic manner.  By letting something that, by its nature, is constantly
+in flux and “fiddly” (that is, the UI) determine the shape of your API, you end up thrashing it around, trying to keep up.</p>
+
+<p>For the remainder of this article, I will refer to this problem as API churn.</p>
+
+<h2 id="the-solution">The Solution</h2>
+
+<p>The solution to the problem of API churn, if you are committed to the client side, is to increase the expressiveness of
+the API available on the client side.  OK, so what does that mean?</p>
+
+<p>That means that you must begin surfacing more and more generalized data access and mutation functionality on the client
+side.  You see this with general query languages such at <a href="http://graphql.org/">GraphQL</a> replacing multiple REST-ish and 
+ad hoc API end points with fewer, but more expressive end points.  This can be thought of as a move towards something
+like SQL (or whatever your data store’s natural query/mutation language is) on the client side.</p>
+
+<p>By increasing the expressive power of endpoints, you, the API designer, no longer need to worry about getting an 
+API just right.  Rather, the front end developer has control over how and what is returned, or what is modified, and your
+API stays stable as the UI needs change.</p>
+
+<p>Sounds great, right?  Right.</p>
+
+<p>But wait a second…</p>
+
+<h2 id="the-problem-with-the-solution">The Problem with the Solution</h2>
+
+<p>The problem with these increasingly expressive end points is that you are putting them not just in the hands of your
+front end developers, but also in the hands of potentially hostile users.  The browser is about the least secure computing 
+environment I can imagine, and anything your front end developer can do, that hostile user can do as well.</p>
+
+<p>Consider the following simple GraphQL query:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  employee(id: 3500401) {
+    id,
+    name
+  }
+}
+</code></pre></div></div>
+
+<p>Perfectly reasonable for any user to issue this query to see the name of a given employee, and your UI developer might
+write exactly this code.</p>
+
+<p>But, what you have given to your developer, you have also given to your users.  So, what if a hostile user figures out the
+API (inspecting HTTP requests isn’t rocket science after all) and modifies the query to be:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  employee(id: 3500401) {
+    id,
+    name,
+    salary
+  }
+}
+</code></pre></div></div>
+
+<p>Ooops.  You had better darn well not show that information to them!</p>
+
+<p>Now, in this case, the only solution is context-sensitive <em>field level</em> security.  When processing a query, you have to 
+know who is asking, and what, exactly, they are asking for, and you have to maintain that security info per field in your 
+domain model.</p>
+
+<p>That, my friends, is complicated.</p>
+
+<p>When I brought the security issue in the comments, <a href="https://twitter.com/floydophone">Peter Hunt</a> had this to say:</p>
+
+<blockquote>
+  <p>It doesn’t belong in the spec, it belongs in the implementation. But yes, the reference implementation (graphql-js) 
+should probably be updated to demonstrate access control.</p>
+</blockquote>
+
+<p>I literally laughed out loud when I read this: this is a major, MAJOR issue, and anyone who considers increasing
+client-side expressiveness as The Answer™ to the API Churn problem needs to have a very good answer for it!</p>
+
+<h2 id="trust">Trust</h2>
+
+<p>The core problem, again, is that in putting more expressive tools in the hands of your client-side UI developers, you 
+are also inadvertently letting them slip into the hands of adversarial users.  There is a fundamental tension, therefore,
+between how much you can give your developers and how much of a security headache this power will turn out to be.</p>
+
+<p>In an ideal world you would give your UI developers everything they could possibly need to build their UI efficiently:
+an open and expressive query layer that would let them tune the structure and return data of a query just so for those
+hot, complicated queries that always end up dominating system performance.</p>
+
+<p>But what if I told you that a place exists where you <em>can</em> do this?</p>
+
+<p>Such a place does exist.</p>
+
+<p>This place is called… <em>the server side</em>.</p>
+
+<p>You see, on the server side, <em>code is trusted</em>.  You can give your developers a completely open and flexible data access and
+update API, because you (to a first order approximation) trust them.  Giving them the power of, say, a Structured 
+Query Language, is perfectly acceptable and, in fact, not even controversial, because you aren’t <em>also</em> giving that
+power to the end user.</p>
+
+<h2 id="the-solution-to-the-problem-with-the-solution">The Solution to the Problem with the Solution</h2>
+
+<p>So, if you want to avoid this API Churn vs. Security complexity trade off entirely, there is a great way to do it: move
+things back to the server side.  One way to do that without sacrificing modern web usability, of course, is to use 
+<a href="http://intercoolerjs.org">intercooler.js</a> and do your HTML rendering and domain logic execution on the server, in a 
+trusted environment.</p>
+
+<p>You will also get a lot of other benefits from this approach: <a href="http://intercoolerjs.org/2016/01/18/rescuing-rest.html">HATEOS without tears</a>, 
+a programming model that you likely already have close to a decade of experience
+with, <a href="http://intercoolerjs.org/2016/01/01/n-reasons-to-try-intercooler-this-year.html">and so on</a>.  Perhaps most 
+importantly: it is simple and, since it is simple, you are much more likely to get the hard things, like security, correct.</p>
+
+<p>But even if you aren’t buying what I’m selling (for free, because I love you), fine: you still should realize that you 
+are going to need to think very hard every time you increase the expressiveness you make available to your client-side
+developers.  Someone who <em>doesn’t</em> love you is getting that functionality too.</p>
+
+<p>Forewarned is forearmed.</p>
+
+<hr/>
+<section>
+  <h3><em><i class="fa fa-bullhorn"></i> | The Comments Section |</em></h3>
+  <div id="disqus_thread"></div>
+</section>
+<script>
+  /**
+   * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+   * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+   */
+  /*
+   var disqus_config = function () {
+   this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+   this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+   };
+   */
+  (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+
+    s.src = '//intercoolerjs.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+      </section>
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+</div>
+</div>
+
+<div class="container">
+  <hr>
+  <footer>
+    <p>
+      &copy; <a href="http://intercoolerjs.org">IntercoolerJS.org</a> 2013-2019
+    </p>
+  </footer>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20364649-2', 'intercoolerjs.org');
+  ga('send', 'pageview');
+</script>
+<script>
+  $('pre').addClass('prettyprint');
+</script>
+<script src="/js/google-code-prettify/run_prettify.js?lang=css&skin=desert"></script>
+</body>
+</html>

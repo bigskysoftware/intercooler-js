@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/images/Intercooler_CMYK_noType_ico.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simple AJAX using HTML attributes">
+  <meta name="author" content="Carson Gross">
+
+  <meta property="og:title" content="Simple AJAX using HTML attributes"/>
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://intercoolerjs.org"/>
+  <meta property="og:site_name" content="Intercooler.js"/>
+  <meta property="og:image" content="http://intercoolerjs.org/images/Intercooler_CMYK_noType_ico.png" />
+
+  
+  <title>Five Reasons To Consider The Server Side</title>
+  
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
+    rel="stylesheet" type="text/css">
+  <link href="/css/site.css" rel="stylesheet" type="text/css">
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/release/lib/jquery.mockjax-2.2.1.js"></script>
+  <script>
+    $.mockjaxSettings['responseTime'] = 100;
+    // Taken from https://gist.github.com/kares/956897
+    function parseParams(str) {
+      var re = /([^&=]+)=?([^&]*)/g;
+      var decode = function (str) {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+      };
+      var params = {}, e;
+      if (str) {
+        if (str.substr(0, 1) == '?') {
+          str = str.substr(1);
+        }
+        while (e = re.exec(str)) {
+          var k = decode(e[1]);
+          var v = decode(e[2]);
+          if (params[k] !== undefined) {
+            if (!$.isArray(params[k])) {
+              params[k] = [params[k]];
+            }
+            params[k].push(v);
+          } else {
+            params[k] = v;
+          }
+        }
+      }
+      return params;
+    }
+  </script>
+  <script type="text/javascript" src="/release/intercooler-1.2.3.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">intercooler<span class="intercooler-dot">.</span><span class="intercooler-js">js</span></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class=""><a href="/docs.html">Guide</a></li>
+              <li class=""><a href="/examples/index.html">Examples</a></li>
+              <li class=""><a href="/reference.html">Reference</a></li>
+              <li class="active" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Talk <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="mailto:intercoolerjs@gmail.com?subject=intercooler.js Consulting">Consulting Contact</a></li>
+                  <li><a href="https://gitter.im/intercooler-js/Lobby" target="_blank">Gitter</a></li>
+                  <li><a href="https://groups.google.com/forum/#!forum/intercooler-js" target="_blank">Newsgroup</a></li>
+                  <li><a href="https://github.com/intercoolerjs/intercooler-js/issues" target="_blank">Bugs</a></li>
+                  <li><a href="/blog.html">Blog</a></li>
+                </ul>
+              </li>
+              <li class=""><a href="/download.html">Download</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://github.com/intercoolerjs/intercooler-js"><i class="fa fa-github"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="body-wrapper">
+  <div class="container">
+
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+
+      <h1 class="blog-title">Five Reasons To Consider The Server Side<br/> <small>22 June 2017</small></h1>
+
+      <hr/>
+
+      <section class="blog-section">
+        <p>For the last decade web development has been moving away from the original server-side model to a client-side programming
+ model, driven by the adoption of javascript and, in the last few years, the explosion of front-end SPA and component 
+ frameworks.  Most new web projects starting today are going to at least entertain the idea of using client-side rendering
+ coupled with some sort of JSON API.</p>
+
+<p>In this article I’d like to give you a few reasons to consider sticking with a server-side architecture.  As with all
+technical decisions there are a near infinite number of things to consider and each application is different, but I think that
+these areas in particular are worth considering, even if you decide not to go with a server side approach.</p>
+
+<h3 id="1---simplicity">#1 - Simplicity</h3>
+
+<p>The first thing that can be said about the server-side approach is that it is simple: there are well known, tried and
+true approaches to most problems you face, and there weren’t a huge number of abstractions to deal with.</p>
+
+<p>One of my favorite intercooler memes captures this:</p>
+
+<p><br /></p>
+
+<p><img src="http://intercoolerjs.org/images/back_to_the_future.png" style="margin-left:-140px !important;" /></p>
+
+<p><br /></p>
+
+<p>This exaggerates the situation for humorous effect, of course, but the point remains: the older server-side model was
+simpler to deal with.  It fell down from a UX perspective, but luckily we have intercooler now to fix that.</p>
+
+<p>As you try to preserve the complexity budget of your application, this is an often overlooked area to simplify.  Intercooler,
+in particular, is designed to be incremental so you can apply as little as is necessary to achieve the UX you want, and only
+in the high value areas of your application.</p>
+
+<h3 id="2--language-agnosticism">#2 -Language Agnosticism</h3>
+
+<p>The browser is making progress towards multi-language support with things like WebAssembly, but the front end is 
+Javascript-oriented and will be for the foreseeable future.  I’m not going to argue over the merits or demerits of
+Javascript, but I will simply observe there are quite a few people who prefer other languages.</p>
+
+<p>Fortunately, on the server side, you can use whatever language (and tool set) that you are most comfortable with.  By
+using HTTP/HTML as your client/server communication medium, you are free to choose the best tool for your application
+domain, rather than being forced into either a multi-language project or a language that isn’t the best tool for your
+particular problem.</p>
+
+<h3 id="3--security">#3 -Security</h3>
+
+<p>This has been a tricky one for me to communicate well, but there are security considerations when you adopt a client-side 
+programming model that many people seem to overlook.  I will focus on two issues in particular:</p>
+
+<p><strong>You cannot trust any computations done on the client</strong></p>
+
+<p>The client side is an <strong>untrusted computing environment</strong> which is to say that you cannot trust any calculations that
+come from it.  A hostile user can inspect your code and data structures and manipulate them in whatever manner they wish
+simply by firing up a console.  This means that sensitive calculations done on the client side <em>must be redone on the server
+side</em> to verify the results.  Data-level security constraints can help here to some extent, but complex calculations often 
+do not lend themselves to these sorts of constraints.</p>
+
+<p>If you keep all calculations server side, in a trusted computing environment, you do not have this concern.</p>
+
+<p><strong>Increasing data API expressiveness introduces new security concerns</strong></p>
+
+<p>As I discuss in the <a href="http://intercoolerjs.org/2016/02/17/api-churn-vs-security.html">API Churn/Security Trade-off</a> post,
+there are security concerns that become more and more elaborate as you increase the expressiveness of your data API.
+Again, the problem is that the client is an untrusted computing environment and, therefore, any tools you give to your
+front-end developers you are also giving to potentially hostile users.</p>
+
+<p>This is not a concern on the server side, where the typical situation is a completely open and expressive data API (e.g. SQL
+or a data store’s native client.)  Giving a tool to your server-side developers does not have the same security ramifications
+that giving it to your client-side developers does.</p>
+
+<h3 id="4---decouple-your-ui-and-data-apis">#4 - Decouple your UI and Data APIs</h3>
+
+<p>This will be controversial, but hear me out: I think it is better to separate your application UI from your
+ data API because they have <em>different target audiences</em>.</p>
+
+<p>To borrow a quote from the “API Churn” article above:</p>
+
+<blockquote>
+  <p>I don’t even argue anymore. Projects end up with a gazillion APIs tied to screens that change often, which, by “design” 
+ require changes in the API and before you know it, you end up with lots of APIs and for each API many form factors and 
+ platform variants.</p>
+</blockquote>
+
+<p>What we see here is a data API engineer dealing with UI API needs.  UIs are inherently fiddly and prone to churn.  They
+often require specialized queries in order to make them perform well.  This is in contrast with the mandate of most
+data (JSON) APIs, which need to be general data access tools, all things to all possible clients, within the security constraints
+mentioned above.</p>
+
+<p>By decoupling your data (JSON) and application UI (HTML) APIs, you remove this mismatch in needs and can end up with cleaner 
+implementations of both.</p>
+
+<h3 id="5---resthateoas-without-tears">#5 - REST/HATEOAS Without Tears</h3>
+
+<p>One of the great technical tragedies of the last couple of decades has been the <a href="http://intercoolerjs.org/2016/01/18/rescuing-rest.html">fall of REST</a>
+due to its misapplication in data APIs and the concomitant obscurity that <a href="http://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html">HATEOAS lingers in</a>.</p>
+
+<p>The technical community is picking up the pieces on the data side with newer technologies like <a href="http://graphql.org/">GraphQL</a>
+and I applaud that: REST was never going to be a great fit for data (JSON) APIs since it required a hypertext (e.g. HTML)
+for a lot of its power.</p>
+
+<p>But let’s not throw the baby out with the bath water.  Remember, REST was <em>a description</em> of the web architecture, not a 
+prescriptive checklist to follow.  All the old, clunky web applications that used reasonable URLs were already basically 
+following that architecture. And that was a good thing!  What was bad was the <em>clunkiness</em> of the applications, not the 
+general network architecture which had, and still has, <a href="https://en.wikipedia.org/wiki/Representational_state_transfer#Architectural_properties">a bunch of benefits</a>
+to it.</p>
+
+<p>Fortunately there is a <a href="/">good, solid way to implement smooth, modern UIs</a> that stays true to the original description of
+REST and, in fact, expands your ability to work with a lot of aspects of it (e.g. HTTP method support).  By using the
+server side for your application logic and HTML for your UI API network transport, you can implement REST and HATEOAS without
+even really thinking about it, and enjoy all the benefits described in Roy Fielding’s dissertation.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>So, there are five good reasons to consider a server-side architecture for your next web application.  Your mileage 
+may vary, of course: going server-side isn’t for every application.  But I think it is a viable option for many, perhaps
+even most, web applications, and carries some nice benefits along with it.</p>
+
+<p>Sure, it’s going against the grain these days.  But what fun is going with the crowd <a href="https://www.brainyquote.com/photos_tr/en/m/marktwain/122378/marktwain1.jpg">anyway</a>?</p>
+
+<p>Carson / <a href="https://twitter.com/carson_gross">@carson_gross</a></p>
+
+<hr/>
+<section>
+  <h3><em><i class="fa fa-bullhorn"></i> | The Comments Section |</em></h3>
+  <div id="disqus_thread"></div>
+</section>
+<script>
+  /**
+   * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+   * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+   */
+  /*
+   var disqus_config = function () {
+   this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+   this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+   };
+   */
+  (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+
+    s.src = '//intercoolerjs.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+      </section>
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+</div>
+</div>
+
+<div class="container">
+  <hr>
+  <footer>
+    <p>
+      &copy; <a href="http://intercoolerjs.org">IntercoolerJS.org</a> 2013-2019
+    </p>
+  </footer>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20364649-2', 'intercoolerjs.org');
+  ga('send', 'pageview');
+</script>
+<script>
+  $('pre').addClass('prettyprint');
+</script>
+<script src="/js/google-code-prettify/run_prettify.js?lang=css&skin=desert"></script>
+</body>
+</html>
