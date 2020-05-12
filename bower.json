@@ -1,6 +1,6 @@
 {
   "name": "intercooler-js",
-  "version":"1.2.3",
+  "version":"1.2.4",
   "homepage": "https://github.com/LeadDyno/intercooler-js",
   "main": "src/intercooler.js",
   "license": "MIT",

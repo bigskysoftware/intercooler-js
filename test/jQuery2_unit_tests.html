@@ -9,16 +9,16 @@
   <title>Intercooler.js</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
     rel="stylesheet" type="text/css">
 
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="//oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
   <![endif]-->
 
 <script src="lib/jquery-2.2.4.js"></script>
@@ -60,12 +60,12 @@
     }
   </script>
 
-  <script src="https://code.jquery.com/qunit/qunit-1.16.0.js"></script>
+  <script src="//code.jquery.com/qunit/qunit-1.16.0.js"></script>
 
   <script type="text/javascript" src="../src/intercooler.js" data-cover></script>
 
 
-  <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.16.0.css">
+  <link rel="stylesheet" href=//code.jquery.com/qunit/qunit-1.16.0.css">
 
   <script>
     // clear out the intercooler library for blanket if we are in a coverage test
@@ -91,7 +91,7 @@
       });
     }
 
-    // Taken from https://gist.github.com/kares/956897
+    // Taken from //gist.github.com/kares/956897
     function parseParams(str) {
       var re = /([^&=]+)=?([^&]*)/g;
       var decode = function (str) {
@@ -162,7 +162,7 @@
     tests</p>
 
   <p>New tests should follow the existing test templates, using
-    the <code>intercoolerTest()</code> helper and <a href="https://github.com/jakerella/jquery-mockjax">mockjax</a> for
+    the <code>intercoolerTest()</code> helper and <a href="//github.com/jakerella/jquery-mockjax">mockjax</a> for
     mocking out AJAX requests.</p>
 
   <p>
@@ -187,6 +187,46 @@
   <div class="col-md-12">
     <h4>Test HTML</h4>
   </div>
+</div>
+
+<div id="all">
+    
+
+<h3>Form on submit</h3>
+  <form id="form-on-submit" ic-post-to='/disabled_on_submit'  ic-disable-inputs="true" >
+      <div>
+
+    <input type="text" name="foo" value="bar">
+      </div>
+      <ul>
+          <li>
+    <input type="submit" value="submit to disabled">
+          </li>
+      </ul>
+  </form>
+
+  <script>
+    intercoolerTest("ic-disable-inputs Disable fields at submit",
+      function (assert) { // before request
+        $.mockjax({
+          url: "/disabled_on_submit",
+          response: function(settings) {
+            console.log("ajax call disabled_ob_submit")
+              console.log($("#form-on-submit"))
+            var params = parseParams(settings.data);
+            assert.equal(params["foo"], "bar");
+              assert.equal($("#form-on-submit > input").is(":disabled"), true);
+
+            return "";
+          }
+        });
+          $("#form-on-submit > input[type='submit']").click();
+      },
+      function (assert) { // afterrequest
+        assert.equal($("#form-on-submit input").is(":disabled"), false);
+      });
+  </script>
+
 </div>
 
 <div class="row">
@@ -1968,6 +2008,10 @@ QUnit.test("Script evaluation", function (assert) {
       });
   </script>
 
+
+
+
+
   <form ic-post-to='/submit_val_included'>
     <input type="submit" id="submit_val_button" name="foo" value="bar">
     <input type="submit"  id="submit_val_button2" name="foo" value="doh">
@@ -2583,7 +2627,7 @@ QUnit.test("Script evaluation", function (assert) {
             });
   </script>
 
-  <a id="enhanced-link-non-local" ic-enhance="true" href="https://intercooler.org">bar</a>
+  <a id="enhanced-link-non-local" ic-enhance="true" href="//intercooler.org">bar</a>
   <script>
     intercoolerTest("test ic-enhance does not monkey with external links",
             function (assert) {
