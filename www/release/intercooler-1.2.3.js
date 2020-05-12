@@ -1,3 +1,19 @@
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define(["jquery"], function (a0) {
+      return (root['Intercooler'] = factory(a0));
+    });
+  } else if (typeof module === 'object' && module.exports) {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require("jquery"));
+  } else {
+    root['Intercooler'] = factory(root["jQuery"]);
+  }
+}(this, function ($) {
+
 ////////////////////////////////////
 
 /**
@@ -339,27 +355,8 @@ var Intercooler = Intercooler || (function() {
   }
 
 
-
   function beforeRequest(elt) {
-
     elt.addClass('disabled');
-
-    var check_disable_inputs = closestAttrValue(elt, "ic-disable-inputs");
-    if (check_disable_inputs === 'true') {
-      var are_inputs = [
-        'input', 'textarea', 'select', 'button', 'fieldset', 
-        'optgroup', 'option', 'textarea'];
-      elt.closest("form").children().each(function(){
-        var $elt = $(this);
-        $elt.addClass('disabled');
-        // inputs to disabled
-        if ($elt.is(are_inputs.join(", "))) {
-            $elt.attr("disabled", true);
-        }
-       
-      })
-    
-    }
     elt.addClass('ic-request-in-flight');
     elt.data('ic-request-in-flight', true);
   }
@@ -372,21 +369,6 @@ var Intercooler = Intercooler || (function() {
       hideIndicator(globalIndicator);
     }
     elt.removeClass('disabled');
-    var check_disable_inputs = closestAttrValue(elt, "ic-disable-inputs");
-    if ( check_disable_inputs === 'true') {
-        // are inputs and are disabled
-        var are_inputs = [
-            'input', 'textarea', 'select', 'button', 'fieldset', 
-            'optgroup', 'option', 'textarea'];
-        elt.closest("form").children().each(function(){
-          var $elt = $(this);
-          $elt.removeClass("disabled");
-          if ($elt.is(are_inputs.join(", ")) && $elt.is(":disabled")) {
-            $elt.removeAttr('disabled');
-          }
-        });
-       
-    }
     elt.removeClass('ic-request-in-flight');
     elt.data('ic-request-in-flight', false);
     if (elt.data('ic-next-request')) {
@@ -1268,8 +1250,7 @@ var Intercooler = Intercooler || (function() {
 
     if (macroIs(macro, 'ic-action')) {
       setIfAbsent(elt, 'ic-trigger-on', 'default');
-    } 
-
+    }
 
     // non-action attributes
     var value = null;
@@ -2094,3 +2075,7 @@ var Intercooler = Intercooler || (function() {
     }
   };
 })();
+
+return Intercooler;
+
+}));
