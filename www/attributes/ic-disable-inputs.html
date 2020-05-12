@@ -1,0 +1,56 @@
+---
+layout: default
+nav: attributes > ic-disable-inputs
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-disable-inputs</code> - Disable all inputs when form submit</h2>
+
+      <h3>Summary</h3>
+
+      <p>Use <code>ic-disable-input</code> when you want to disable all inputs when a request is in process</p>
+
+
+      <h3>Example</h3>
+
+
+      <pre>
+        &#x3C;form id=&#x22;form-on-submit&#x22; ic-post-to=&#x27;/disabled_on_submit&#x27;  ic-disable-inputs=&#x22;true&#x22; &#x3E;
+            &#x3C;input type=&#x22;text&#x22; name=&#x22;foo&#x22; value=&#x22;bar&#x22;&#x3E;
+            &#x3C;input type=&#x22;submit&#x22; value=&#x22;submit to disabled&#x22;&#x3E;
+        &#x3C;/form&#x3E;
+      </pre>
+
+    <div>
+
+                       
+        
+      <div class="live-demo ">
+
+        <script>
+          $.mockjax({
+            'url': '/disabled_on_submit',
+            responseTime: 1500
+          });
+        </script>
+             <form id="form-on-submit" ic-post-to='/disabled_on_submit'  ic-disable-inputs="true" >
+                 <div class="form-group">
+                         <textarea class="form-control" name="textareainput" ></textarea>
+                 </div>
+                 <div class="form-group">
+                         <input type="text" name="foo" value="bar" class="form-control">
+                 </div>
+                         <input type="submit" value="submit to disabled" class="btn btn-primary">
+             </form>
+
+
+    </div>
+
+
+    </div>
+  </div>
+</div>

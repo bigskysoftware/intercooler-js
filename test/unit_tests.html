@@ -197,12 +197,19 @@
 
 <h3>Form on submit</h3>
   <form id="form-on-submit" ic-post-to='/disabled_on_submit'  ic-disable-inputs="true" >
+      <div>
+
     <input type="text" name="foo" value="bar">
+      </div>
+      <ul>
+          <li>
     <input type="submit" value="submit to disabled">
+          </li>
+      </ul>
   </form>
 
   <script>
-    intercoolerTest("Disable fields at submit",
+    intercoolerTest("ic-disable-inputs Disable fields at submit",
       function (assert) { // before request
         $.mockjax({
           url: "/disabled_on_submit",
@@ -211,12 +218,12 @@
               console.log($("#form-on-submit"))
             var params = parseParams(settings.data);
             assert.equal(params["foo"], "bar");
-            assert.equal($("#form-on-submit input").is(":disabled"), true);
+              assert.equal($("#form-on-submit > input").is(":disabled"), true);
 
             return "";
           }
         });
-        $("#form-on-submit input[type='submit']").click();
+          $("#form-on-submit > input[type='submit']").click();
       },
       function (assert) { // afterrequest
         assert.equal($("#form-on-submit input").is(":disabled"), false);

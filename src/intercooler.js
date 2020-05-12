@@ -349,13 +349,10 @@ var Intercooler = Intercooler || (function() {
       var are_inputs = [
         'input', 'textarea', 'select', 'button', 'fieldset', 
         'optgroup', 'option', 'textarea'];
-      elt.closest("form").children().each(function(){
+      elt.closest("form").find(are_inputs.join(", ")).each(function(){
         var $elt = $(this);
         $elt.addClass('disabled');
-        // inputs to disabled
-        if ($elt.is(are_inputs.join(", "))) {
-            $elt.attr("disabled", true);
-        }
+        $elt.attr("disabled", true);
        
       })
     
@@ -378,12 +375,10 @@ var Intercooler = Intercooler || (function() {
         var are_inputs = [
             'input', 'textarea', 'select', 'button', 'fieldset', 
             'optgroup', 'option', 'textarea'];
-        elt.closest("form").children().each(function(){
+        elt.closest("form").find(are_inputs.join(", ")).each(function(){
           var $elt = $(this);
           $elt.removeClass("disabled");
-          if ($elt.is(are_inputs.join(", ")) && $elt.is(":disabled")) {
             $elt.removeAttr('disabled');
-          }
         });
        
     }
