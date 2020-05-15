@@ -14,6 +14,8 @@ And the new repo here:
 
 https://github.com/bigskysoftware/kutty
 
+---
+
 ## Introduction
 
 Intercooler is a small (6.74KB gzipped) [jQuery](https://jquery.com/) or [zepto.js](http://intercoolerjs.org/docs.html#zepto) based library that allows you to add AJAX to 
