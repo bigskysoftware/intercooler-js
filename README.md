@@ -4,15 +4,15 @@
 
 ## Intercooler 2.0
 
-**NB: Work on intercooler 2.0 has begun under a new name: kutty**
+**NB: Work on intercooler 2.0 has begun under a new name: htmx**
 
 You can check out the new website here:
 
-http://kutty.org
+http://htmx.org
 
 And the new repo here:
 
-https://github.com/bigskysoftware/kutty
+https://github.com/bigskysoftware/htmx
 
 ---
 
