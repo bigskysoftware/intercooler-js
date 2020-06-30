@@ -149,7 +149,8 @@
           that.closed = true;
         },
         url: url,
-        withCredentials: withCredentials
+        withCredentials: withCredentials,
+        eventHandlers: eventHandlers,
       };
       return that;
     };
@@ -2220,11 +2221,29 @@ QUnit.test("Script evaluation", function (assert) {
       });
   </script>
 
-  <div id="sse-7" ic-sse-src="/foo" ic-sse-with-credentials="true">
+  <div id="sse-7" ic-sse-src="/foo">
+    <span id="sse-7-event1" ic-get-from="/sse_replace_req" ic-trigger-on="sse:foo" ic-replace-target="true"></span>
+    <span id="sse-7-event2" ic-get-from="/sse_replace_req" ic-trigger-on="sse:bar" ic-replace-target="true"></span>
+    <span id="sse-7-event3" ic-get-from="/sse_replace_req" ic-trigger-on="sse:foo" ic-replace-target="true"></span>
+  </div>
+  <script>
+    intercoolerTest("Server Sent Event registers one handler per event on source", function(assert) {
+        var mockSource = $("#sse-7").data("ic-event-sse-source");
+        var mockEventMap = $("#sse-7").data("ic-event-sse-map");
+        assert.equal(true, mockEventMap.foo);
+        assert.equal(true, mockEventMap.bar);
+        assert.equal(1, mockSource.eventHandlers['foo'].length);
+        assert.equal(1, mockSource.eventHandlers['foo'].length);
+      },
+      function(assert) {
+      });
+  </script>
+
+  <div id="sse-8" ic-sse-src="/foo" ic-sse-with-credentials="true">
   <script>
     intercoolerTest("test event source with credentials set to true",
             function (assert) {
-              var mockSource = $("#sse-7").data("ic-event-sse-source");
+              var mockSource = $("#sse-8").data("ic-event-sse-source");
               assert.equal('/foo', mockSource.url);
               assert.equal(true, mockSource.withCredentials);
             },
@@ -2232,11 +2251,11 @@ QUnit.test("Script evaluation", function (assert) {
             });
   </script>
 
-  <div id="sse-8" ic-sse-src="/foo" ic-sse-with-credentials="false">
+  <div id="sse-9" ic-sse-src="/foo" ic-sse-with-credentials="false">
   <script>
     intercoolerTest("test event source with credentials set to false",
             function (assert) {
-              var mockSource = $("#sse-8").data("ic-event-sse-source");
+              var mockSource = $("#sse-9").data("ic-event-sse-source");
               assert.equal('/foo', mockSource.url);
               assert.equal(false, mockSource.withCredentials);
             },
@@ -2244,11 +2263,11 @@ QUnit.test("Script evaluation", function (assert) {
             });
   </script>
 
-  <div id="sse-9" ic-sse-src="/foo">
+  <div id="sse-10" ic-sse-src="/foo">
   <script>
     intercoolerTest("test event source without credentials explicitly set",
             function (assert) {
-              var mockSource = $("#sse-9").data("ic-event-sse-source");
+              var mockSource = $("#sse-10").data("ic-event-sse-source");
               assert.equal('/foo', mockSource.url);
               assert.equal(false, mockSource.withCredentials);
             },

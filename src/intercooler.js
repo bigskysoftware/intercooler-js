@@ -1095,6 +1095,7 @@ var Intercooler = Intercooler || (function() {
           }
         });
       })
+      eventMap[event] = true;
     }
   }
 
