@@ -1708,12 +1708,21 @@ QUnit.test("Script evaluation", function (assert) {
 <button id="ica-btn-6" ic-action=";addClass:ic-apply1;">ic-apply-button</button>
 <button id="ica-btn-7" ic-action="delay:10ms;addClass:ic-apply1;">ic-apply-button</button>
 <button id="ica-btn-8" ic-action="delay:10ms;globalFuncForAction:1, 2, 3;">ic-apply-button</button>
+<button id="ica-btn-9" ic-action="delay:10ms;globalObj.functionForAction:1, 2, 3;">ic-apply-button</button>
 
   <script>
     var globalVarForAction = 0;
     function globalFuncForAction(a, b, c) {
       globalVarForAction = a + b + c;
     }
+
+    var globalVarForDeferencedAction = 0;
+    var globalObj = {
+      functionForAction: function globalFuncForAction(a, b, c) {
+        globalVarForDeferencedAction = a + b + c;
+      }
+    };
+
   QUnit.test('Test ic-action', function (assert) {
     var done = assert.async();
 
@@ -1727,6 +1736,7 @@ QUnit.test("Script evaluation", function (assert) {
     $('#ica-btn-6').click();
     $('#ica-btn-7').click();
     $('#ica-btn-8').click();
+    $('#ica-btn-9').click();
 
     setTimeout(function () {
       assert.ok($('#ica-btn-1').is(".ic-apply1"));
@@ -1753,6 +1763,7 @@ QUnit.test("Script evaluation", function (assert) {
     setTimeout(function () {
       assert.ok($('#ica-btn-7').is(".ic-apply1"));
       assert.equal(globalVarForAction, 6);
+      assert.equal(globalVarForDeferencedAction, 6);
     }, 12);
 
     setTimeout(function () {

@@ -1701,9 +1701,14 @@ var Intercooler = Intercooler || (function() {
 
   function makeApplyAction(target, action, args) {
     return function() {
-      var func = target[action] || window[action];
-      if (func) {
-        func.apply(target, args);
+      var path = action.split(".");
+      var root = path.shift();
+      var functionValue = target[root] || window[root];
+      while (path.length > 0) {
+        functionValue = functionValue[path.shift()]
+      }
+      if (functionValue) {
+        functionValue.apply(target, args);
       } else {
         log(target, "Action " + action + " was not found", "ERROR");
       }
