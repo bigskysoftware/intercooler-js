@@ -2,6 +2,20 @@
   <img src="http://i.imgur.com/CQh4tnm.png">
 </center>
 
+## Intercooler 2.0
+
+**NB: Work on intercooler 2.0 has begun under a new name: htmx**
+
+You can check out the new website here:
+
+http://htmx.org
+
+And the new repo here:
+
+https://github.com/bigskysoftware/htmx
+
+---
+
 ## Introduction
 
 Intercooler is a small (6.74KB gzipped) [jQuery](https://jquery.com/) or [zepto.js](http://intercoolerjs.org/docs.html#zepto) based library that allows you to add AJAX to 
