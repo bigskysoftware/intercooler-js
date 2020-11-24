@@ -2,17 +2,18 @@
   <img src="http://i.imgur.com/CQh4tnm.png">
 </center>
 
-## Intercooler 2.0
+## htmx
 
-**NB: Work on intercooler 2.0 has begun under a new name: htmx**
+intercooler 2.0 (renamed to htmx 1.0) has been released.  It is smaller, more expressive and no longer has a 
+dependency on jQuery.
 
-You can check out the new website here:
+You can view the new website here:
 
-http://htmx.org
+[http://htmx.org](http://htmx.org)
 
 And the new repo here:
 
-https://github.com/bigskysoftware/htmx
+[https://github.com/bigskysoftware/htmx](https://github.com/bigskysoftware/htmx)
 
 ---
 
@@ -81,7 +82,5 @@ To contribute a change to intercooler:
 * Create a pull request for that branch against `development` in the main repository
 
 Thank you to [all the contributors](https://github.com/LeadDyno/intercooler-js/graphs/contributors)!
-
-[![Join the chat at https://gitter.im/intercooler-js/Lobby](https://badges.gitter.im/intercooler-js/Lobby.svg)](https://gitter.im/intercooler-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 🕊️🕊️🕊️
