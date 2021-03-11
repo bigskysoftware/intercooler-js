@@ -82,7 +82,7 @@ True REST-ful JSON API.  As usual, in as much as they were aware of it, the mode
 work done were confused and alienated by the whole scene, and simply tried to make things work.
 
 The second problem that eventually came to the fore, again almost exclusively in *JSON APIs*, was confusion around HATEOAS.  Today,
-if someone actually recognizes that acronym, there is a good chance that they will [recoil in disgust](https://www.jeffknupp.com/blog/2014/06/03/why-i-hate-hateoas/).  
+if someone actually recognizes that acronym, there is a good chance that they will [recoil in disgust](https://laptrinhx.com/why-i-hate-hateoas-2966199266/).  
 
 The acronym stands for [Hypermedia as the Engine of Application State](https://en.wikipedia.org/wiki/HATEOAS) and, in plain terms, it
 means that a REST-ful system should send both data *and the network operations on that data* in responses to clients, so clients
