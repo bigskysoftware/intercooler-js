@@ -80,7 +80,7 @@ for their client/server communication, and all of them address the clunkiness th
 
 With intercooler, in particular, I tried to stay as close to the original HTML model as possible, using hypertext attributes to drive 
 everything,  while opening up the remainder of the web architecture (e.g. AJAX, various DOM events, various HTTP Actions.)  
-You can see what pure (or nearly pure) HTML [can accomplish with intercooler here](http://intercoolerjs.org/examples/index.html).
+You can see what pure (or nearly pure) HTML [can accomplish with intercooler here](https://intercoolerjs.org/examples/index.html).
 
 It isn't perfect for every application, but you might try it out and see how it goes.  You might be surprised at how
 much it can simplify your web application development environment, and how natural the original REST architecture
@@ -103,9 +103,9 @@ it isn't: it is being used by quite a few people, very happily.
 
 If you liked this article, you might find the following older posts interesting:
 
-* ['Rescuing REST'](http://intercoolerjs.org/2016/01/18/rescuing-rest.html)
-* ['HATEOAS is for Humans'](http://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html) 
-* ['API Churn vs. Security](http://intercoolerjs.org/2016/02/17/api-churn-vs-security.html) 
+* ['Rescuing REST'](https://intercoolerjs.org/2016/01/18/rescuing-rest.html)
+* ['HATEOAS is for Humans'](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html) 
+* ['API Churn vs. Security'](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html) 
 
 Instawork [liked intercooler so much](https://engineering.instawork.com/iterating-with-simplicity-evolving-a-django-app-with-intercooler-js-8ed8e69d8a52)
 they went ahead and built a similar (and far more advanced!) technology for mobile development:
