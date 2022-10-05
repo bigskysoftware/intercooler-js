@@ -71,7 +71,7 @@ Developers and users, understandably, wanted better usability than that.  Develo
 available: javascript and AJAX.  This was a pragmatic move, but unfortunately it made REST difficult and tedious, rather 
 than natural and helpful.
  
- ## Some HTML-Oriented Solutions
+## Some HTML-Oriented Solutions
 
 There are a few against-the-grain libraries that address this problem from within the context of the original, HTML driven model: 
 [Turbolinks](https://github.com/turbolinks/turbolinks), [pjax](https://github.com/defunkt/jquery-pjax) and 
