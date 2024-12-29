@@ -2699,6 +2699,11 @@ QUnit.test("Script evaluation", function (assert) {
         assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "doe, joe", "bar=foo&joe=blow"), "http://foo.bar?doe=&joe=blow");
         assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "doe,   joe", "bar=foo&joe=blow"), "http://foo.bar?doe=&joe=blow");
         assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", " doe,   joe", "bar=foo&joe=blow"), "http://foo.bar?doe=&joe=blow");
+
+        // multiple params with same name 
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "doe,joe", "bar=foo&joe=blow1&joe=blow2"), "http://foo.bar?doe=&joe=blow1&joe=blow2");
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "doe,  bar,joe", "doe=&bar=foo1&bar=foo2&joe=blow1&joe=blow2"), "http://foo.bar?doe=&bar=foo1&bar=foo2&joe=blow1&joe=blow2");
+        assert.equal(Intercooler._internal.getLocalURL("http://foo.bar", "joe,bar", "joe=blow1&joe=blow2&bar="), "http://foo.bar?joe=blow1&joe=blow2&bar=");
       });
 
     </script>
