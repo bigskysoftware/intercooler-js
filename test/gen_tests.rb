@@ -21,6 +21,10 @@ VARIANTS =
 
     'jQuery2' =>
  '<script src="lib/jquery-2.2.4.js"></script>
+  <script type="text/javascript" src="lib/jquery.mockjax-2.2.1.js"></script>',
+
+    'jQuery3' =>
+ '<script src="lib/jquery-2.2.4.js"></script>
   <script type="text/javascript" src="lib/jquery.mockjax-2.2.1.js"></script>'
 }
 

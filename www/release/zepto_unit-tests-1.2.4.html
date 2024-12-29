@@ -21,8 +21,19 @@
   <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
   <![endif]-->
 
-<script src="lib/jquery-2.2.4.js"></script>
-  <script type="text/javascript" src="lib/jquery.mockjax-2.2.1.js"></script>
+<script src="lib/zepto-1.2.0.min.js"></script>
+  <script src="lib/zepto.data-1.2.0.js"></script>
+  <script>
+    //override on to transform standard namespaces
+    (function($) {
+      var zeptoOn = $.fn.on;
+      $.fn.on = function(arg1, arg2, arg3, arg4){
+        arg1 = arg1.split(".").reverse().join(":");
+        zeptoOn.call(this, arg1, arg2, arg3, arg4);
+      };
+    })(Zepto);
+  </script>
+  <script type="text/javascript" src="lib/zepto.mockjax-1.2.0.js"></script>
   <script>
     var USE_DATA_ATTRS = location.search.indexOf("use-data-attr") >= 0;
     function fixAttrName(name) {
@@ -62,7 +73,7 @@
 
   <script src="https://code.jquery.com/qunit/qunit-1.16.0.js"></script>
 
-  <script type="text/javascript" src="../src/intercooler.js" data-cover></script>
+  <script type="text/javascript" src="./intercooler-1.2.4.js" data-cover></script>
 
 
   <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.16.0.css">

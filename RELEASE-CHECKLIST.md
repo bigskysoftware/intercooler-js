@@ -2,7 +2,7 @@
 
 ### Ready
 * Ensure correct version numbers are in `bower.json` and `package.json`
-* Run /test/gen_tests.rb to ensure all tests are up to date
+* Run `ruby gen_tests.rb` in the `/tests` directory to ensure all tests are up to date
 * Run /node_modules/.bin/grunt to generate latest version of intercooler release and tests
 * Search and replace current version for new version in `/www`
   * Do not replace in `download.html`, `CHANGES.html`, and `www/release`
