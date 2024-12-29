@@ -100,6 +100,16 @@
     </tr>
     <tr>
       <td>
+        <code>beforeSwap.ic(evt)</code>
+      </td>
+      <td>
+        Triggered before an element is swapped out of the page. You should use this event to trigger your cleanup code,
+        before the elements are removed from the page. It's possible to access the element that is to be swapped using 
+        <code>evt.target</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <code>elementAdded.ic(evt)</code>
       </td>
       <td>
