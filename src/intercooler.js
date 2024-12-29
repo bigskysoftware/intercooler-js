@@ -438,23 +438,24 @@ var Intercooler = Intercooler || (function() {
     if (paramsToPush) {
       baseURL = baseURL + "?";
       var vars = {};
-      var keyArray = [];      
-      paramsToPush.split(",").forEach(element => {
-        keyArray[element.trim()] = [];        
+      var keyArray = [];
+      paramsToPush.split(",").forEach(function(element) {
+        keyArray[element.trim()] = [];
       });
       data.replace(/([^=&]+)=([^&]*)/gi, function(m,key,value) {
         if (keyArray[key]){
-          keyArray[key].push(value);          
+          keyArray[key].push(value);
           vars[key] = keyArray[key];
-        }     
+        }
       });
       var counter = 0;
       $(paramsToPush.split(",")).each(function(index) {
         var param = $.trim(this);
-        var value = vars[param] || "";                
-        for (const child of value) {    
-          baseURL += (counter == 0) ? "" : "&";      
-          baseURL += param + "=" + child;  
+        var value = vars[param] || "";
+        for (var i = 0; i < value.length; i++) {
+          var child = value[i];
+          baseURL += (counter == 0) ? "" : "&";
+          baseURL += param + "=" + child;
           counter++;
         }
         if (typeof value === 'string') {
