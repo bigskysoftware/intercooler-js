@@ -468,7 +468,7 @@ var Intercooler = Intercooler || (function() {
     return baseURL;
   }
 
-  function handleRemoteRequest(elt, type, url, data, success) {
+  function handleRemoteRequest(elt, type, url, data, handler, fireOnError) {
 
     beforeRequest(elt);
 
@@ -494,6 +494,39 @@ var Intercooler = Intercooler || (function() {
     } else {
       actualRequestType = type == 'GET' ? 'GET' : 'POST';
     }
+
+    function dataHandler(responseData, textStatus, xhr) {
+      var beforeHeaders = new Date();
+      var oldTitle = document.title;
+      try {
+        if (processHeaders(elt, xhr)) {
+          log(elt, "Processed headers for request " + requestId + " in " + (new Date() - beforeHeaders) + "ms", "DEBUG");
+          var beforeHandlerFire = new Date();
+
+          if (xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true") {
+            try {
+              requestCleanup(indicator, globalIndicator, elt); // clean up before snap-shotting HTML
+              var baseURL = closestAttrValue(elt, 'ic-src');
+              var paramsToPush = closestAttrValue(elt, 'ic-push-params');
+              var newUrl = xhr.getResponseHeader("X-IC-PushURL") || getLocalURL(baseURL, paramsToPush, data);
+              if(_history) {
+                _history.snapshotForHistory(newUrl, oldTitle);
+              } else {
+                throw "History support not enabled";
+              }
+            } catch (e) {
+              log(elt, "Error during history snapshot for " + requestId + ": " + formatError(e), "ERROR");
+            }
+          }
+
+          handler(responseData, textStatus, elt, xhr);
+
+          log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeHandlerFire) + "ms", "DEBUG");
+        }
+      } catch (e) {
+        log(elt, "Error processing request " + requestId + " : " + formatError(e), "ERROR");
+      }
+    };
 
     var ajaxSetup = {
       type: actualRequestType,
@@ -522,35 +555,9 @@ var Intercooler = Intercooler || (function() {
           if (globalEval(onSuccess, [["elt", elt], ["data", responseData], ["textStatus", textStatus], ["xhr", xhr]]) == false) {
             return;
           }
-        }
-
-        var beforeHeaders = new Date();
-        var oldTitle = document.title;
+        }     
         try {
-          if (processHeaders(elt, xhr)) {
-            log(elt, "Processed headers for request " + requestId + " in " + (new Date() - beforeHeaders) + "ms", "DEBUG");
-            var beforeSuccess = new Date();
-
-            if (xhr.getResponseHeader("X-IC-PushURL") || closestAttrValue(elt, 'ic-push-url') == "true") {
-              try {
-                requestCleanup(indicator, globalIndicator, elt); // clean up before snap-shotting HTML
-                var baseURL = closestAttrValue(elt, 'ic-src');
-                var paramsToPush = closestAttrValue(elt, 'ic-push-params');
-                var newUrl = xhr.getResponseHeader("X-IC-PushURL") || getLocalURL(baseURL, paramsToPush, data);
-                if(_history) {
-                  _history.snapshotForHistory(newUrl, oldTitle);
-                } else {
-                  throw "History support not enabled";
-                }
-              } catch (e) {
-                log(elt, "Error during history snapshot for " + requestId + ": " + formatError(e), "ERROR");
-              }
-            }
-
-            success(responseData, textStatus, elt, xhr);
-
-            log(elt, "Process content for request " + requestId + " in " + (new Date() - beforeSuccess) + "ms", "DEBUG");
-          }
+          dataHandler(responseData, textStatus, xhr);    
           triggerEvent(elt, "after.success.ic", [elt, responseData, textStatus, xhr, requestId]);
           maybeInvokeLocalAction(elt, "-success");
         } catch (e) {
@@ -563,8 +570,18 @@ var Intercooler = Intercooler || (function() {
         if (onError) {
           globalEval(onError, [["elt", elt], ["status", status], ["str", str], ["xhr", xhr]]);
         }
-        processHeaders(elt, xhr);
-        maybeInvokeLocalAction(elt, "-error");
+        
+        try {
+          if (fireOnError) {
+            dataHandler(xhr.responseText, str, xhr);
+          } else {
+            processHeaders(elt, xhr);
+          }
+          maybeInvokeLocalAction(elt, "-error");
+        } catch (e) {
+          log(elt, "Error processing successful request " + requestId + " : " + formatError(e), "ERROR");
+        }
+        
         log(elt, "AJAX request " + requestId + " to " + url + " experienced an error: " + str, "ERROR");
       },
       complete: function(xhr, status) {
@@ -1617,13 +1634,15 @@ var Intercooler = Intercooler || (function() {
           return;
         }
 
+        var fireOnError = "true" == closestAttrValue(elt, 'ic-swap-on-error')
+
         if (elt.data('ic-event-id') == icEventId) {
           var styleTarget = getStyleTarget(elt);
           var attrTarget = styleTarget ? null : getAttrTarget(elt);
           var verb = verbFor(elt);
           var url = getICAttribute(elt, 'ic-src');
           if (url) {
-            var success = alternateHandler || function(data) {
+            var handler = alternateHandler || function(data) {
               if (styleTarget) {
                 elt.css(styleTarget, data);
               } else if (attrTarget) {
@@ -1637,7 +1656,7 @@ var Intercooler = Intercooler || (function() {
             };
             var data = getParametersForElement(verb, elt, triggerOrigin);
             if(data) {
-              handleRemoteRequest(elt, verb, url, data, success);
+              handleRemoteRequest(elt, verb, url, data, handler, fireOnError);
             }
           }
           maybeInvokeLocalAction(elt, "");
