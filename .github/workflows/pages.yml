@@ -32,6 +32,8 @@ jobs:
       # The Gemfile.lock pins ffi 1.9.25, which does not compile on current runners.
       - run: gem install jekyll -v 3.8.5 --no-document
       - run: jekyll _3.8.5_ build
+        env:
+          JEKYLL_NO_BUNDLER_REQUIRE: 'true'
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
