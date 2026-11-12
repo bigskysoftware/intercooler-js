@@ -34,6 +34,12 @@ jobs:
       - run: jekyll _3.10.0_ build
         env:
           JEKYLL_NO_BUNDLER_REQUIRE: 'true'
+      # Netlify matched URLs without case. Add lowercase copies of mixed-case pages.
+      - run: |
+          find _site -name '*[A-Z]*.html' | while read -r f; do
+            l=$(echo "$f" | tr 'A-Z' 'a-z')
+            [ -e "$l" ] || { mkdir -p "$(dirname "$l")"; cp "$f" "$l"; }
+          done
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
