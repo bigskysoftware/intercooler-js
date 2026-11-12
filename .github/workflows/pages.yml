@@ -28,10 +28,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1'
-      # The Gemfile.lock pins ffi 1.9.25, which does not compile on current runners.
-      - run: gem install jekyll -v 3.8.5 --no-document
-      - run: jekyll _3.8.5_ build
+          ruby-version: '3.3'
+      # The Gemfile.lock (jekyll 3.8.5, ffi 1.9.25) does not build on current runners.
+      - run: gem install jekyll -v 3.10.0 --no-document && gem install kramdown-parser-gfm --no-document
+      - run: jekyll _3.10.0_ build
         env:
           JEKYLL_NO_BUNDLER_REQUIRE: 'true'
       - uses: actions/configure-pages@v5
